@@ -1,0 +1,26 @@
+.input-field-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    gap: 8px;
+}
+
+.input-field-label {
+    font-size: 16px;
+    color: black;
+}
+
+.required-indicator {
+    color: red;
+}
+
+.input-field-input {
+    width: 100%;
+    height: 32px;
+    border-radius: 8px;
+    background-color: inherit;
+    border: 1px solid #D9D9D9;
+    padding-left: 16px;
+    color: black;
+}
