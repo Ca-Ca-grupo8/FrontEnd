@@ -4,6 +4,7 @@ import { Button } from './components/ui/Button'
 import { InputField } from './components/ui/InputField'
 import useFetch from './hooks/useFetch'
 import { banhoApi } from './service/banhoApi'
+import { SelectField } from './components/ui/SelectField'
 
 function App() {
 
@@ -80,6 +81,8 @@ function App() {
           placeholder={"Anel XYZ"}
           required={false}>
         </InputField>
+
+        <SelectField data={banhos} label={"Banho"}></SelectField>
 
         <Button>Confirmar</Button>
       </CardForm>
