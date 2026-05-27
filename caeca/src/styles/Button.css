@@ -9,6 +9,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     box-sizing: border-box;
+    color: white;
 }
 
 .button-container:hover {
