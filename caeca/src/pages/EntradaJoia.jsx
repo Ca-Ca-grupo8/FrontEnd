@@ -8,6 +8,7 @@ import { materialApi } from "../service/materialApi";
 import { categoriaApi } from "../service/categoriaApi";
 import { fornecedorApi } from "../service/fornecedorApi";
 import { movimentacaoApi } from "../service/movimentacaoApi";
+import { Header } from "../components/ui/Header";
 
 export function EntradaJoia() {
     const [banhos, setBanhos] = useState([]);
@@ -89,6 +90,7 @@ export function EntradaJoia() {
 
     return (
         <>
+            <Header></Header>
             <CardForm onSubmit={handleSubmit}>
                 <InputField
                     label={"Nome da peça"}
