@@ -7,6 +7,7 @@ import { Button } from "../components/ui/Button";
 import { materialApi } from "../service/materialApi";
 import { categoriaApi } from "../service/categoriaApi";
 import { fornecedorApi } from "../service/fornecedorApi";
+import { movimentacaoApi } from "../service/movimentacaoApi";
 
 export function EntradaJoia() {
     const [banhos, setBanhos] = useState([]);
@@ -24,7 +25,7 @@ export function EntradaJoia() {
         precoBanho: "",
         multiplicador: "",
         fornecedorId: "",
-        imagem: ""
+        imagem: null
     });
 
     const handleChange = (field, value) => {
@@ -74,11 +75,16 @@ export function EntradaJoia() {
             idJoia: null
         }
 
-        console.log(payload)
+        console.log(cadastrarJoia(payload, formValues.imagem))
     }
 
     async function cadastrarJoia(payload, image) {
-        
+        try {
+            const response = await movimentacaoApi.realizarMovimentacao(payload, image);
+            return response;
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     return (
