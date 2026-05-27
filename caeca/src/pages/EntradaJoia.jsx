@@ -14,6 +14,26 @@ export function EntradaJoia() {
     const [categoria, setCategoria] = useState([]);
     const [fornecedor, setFornecedor] = useState([]);
 
+    const [formValues, setFormValues] = useState({
+        nomePeca: "",
+        materialId: "",
+        categoriaId: "",
+        banhoId: "",
+        quantidade: "",
+        precoCusto: "",
+        precoBanho: "",
+        multiplicador: "",
+        fornecedorId: "",
+        imagem: ""
+    });
+
+    const handleChange = (field, value) => {
+        setFormValues(prev => ({
+            ...prev,
+            [field]: value
+        }))
+    }
+
     useEffect(() => {
         async function carregarDadosIniciais() {
             const [listaBanhos, listaMateriais, listaCategorias, listaFornecedores] = await Promise.all([
@@ -32,51 +52,118 @@ export function EntradaJoia() {
         carregarDadosIniciais();
     }, []);
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const payload = {
+            idFornecedor: Number(formValues.fornecedorId) || 0,
+            quantidade: Number(formValues.quantidade) || 0,
+            precoBanho: Number(formValues.precoBanho) || 0.0,
+            precoCompraRevendedor: Number(formValues.precoCusto) || 0.0,
+            idRevendedora: null,
+            idTipoMovimentacao: 1,
+            dadosNovaJoia: {
+                nome: formValues.nomePeca,
+                quantidade: Number(formValues.quantidade) || 0,
+                quantidadeMinima: Number(formValues.quantidade) || 0,
+                categoria: Number(formValues.categoriaId) || 0,
+                banho: Number(formValues.banhoId) || 0,
+                material: Number(formValues.materialId) || 0
+            },
+            multiplicador: Number(formValues.multiplicador) || 0.0,
+            idJoia: null
+        }
+
+        console.log(payload)
+    }
+
+    async function cadastrarJoia(payload, image) {
+        
+    }
+
     return (
         <>
-            <CardForm>
+            <CardForm onSubmit={handleSubmit}>
                 <InputField
                     label={"Nome da peça"}
                     type={"text"}
                     placeholder={"Coração XYZ"}
-                    required={true}>
+                    required={true}
+                    value={formValues.nomePeca}
+                    onChange={(e) => handleChange("nomePeca", e.target.value)}>
                 </InputField>
-                <SelectField data={material} label={"Material"}></SelectField>
-                <SelectField data={categoria} label={"Categoria"}></SelectField>
-                <SelectField data={banhos} label={"Banho"}></SelectField>
+
+                <SelectField
+                    data={material}
+                    label={"Material"}
+                    value={formValues.materialId}
+                    onChange={(e) => handleChange("materialId", e.target.value)}>
+                </SelectField>
+                <SelectField
+                    data={categoria}
+                    label={"Categoria"}
+                    value={formValues.categoriaId}
+                    onChange={(e) => handleChange("categoriaId", e.target.value)}>
+                </SelectField>
+                <SelectField
+                    data={banhos}
+                    label={"Banho"}
+                    value={formValues.banhoId}
+                    onChange={(e) => handleChange("banhoId", e.target.value)}>
+                </SelectField>
+
                 <InputField
                     label={"Quantidade"}
                     type={"number"}
                     placeholder={"15"}
-                    required={true}>
+                    required={true}
+                    value={formValues.quantidade}
+                    onChange={(e) => handleChange("quantidade", e.target.value)}>
                 </InputField>
                 <InputField
                     label={"Preço original (custo)"}
                     type={"number"}
                     placeholder={"Anel XYZ"}
-                    required={true}>
+                    required={true}
+                    value={formValues.precoCusto}
+                    onChange={(e) => handleChange("precoCusto", e.target.value)}>
                 </InputField>
                 <InputField
                     label={"Preço do banho"}
                     type={"number"}
                     placeholder={"72.24"}
-                    required={true}>
+                    required={true}
+                    value={formValues.precoBanho}
+                    onChange={(e) => handleChange("precoBanho", e.target.value)}>
                 </InputField>
                 <InputField
                     label={"Multiplicador (Ganho)"}
                     type={"number"}
                     placeholder={"1.5"}
-                    required={true}>
+                    required={true}
+                    value={formValues.multiplicador}
+                    onChange={(e) => handleChange("multiplicador", e.target.value)}>
                 </InputField>
-                <SelectField data={fornecedor} label={"Fornecedor"}></SelectField>
+                <SelectField
+                    data={fornecedor}
+                    label={"Fornecedor"}
+                    value={formValues.fornecedorId}
+                    onChange={(e) => handleChange("fornecedorId", e.target.value)}>
+                </SelectField>
                 <InputField
-                    label={"Imagem"}
-                    type={"text"}
-                    placeholder={"Anel XYZ"}
-                    required={false}>
+                    label={"Escolha uma imagem"}
+                    type={"file"}
+                    required={false}
+                    onChange={(e) => handleChange("imagem", e.target.files[0])}>
                 </InputField>
 
-                <Button>Confirmar</Button>
+                <div className="card-form-actions">
+                    <Button type={"submit"}>Confirmar</Button>
+                    <span className="card-form-link">
+                        <p>Jóia existente?</p>
+                        <a href="">Atualizar Estoque</a>
+                    </span>
+                </div>
             </CardForm>
         </>
     )

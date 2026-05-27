@@ -1,6 +1,7 @@
 .button-container {
     background: linear-gradient(to right, #C95E95, #632E49);
     height: 40px;
+    width: 100%;
     border-radius: 8px;
     border: none;
     font-weight: 600;

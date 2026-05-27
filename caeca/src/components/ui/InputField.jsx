@@ -1,6 +1,6 @@
 import '../../styles/InputField.css';
 
-export function InputField({ label, type, placeholder, required = false}){
+export function InputField({ label, type, placeholder, required = false, value, onChange}){
     return (
         <div className="input-field-container">
             <label className="input-field-label">
@@ -11,6 +11,8 @@ export function InputField({ label, type, placeholder, required = false}){
                 placeholder={placeholder}
                 className="input-field-input"
                 required={required}
+                value={value}
+                onChange={onChange}
             />
         </div>
     )

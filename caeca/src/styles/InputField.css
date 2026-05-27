@@ -24,3 +24,51 @@
     padding-left: 16px;
     color: black;
 }
+
+.input-field-container:has(input[type="file"]) {
+    width: 100%;
+    position: relative;
+}
+
+.input-field-container:has(input[type="file"]) .input-field-label {
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 90px;
+    margin-top: 28px;
+    padding: 24px;
+    background-color: #F8F9FA;
+    border: 2px dashed #B3B3B3;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    color: #666666;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+    position: relative;
+}
+
+.input-field-container:has(input[type="file"]) .input-field-label::before {
+    content: "📂";
+    font-size: 24px;
+}
+
+.input-field-container input[type="file"] {
+    position: absolute;
+    margin-top: 28px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90px;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.input-field-container:has(input[type="file"]):hover .input-field-label {
+  background-color: #F5E8EF;
+  border-color: #A81A63;
+  color: #A81A63;
+}

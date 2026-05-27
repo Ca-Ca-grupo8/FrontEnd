@@ -5,6 +5,8 @@ export function SelectField({
     error,
     loading,
     label,
+    value,
+    onChange,
     required = false
 }){
     return (
@@ -12,7 +14,8 @@ export function SelectField({
             <label className="select-field-label">
                 {label} {required && <span className="required-indicator">*</span>}
             </label>
-            <select name="" id="" className='select-field-select'>
+            <select value={value} className='select-field-select' onChange={onChange}>
+                <option value="" disabled hidden>Selecione...</option>
                 {data && data.map(d => (<option value={d.id} key={d.id}>{d.nome}</option>))}
             </select>
         </div>
