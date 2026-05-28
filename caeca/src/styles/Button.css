@@ -1,0 +1,17 @@
+.button-container {
+    background-color: #96205C;
+    height: 40px;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    color: white;
+}
+
+.button-container:hover {
+  filter: brightness(1.1);
+}

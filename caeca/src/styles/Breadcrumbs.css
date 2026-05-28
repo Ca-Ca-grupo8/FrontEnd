@@ -1,0 +1,38 @@
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+  font-family: sans-serif;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-item {
+  color: #666666;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+  color: #921b51; /* Tom de vinho combinando com seu header */
+}
+
+.breadcrumb-home {
+  font-weight: 500;
+}
+
+/* Estilo do separador (a setinha) */
+.breadcrumb-separator {
+  color: #cccccc;
+}
+
+/* Estilo da página atual (último item) */
+.breadcrumb-item.active {
+  color: #333333;
+  font-weight: 600;
+  pointer-events: none; /* Desativa o clique */
+}
