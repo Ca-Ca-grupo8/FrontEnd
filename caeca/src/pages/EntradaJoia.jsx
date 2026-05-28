@@ -9,6 +9,9 @@ import { categoriaApi } from "../service/categoriaApi";
 import { fornecedorApi } from "../service/fornecedorApi";
 import { movimentacaoApi } from "../service/movimentacaoApi";
 import { Header } from "../components/ui/Header";
+import { Breadcrumbs } from "../components/ui/Breadcrumbs";
+import { PageHeader } from "../components/ui/PageHeader";
+import { Footer } from "../components/ui/Footer";
 
 export function EntradaJoia() {
     const [banhos, setBanhos] = useState([]);
@@ -90,7 +93,9 @@ export function EntradaJoia() {
 
     return (
         <>
-            <Header></Header>
+            <Header/>
+            <PageHeader titulo={"Entrada de jóia"}/>
+
             <CardForm onSubmit={handleSubmit}>
                 <InputField
                     label={"Nome da peça"}
@@ -173,6 +178,8 @@ export function EntradaJoia() {
                     </span>
                 </div>
             </CardForm>
+
+            <Footer />
         </>
     )
 }

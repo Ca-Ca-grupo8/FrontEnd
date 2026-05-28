@@ -1,0 +1,28 @@
+.page-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  margin-left: 32px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.page-info-title-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 16px;
+}
+
+.page-info-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #9C2863;
+  margin: 0;
+}
+
+.page-info-container::after{
+    content: "";
+    border: 1px solid #B3B3B3;
+}
