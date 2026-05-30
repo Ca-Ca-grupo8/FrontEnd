@@ -1,0 +1,11 @@
+.new-categoria-container {
+    display: flex;
+    width: 100%;
+    align-items: end;
+    justify-content: end;
+    padding-right: 32px;
+}
+
+.new-categoria-content{
+    width: 384px;
+}
