@@ -10,7 +10,6 @@ import { EntradaJoia } from './pages/EntradaJoia'
 function App() {
   return (
     <>
-      <EntradaJoia></EntradaJoia>
     </>
   )
 }
