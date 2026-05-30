@@ -14,13 +14,16 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { Footer } from "../components/ui/Footer";
 import '../styles/EntradaJoia.css'
 import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
+import { CirclePlus } from "lucide-react";
+import { NovoFornecedorModal } from "../components/modals/NovoFornecedor";
 
 export function EntradaJoia() {
     const [banhos, setBanhos] = useState([]);
     const [material, setMaterial] = useState([]);
     const [categoria, setCategoria] = useState([]);
     const [fornecedor, setFornecedor] = useState([]);
-    const [isOpen, setIsOpen] = useState(false);
+    const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
+    const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
 
     const [formValues, setFormValues] = useState({
         nomePeca: "",
@@ -98,14 +101,18 @@ export function EntradaJoia() {
         <>
             <Header />
             <PageHeader titulo={"Entrada de jóia"}>
-                <Button type={"button"} colorido={false} onClick={() => setIsOpen(true)}>
+                <Button type={"button"} colorido={false} onClick={() => setIsCategoriaOpen(true)}>
                     Cadastrar nova categoria
                 </Button>
             </PageHeader>
 
-            <NovaCategoriaModal 
-            isOpen={isOpen}
-            onClose={() => setIsOpen(false)}/>
+            <NovaCategoriaModal
+                isOpen={isCategoriaOpen}
+                onClose={() => setIsCategoriaOpen(false)} />
+
+            <NovoFornecedorModal
+                isOpen={isFornecedorOpen}
+                onClose={() => setIsFornecedorOpen(false)} />
 
             <CardForm onSubmit={handleSubmit}>
                 <InputField
@@ -168,12 +175,20 @@ export function EntradaJoia() {
                     value={formValues.multiplicador}
                     onChange={(e) => handleChange("multiplicador", e.target.value)}>
                 </InputField>
-                <SelectField
-                    data={fornecedor}
-                    label={"Fornecedor"}
-                    value={formValues.fornecedorId}
-                    onChange={(e) => handleChange("fornecedorId", e.target.value)}>
-                </SelectField>
+
+                <div className="input-with-action">
+
+                    <SelectField
+                        data={fornecedor}
+                        label={"Fornecedor"}
+                        value={formValues.fornecedorId}
+                        onChange={(e) => handleChange("fornecedorId", e.target.value)}>
+                    </SelectField>
+
+                    <div className="add-fornecedor-container">
+                        <CirclePlus className="add-fornecedor-content" onClick={() => setIsFornecedorOpen(true)} />
+                    </div>
+                </div>
                 <InputField
                     label={"Escolha uma imagem"}
                     type={"file"}

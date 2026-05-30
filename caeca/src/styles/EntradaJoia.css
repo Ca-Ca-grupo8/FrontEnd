@@ -1,11 +1,23 @@
-.new-categoria-container {
+.input-with-action {
     display: flex;
+    gap: 12px;
     width: 100%;
-    align-items: end;
-    justify-content: end;
-    padding-right: 32px;
 }
 
-.new-categoria-content{
-    width: 384px;
+.add-fornecedor-container {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 12%;
+}
+
+.add-fornecedor-content {
+    color: #9C2863;
+    width: 24px;
+    height: 24px;
+}
+
+.add-fornecedor-content:hover {
+    color: #7d2050;
+    transform: scale(1.05);
+    cursor: pointer;
 }
