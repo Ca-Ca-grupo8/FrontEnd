@@ -11,6 +11,8 @@
   box-sizing: border-box;
   font-family: sans-serif;
   border-bottom: 2px solid #FFACC0;
+  position: relative;
+  z-index: 100;
 }
 
 .user-profile {
@@ -64,6 +66,7 @@
   opacity: 0.75;
   transition: opacity 0.2s ease, transform 0.2s ease;
   position: relative;
+  text-decoration: none; 
 }
 
 .nav-item:hover {
@@ -89,4 +92,194 @@
   background-color: #FFB8C9;
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.user-profile-wrapper, .nav-item-wrapper {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Base invisível do Dropdown no Desktop */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 80px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  min-width: 160px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 6px 6px;
+  padding: 6px 0;
+  z-index: 110;
+  border: 1px solid #E5E5E5;
+}
+
+/* Alinha o dropdown do perfil à esquerda para não cortar na tela */
+.user-profile-wrapper .profile-dropdown {
+  left: 0;
+  transform: none;
+}
+
+/* Exibe o dropdown quando ativo */
+.show-dropdown .dropdown-menu {
+  display: block;
+}
+
+/* Itens de dentro do dropdown */
+.dropdown-menu a {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  color: #333333;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background-color: #F5F5F5;
+  color: #96205C;
+}
+
+.logout-link {
+  border-top: 1px solid #EEEEEE;
+  color: #C92A2A !important;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .header-nav {
+    padding: 0 16px;
+  }
+
+  
+  .menu-toggle {
+    display: block;
+    z-index: 101;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    padding-top: 80px;
+    right: -100%;
+    height: 100vh;
+    background-color: #7A1A4A;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0; 
+    padding-bottom: 24px;
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease-in-out;
+  }
+
+  .nav-menu.open {
+    right: 0;
+  }
+
+  .nav-item {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px 24px;
+    box-sizing: border-box;
+  }
+
+  .nav-label {
+    font-size: 1rem; 
+  }
+
+  .nav-item.active::after {
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 80px;
+    right: -100%;
+    width: 260px;
+    height: calc(100vh - 80px);
+    background-color: #821B4F; /* Um tom sutilmente mais escuro */
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0;
+    box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+  }
+
+  .nav-menu.open {
+    right: 0;
+  }
+
+  .nav-item-wrapper {
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-item {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 16px 24px;
+    box-sizing: border-box;
+  }
+
+  /* Dropdown adaptado para o mobile (Acordeão) */
+  .nav-item-wrapper .dropdown-menu,
+  .user-profile-wrapper .profile-dropdown {
+    position: static;
+    transform: none;
+    width: 100%;
+    background-color: #6E1442; /* Destaca o fundo do submenu interno */
+    box-shadow: none;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+  }
+
+  .dropdown-menu a {
+    color: rgba(255, 255, 255, 0.9);
+    padding: 12px 24px 12px 64px; /* Recuo para alinhar o texto */
+  }
+
+  .dropdown-menu a:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #ffffff;
+  }
 }

@@ -11,7 +11,6 @@
 
 .page-info-title-bar {
   display: flex;
-  align-items: start;
   justify-content: space-between;
   align-items: flex-end;
   gap: 16px;
@@ -21,7 +20,9 @@
   width: 100%;
 }
 .page-info-title-bar button {
-  width: 384px;
+  max-width: 384px;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .page-info-title {
@@ -34,4 +35,24 @@
 .page-info-container::after{
     content: "";
     border: 1px solid #B3B3B3;
+}
+
+@media (max-width: 768px) {
+  .page-info-container {
+    padding: 0px 16px;
+  }
+
+  .page-info-title-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .page-info-title-bar button {
+    max-width: 100%; 
+  }
+
+  .page-info-title {
+    font-size: 1.5rem;
+  }
 }
