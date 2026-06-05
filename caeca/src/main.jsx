@@ -8,7 +8,7 @@ import { Login } from './pages/Login.jsx';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/login',
     element: <Login/>,        
   },
   {
