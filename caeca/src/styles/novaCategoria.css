@@ -105,6 +105,21 @@
   transition: width 1.5s linear; 
 }
 
+.error-message {
+  color: #d32f2f; 
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.error-progress-bg {
+  background-color: #ffeade; 
+}
+
+.error-progress-fill {
+  background-color: #d32f2f;
+}
+
 @media (max-width: 520px) {
   .modal-overlay {
     padding: 16px; 

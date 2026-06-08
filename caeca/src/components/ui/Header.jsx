@@ -3,7 +3,7 @@ import { Gem, Users, History, TrendingUp, Home, Menu, X, User, LogOut } from 'lu
 import '../../styles/Header.css';
 import { NavLink } from 'react-router-dom';
 
-export function Header({ avatarImg, username = "nome", description = "description" }) {
+export function Header({ avatarImg }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
@@ -21,6 +21,9 @@ export function Header({ avatarImg, username = "nome", description = "descriptio
     setActiveDropdown(null);
   };
 
+  const nomeUsuario = localStorage.getItem("nome_usuario") || "Visitante";
+  const emailUsuario = localStorage.getItem("email_usuario") || "visitante@email.com";
+
   return (
     <nav className="header-nav">
       
@@ -28,8 +31,8 @@ export function Header({ avatarImg, username = "nome", description = "descriptio
         <div className="user-profile" onClick={() => toggleDropdown('perfil')} style={{ cursor: 'pointer' }}>
           <img src={avatarImg} alt="Foto de perfil" className="user-avatar" />
           <div className="user-info">
-            <span className="user-name">{username}</span>
-            <span className="user-desc">{description}</span>
+            <span className="user-name">{nomeUsuario}</span>
+            <span className="user-desc">{emailUsuario}</span>
           </div>
         </div>
         
