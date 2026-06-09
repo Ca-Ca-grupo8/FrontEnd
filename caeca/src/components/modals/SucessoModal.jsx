@@ -2,8 +2,10 @@ import { useState } from 'react';
 import '../../styles/novaCategoria.css'
 import { useEffect } from 'react';
 
-export function SucessoModal({ text, IsSuccess, onClose }) {
+export function SucessoModal({ text, IsSuccess, error = false, onClose }) {
     const [progressWidth, setProgressWidth] = useState(0);
+
+    const deveExibir = IsSuccess || error;
 
 
     useEffect(() => {
@@ -30,11 +32,13 @@ export function SucessoModal({ text, IsSuccess, onClose }) {
         <div className="modal-overlay">
             <div className="modal-container">
                 <div className="modal-header">
-                    <p className='success-message'>{text}</p>
+                    <p className={error ? 'error-message' : 'success-message'}>
+                        {text}
+                    </p>
                 </div>
-                <div className="success-progress-bg">
+                <div className={`success-progress-bg ${error ? 'error-progress-bg' : ''}`}>
                     <div
-                        className="success-progress-fill"
+                        className={`success-progress-fill ${error ? 'error-progress-fill' : ''}`}
                         style={{ width: `${progressWidth}%` }}
                     ></div>
                 </div>

@@ -6,11 +6,11 @@ import useFetch from './hooks/useFetch'
 import { banhoApi } from './service/banhoApi'
 import { SelectField } from './components/ui/SelectField'
 import { EntradaJoia } from './pages/EntradaJoia'
+import { Login } from './pages/Login'
 
 function App() {
   return (
-    <>
-    </>
+    <></>
   )
 }
 

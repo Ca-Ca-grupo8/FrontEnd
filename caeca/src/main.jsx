@@ -4,21 +4,17 @@ import { createBrowserRouter, RouterContextProvider, RouterProvider } from 'reac
 import './index.css'
 import App from './App.jsx'
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
+import { Login } from './pages/Login.jsx';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    children: [
-      {
-        // path: '/',
-        // element: <Home />,
-      },
-      {
-        path: '/joias/movimentacoes/entrada',
-        element: <EntradaJoia />,
-      },
-    ],
-  }
+    path: '/login',
+    element: <Login/>,        
+  },
+  {
+    path: '/joias/movimentacoes/entrada',
+    element: <EntradaJoia />,
+  },
 ])
 
 createRoot(document.getElementById('root')).render(
