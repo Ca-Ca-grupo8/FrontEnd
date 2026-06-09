@@ -22,7 +22,8 @@ export function Header({ avatarImg }) {
   };
 
   const nomeUsuario = localStorage.getItem("nome_usuario") || "Visitante";
-  const emailUsuario = localStorage.getItem("email_usuario") || "visitante@email.com";
+  const roleUsuario = localStorage.getItem("role_usuario").split("_");
+  const roleUsuarioFormatted = roleUsuario[1] == "USER" ? "Funcionário" : "Administrador"
 
   return (
     <nav className="header-nav">
@@ -32,7 +33,7 @@ export function Header({ avatarImg }) {
           <img src={avatarImg} alt="Foto de perfil" className="user-avatar" />
           <div className="user-info">
             <span className="user-name">{nomeUsuario}</span>
-            <span className="user-desc">{emailUsuario}</span>
+            <span className="user-desc">{roleUsuarioFormatted}</span>
           </div>
         </div>
         

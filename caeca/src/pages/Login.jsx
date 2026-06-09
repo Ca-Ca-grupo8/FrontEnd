@@ -38,10 +38,12 @@ export function Login() {
 
       const nomeUsuario = resposta?.nome || resposta?.data?.nome || "Usuário";
       const emailUsuario = resposta?.email || resposta?.data?.email || "usuário@email.com";
+      const roleUsuario = resposta?.role || resposta?.data?.role || "ROLE_USER"
       const idUsuario = resposta?.userId || resposta?.data?.userId || null;
 
       localStorage.setItem("nome_usuario", nomeUsuario);
       localStorage.setItem("email_usuario", emailUsuario);
+      localStorage.setItem("role_usuario", roleUsuario);
       localStorage.setItem("id_usuario", idUsuario);
 
       navigate("/joias/movimentacoes/entrada")

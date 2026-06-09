@@ -6,38 +6,64 @@ import { Button } from "../ui/Button";
 import { banhoApi } from "../../service/banhoApi";
 import { materialApi } from "../../service/materialApi";
 import { categoriaApi } from "../../service/categoriaApi";
+import { motivoApi } from "../../service/motivoApi";
+import { tiposApi } from "../../service/tipoApi";
 
 export function NovaCategoriaModal({ isOpen, onClose }) {
-    const [tiposCategoria, setTiposCategoria] = useState([]);
+    const [tiposMotivoOptions, setTiposMotivoOptions] = useState([]);
     const [formValues, setFormValues] = useState({
         tipoCategoriaId: "",
-        nomeCategoria: ""
+        nomeCategoria: "",
+        tipoMotivoId: ""
     });
 
     const handleChange = (field, value) => {
         setFormValues(prev => ({
             ...prev,
-            [field]: value
+            [field]: value,
+            ...(field === "tipoCategoriaId" && value !== "Motivo" ? { tipoMotivoId: "" } : {})
         }));
     };
 
     const apiMethodsMap = {
         "Banho": (payload) => banhoApi.cadastrarBanho(payload),
         "Material": (payload) => materialApi.cadastrarMaterial(payload),
-        "Categoria": (payload) => categoriaApi.cadastrarCategoria(payload)
+        "Categoria": (payload) => categoriaApi.cadastrarCategoria(payload),
+        "Motivo": (payload) => motivoApi.cadastrarMotivo(payload)
     };
 
     const TIPOS_DISPONIVEIS = [
         { id: "Banho", nome: "Banho" },
         { id: "Material", nome: "Material" },
-        { id: "Categoria", nome: "Categoria" }
+        { id: "Categoria", nome: "Categoria" },
+        { id: "Motivo", nome: "Motivo" }
     ];
+
+    useEffect(() => {
+        if (formValues.tipoCategoriaId === "Motivo" && isOpen) {
+            const carregarTiposMovimentacao = async () => {
+                try {
+                    const data = await tiposApi.listarTipos();
+
+                    const options_formatadas = data.map(tipo => ({
+                        id: tipo.id,
+                        nome: tipo.nome
+                    }));
+
+                    setTiposMotivoOptions(options_formatadas);
+                } catch (error) {
+                    console.error("Erro ao buscar tipos de motivo:", error);
+                }
+            };
+
+            carregarTiposMovimentacao();
+        }
+    }, [formValues.tipoCategoriaId, isOpen]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const tipoSelecionado = formValues.tipoCategoriaId;
-
         const metodoApi = apiMethodsMap[tipoSelecionado];
 
         if (!metodoApi) {
@@ -45,13 +71,23 @@ export function NovaCategoriaModal({ isOpen, onClose }) {
             return;
         }
 
-        const payload = {
-            nome: formValues.nomeCategoria
-        };
+        let payload = {};
+
+        if (tipoSelecionado === "Motivo") {
+            payload = {
+                descricao: formValues.nomeCategoria,
+                idTipoMovimentacao: Number(formValues.tipoMotivoId)
+            };
+        } else {
+            payload = {
+                nome: formValues.nomeCategoria
+            };
+        }
 
         try {
             const response = await metodoApi(payload);
             console.log("Cadastrado com sucesso:", response);
+            setFormValues({ tipoCategoriaId: "", nomeCategoria: "", tipoMotivoId: "" });
             onClose();
         } catch (error) {
             console.error("Erro ao cadastrar via mapa de API:", error);
@@ -78,6 +114,16 @@ export function NovaCategoriaModal({ isOpen, onClose }) {
                         onChange={(e) => handleChange("tipoCategoriaId", e.target.value)}
                         required={true}
                     />
+
+                    {formValues.tipoCategoriaId === "Motivo" && (
+                        <SelectField
+                            data={tiposMotivoOptions}
+                            label={"Tipo do motivo"}
+                            value={formValues.tipoMotivoId}
+                            onChange={(e) => handleChange("tipoMotivoId", e.target.value)}
+                            required={true}
+                        />
+                    )}
 
                     <InputField
                         label={"Nome da categoria"}
