@@ -16,3 +16,13 @@ html,
 body {
   background-color: #f1f1f1;
 }
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+}
+
+.main-content {
+    flex: 1;
+}

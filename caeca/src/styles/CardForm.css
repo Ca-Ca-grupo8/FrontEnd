@@ -58,6 +58,10 @@
   cursor: pointer;
 }
 
+.file-input-wrapper {
+    grid-column: span 2;
+}
+
 @media (max-width: 768px) {
   .card-form-box {
     padding: 24px;

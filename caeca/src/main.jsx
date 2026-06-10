@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { Login } from './pages/Login.jsx';
+import { SaidaJoia } from './pages/SaidaJoia.jsx';
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
     path: '/joias/movimentacoes/entrada',
     element: <EntradaJoia />,
   },
+  {
+    path: '/joias/movimentacoes/saida',
+    element: <SaidaJoia />,
+  }
 ])
 
 createRoot(document.getElementById('root')).render(
