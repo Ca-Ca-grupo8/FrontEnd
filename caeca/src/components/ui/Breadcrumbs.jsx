@@ -20,7 +20,7 @@ export function Breadcrumbs() {
             {pathnames.map((value, index) => {
                 const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
 
-                const isLast = false
+                let isLast = false
 
                 if (index == pathnames.length) {
                     isLast = true

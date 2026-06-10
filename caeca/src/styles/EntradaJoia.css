@@ -2,18 +2,18 @@
     display: flex;
     gap: 12px;
     width: 100%;
+    align-items: flex-end;
 }
 
 .add-fornecedor-container {
     display: flex;
     align-items: flex-end;
-    margin-bottom: 12%;
 }
 
 .add-fornecedor-content {
     color: #9C2863;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
 }
 
 .add-fornecedor-content:hover {

@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { banhoApi } from "../service/banhoApi";
 import CardForm from "../components/layout/CardForm";
 import { InputField } from "../components/ui/InputField";
@@ -8,8 +8,8 @@ import { materialApi } from "../service/materialApi";
 import { categoriaApi } from "../service/categoriaApi";
 import { fornecedorApi } from "../service/fornecedorApi";
 import { movimentacaoApi } from "../service/movimentacaoApi";
+import { motivoApi } from "../service/motivoApi";
 import { Header } from "../components/ui/Header";
-import { Breadcrumbs } from "../components/ui/Breadcrumbs";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Footer } from "../components/ui/Footer";
 import '../styles/EntradaJoia.css'
@@ -19,6 +19,7 @@ import { NovoFornecedorModal } from "../components/modals/NovoFornecedor";
 import { SucessoModal } from "../components/modals/SucessoModal";
 
 export function EntradaJoia() {
+    const [motivos, setMotivos] = useState([]);
     const [banhos, setBanhos] = useState([]);
     const [material, setMaterial] = useState([]);
     const [categoria, setCategoria] = useState([]);
@@ -28,6 +29,7 @@ export function EntradaJoia() {
     const [IsSuccess, setIsSuccess] = useState(false);
 
     const [formValues, setFormValues] = useState({
+        motivoEntradaId: "",
         nomePeca: "",
         materialId: "",
         categoriaId: "",
@@ -49,17 +51,27 @@ export function EntradaJoia() {
 
     useEffect(() => {
         async function carregarDadosIniciais() {
-            const [listaBanhos, listaMateriais, listaCategorias, listaFornecedores] = await Promise.all([
-                banhoApi.listarBanhos(),
-                materialApi.listarMateriais(),
-                categoriaApi.listarCategorias(),
-                fornecedorApi.listarFornecedores()
-            ]);
+            try {
+                const [listaMotivos, listaBanhos, listaMateriais, listaCategorias, listaFornecedores] = await Promise.all([
+                    motivoApi?.listarMotivos() || [],
+                    banhoApi.listarBanhos(),
+                    materialApi.listarMateriais(),
+                    categoriaApi.listarCategorias(),
+                    fornecedorApi.listarFornecedores()
+                ]);
 
-            setBanhos(listaBanhos);
-            setMaterial(listaMateriais);
-            setCategoria(listaCategorias);
-            setFornecedor(listaFornecedores);
+                const motivosFiltrados = listaMotivos.filter(
+                    motivo => motivo.tipoMovimentacao.nome === "ENTRADA" || motivo.tipoMovimentacao.id === 1
+                );
+
+                setMotivos(motivosFiltrados);
+                setBanhos(listaBanhos);
+                setMaterial(listaMateriais);
+                setCategoria(listaCategorias);
+                setFornecedor(listaFornecedores);
+            } catch (error) {
+                console.error("Erro ao carregar dados de inicialização:", error);
+            }
         }
 
         carregarDadosIniciais();
@@ -74,7 +86,7 @@ export function EntradaJoia() {
             precoBanho: Number(formValues.precoBanho) || 0.0,
             precoCompraRevendedor: Number(formValues.precoCusto) || 0.0,
             idRevendedora: null,
-            idTipoMovimentacao: 1,
+            idMotivoMovimentacao: Number(formValues.motivoEntradaId) || 0,
             dadosNovaJoia: {
                 nome: formValues.nomePeca,
                 quantidade: Number(formValues.quantidade) || 0,
@@ -87,13 +99,26 @@ export function EntradaJoia() {
             idJoia: null
         }
 
-        console.log(cadastrarJoia(payload, formValues.imagem))
+        cadastrarJoia(payload, formValues.imagem);
     }
 
     async function cadastrarJoia(payload, image) {
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, image);
             setIsSuccess(true)
+            setFormValues({
+                motivoEntradaId: "",
+                nomePeca: "",
+                materialId: "",
+                categoriaId: "",
+                banhoId: "",
+                quantidade: "",
+                precoCusto: "",
+                precoBanho: "",
+                multiplicador: "",
+                fornecedorId: "",
+                imagem: null
+            });
             return response;
         } catch (error) {
             console.error(error)
@@ -103,7 +128,7 @@ export function EntradaJoia() {
     return (
         <>
             <Header />
-            <PageHeader titulo={"Entrada de jóia"}>
+            <PageHeader titulo={"Entrada de jóias"}>
                 <Button type={"button"} colorido={false} onClick={() => setIsCategoriaOpen(true)}>
                     Cadastrar nova categoria
                 </Button>
@@ -120,69 +145,16 @@ export function EntradaJoia() {
             <SucessoModal text={"Cadastro realizado com sucesso!"} IsSuccess={IsSuccess} onClose={() => {setIsSuccess(false)}}/>
 
             <CardForm onSubmit={handleSubmit}>
-                <InputField
-                    label={"Nome da peça"}
-                    type={"text"}
-                    placeholder={"Coração XYZ"}
-                    required={true}
-                    value={formValues.nomePeca}
-                    onChange={(e) => handleChange("nomePeca", e.target.value)}>
-                </InputField>
-
+                
                 <SelectField
-                    data={material}
-                    label={"Material"}
-                    value={formValues.materialId}
-                    onChange={(e) => handleChange("materialId", e.target.value)}>
-                </SelectField>
-                <SelectField
-                    data={categoria}
-                    label={"Categoria"}
-                    value={formValues.categoriaId}
-                    onChange={(e) => handleChange("categoriaId", e.target.value)}>
-                </SelectField>
-                <SelectField
-                    data={banhos}
-                    label={"Banho"}
-                    value={formValues.banhoId}
-                    onChange={(e) => handleChange("banhoId", e.target.value)}>
-                </SelectField>
-
-                <InputField
-                    label={"Quantidade"}
-                    type={"number"}
-                    placeholder={"15"}
+                    data={motivos}
+                    label={"Motivo da entrada"}
+                    value={formValues.motivoEntradaId}
                     required={true}
-                    value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}>
-                </InputField>
-                <InputField
-                    label={"Preço original (custo)"}
-                    type={"number"}
-                    placeholder={"Anel XYZ"}
-                    required={true}
-                    value={formValues.precoCusto}
-                    onChange={(e) => handleChange("precoCusto", e.target.value)}>
-                </InputField>
-                <InputField
-                    label={"Preço do banho"}
-                    type={"number"}
-                    placeholder={"72.24"}
-                    required={true}
-                    value={formValues.precoBanho}
-                    onChange={(e) => handleChange("precoBanho", e.target.value)}>
-                </InputField>
-                <InputField
-                    label={"Multiplicador (Ganho)"}
-                    type={"number"}
-                    placeholder={"1.5"}
-                    required={true}
-                    value={formValues.multiplicador}
-                    onChange={(e) => handleChange("multiplicador", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("motivoEntradaId", e.target.value)}
+                />
 
                 <div className="input-with-action">
-
                     <SelectField
                         data={fornecedor}
                         label={"Fornecedor"}
@@ -194,12 +166,81 @@ export function EntradaJoia() {
                         <CirclePlus className="add-fornecedor-content" onClick={() => setIsFornecedorOpen(true)} />
                     </div>
                 </div>
+
                 <InputField
-                    label={"Escolha uma imagem"}
-                    type={"file"}
-                    required={false}
-                    onChange={(e) => handleChange("imagem", e.target.files[0])}>
+                    label={"Nome da peça"}
+                    type={"text"}
+                    placeholder={"Ex: Anel Coração XYZ"}
+                    required={true}
+                    value={formValues.nomePeca}
+                    onChange={(e) => handleChange("nomePeca", e.target.value)}>
                 </InputField>
+
+                <SelectField
+                    data={categoria}
+                    label={"Categoria"}
+                    value={formValues.categoriaId}
+                    onChange={(e) => handleChange("categoriaId", e.target.value)}>
+                </SelectField>
+
+                <SelectField
+                    data={material}
+                    label={"Material"}
+                    value={formValues.materialId}
+                    onChange={(e) => handleChange("materialId", e.target.value)}>
+                </SelectField>
+                
+                <SelectField
+                    data={banhos}
+                    label={"Banho"}
+                    value={formValues.banhoId}
+                    onChange={(e) => handleChange("banhoId", e.target.value)}>
+                </SelectField>
+
+                <InputField
+                    label={"Quantidade"}
+                    type={"number"}
+                    placeholder={"Ex: 15"}
+                    required={true}
+                    value={formValues.quantidade}
+                    onChange={(e) => handleChange("quantidade", e.target.value)}>
+                </InputField>
+
+                <InputField
+                    label={"Preço original (custo)"}
+                    type={"number"}
+                    placeholder={"Ex: 45.50"}
+                    required={true}
+                    value={formValues.precoCusto}
+                    onChange={(e) => handleChange("precoCusto", e.target.value)}>
+                </InputField>
+
+                <InputField
+                    label={"Preço do banho"}
+                    type={"number"}
+                    placeholder={"Ex: 12.00"}
+                    required={true}
+                    value={formValues.precoBanho}
+                    onChange={(e) => handleChange("precoBanho", e.target.value)}>
+                </InputField>
+
+                <InputField
+                    label={"Multiplicador (Ganho)"}
+                    type={"number"}
+                    placeholder={"Ex: 1.5"}
+                    required={true}
+                    value={formValues.multiplicador}
+                    onChange={(e) => handleChange("multiplicador", e.target.value)}>
+                </InputField>
+
+                <div className="file-input-wrapper">
+                    <InputField
+                        label={"Escolha uma imagem"}
+                        type={"file"}
+                        required={false}
+                        onChange={(e) => handleChange("imagem", e.target.files[0])}>
+                    </InputField>
+                </div>
 
                 <div className="card-form-actions">
                     <Button type={"submit"} colorido={true}>Confirmar</Button>
