@@ -58,6 +58,15 @@
   cursor: pointer;
 }
 
+.card-form-tip {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.card-form-tip span {
+  color: red;
+}
+
 .file-input-wrapper {
     grid-column: span 2;
 }

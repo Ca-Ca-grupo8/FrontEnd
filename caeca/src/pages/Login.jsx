@@ -17,9 +17,8 @@ export function Login() {
     senha: "",
   });
 
-  const [IsSuccess, setIsSuccess] = useState(false)
-  const [Error, setError] = useState(false)
-  const [SuccessText, setSuccessText] = useState("Cadastro realizado com sucesso!");
+  const [isError, setIsError] = useState(false);
+  const [mensagemFeedback, setMensagemFeedback] = useState("");
 
   const handleChange = (field, value) => {
     setFormValues((prev) => ({ ...prev, [field]: value }));
@@ -27,18 +26,16 @@ export function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-
-    login(formValues)
+    login(formValues);
   };
 
   async function login(payload) {
     try {
-      const resposta = await usuarioApi.login(payload)
+      const resposta = await usuarioApi.login(payload);
 
       const nomeUsuario = resposta?.nome || resposta?.data?.nome || "Usuário";
       const emailUsuario = resposta?.email || resposta?.data?.email || "usuário@email.com";
-      const roleUsuario = resposta?.role || resposta?.data?.role || "ROLE_USER"
+      const roleUsuario = resposta?.role || resposta?.data?.role || "ROLE_USER";
       const idUsuario = resposta?.userId || resposta?.data?.userId || null;
 
       localStorage.setItem("nome_usuario", nomeUsuario);
@@ -46,19 +43,24 @@ export function Login() {
       localStorage.setItem("role_usuario", roleUsuario);
       localStorage.setItem("id_usuario", idUsuario);
 
-      navigate("/joias/movimentacoes/entrada")
-      return
+      navigate("/joias/movimentacoes/entrada");
+      return resposta;
     } catch (e) {
-      setSuccessText("Erro inesperado ocorreu!")
-      setError(true)
+      setMensagemFeedback("Erro ao realizar o login. Verifique suas credenciais.");
+      setIsError(true);
+      console.error(e);
     }
   }
 
   return (
-    
     <div className="login-container">
-      <SucessoModal text={SuccessText} error={Error} onClose={() => {setError(false)}}/>
-      {/* Painel esquerdo — mármore + formulário */}
+      <SucessoModal 
+        text={mensagemFeedback} 
+        IsSuccess={false} 
+        error={isError} 
+        onClose={() => setIsError(false)} 
+      />
+
       <div className="login-left" style={{ backgroundImage: `url(${imgMarmore})` }}>
         <div className="login-form-wrapper">
           <div className="login-logo">
@@ -89,11 +91,15 @@ export function Login() {
                 Entrar
               </Button>
             </div>
+            <div className="tips">
+              <span className="card-form-tip">
+                <p><span>*</span> Campos Obrigatórios</p>
+              </span>
+            </div>
           </form>
         </div>
       </div>
 
-      {/* Painel direito — imagem destaque */}
       <div className="login-right">
         <img
           src={imgDestaque}

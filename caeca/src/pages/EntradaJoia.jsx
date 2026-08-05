@@ -26,7 +26,9 @@ export function EntradaJoia() {
     const [fornecedor, setFornecedor] = useState([]);
     const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
     const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
-    const [IsSuccess, setIsSuccess] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [mensagemFeedback, setMensagemFeedback] = useState("");
 
     const [formValues, setFormValues] = useState({
         motivoEntradaId: "",
@@ -105,6 +107,7 @@ export function EntradaJoia() {
     async function cadastrarJoia(payload, image) {
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, image);
+            setMensagemFeedback("Cadastro realizado com sucesso!");
             setIsSuccess(true)
             setFormValues({
                 motivoEntradaId: "",
@@ -121,9 +124,16 @@ export function EntradaJoia() {
             });
             return response;
         } catch (error) {
+            setMensagemFeedback("Erro ao realizar o cadastro. Tente novamente.");
+            setIsError(true)
             console.error(error)
         }
     }
+
+    const handleCloseFeedback = () => {
+        setIsSuccess(false);
+        setIsError(false);
+    };
 
     return (
         <>
@@ -142,10 +152,15 @@ export function EntradaJoia() {
                 isOpen={isFornecedorOpen}
                 onClose={() => setIsFornecedorOpen(false)} />
 
-            <SucessoModal text={"Cadastro realizado com sucesso!"} IsSuccess={IsSuccess} onClose={() => {setIsSuccess(false)}}/>
+            <SucessoModal 
+                text={mensagemFeedback} 
+                IsSuccess={isSuccess} 
+                error={isError} 
+                onClose={handleCloseFeedback} 
+            />
 
             <CardForm onSubmit={handleSubmit}>
-                
+
                 <SelectField
                     data={motivos}
                     label={"Motivo da entrada"}
@@ -189,7 +204,7 @@ export function EntradaJoia() {
                     value={formValues.materialId}
                     onChange={(e) => handleChange("materialId", e.target.value)}>
                 </SelectField>
-                
+
                 <SelectField
                     data={banhos}
                     label={"Banho"}
@@ -247,6 +262,9 @@ export function EntradaJoia() {
                     <span className="card-form-link">
                         <p>Jóia existente?</p>
                         <a href="">Atualizar Estoque</a>
+                    </span>
+                    <span className="card-form-tip">
+                        <p><span>*</span> Campos Obrigatórios</p>
                     </span>
                 </div>
             </CardForm>

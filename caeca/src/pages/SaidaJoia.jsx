@@ -9,13 +9,12 @@ import { Footer } from "../components/ui/Footer";
 import { CirclePlus } from "lucide-react";
 import { SucessoModal } from "../components/modals/SucessoModal";
 
-// Substitua pelas APIs reais do seu projeto
 import { movimentacaoApi } from "../service/movimentacaoApi";
 import { joiaApi } from "../service/joiaApi";
 import { revendedoraApi } from "../service/revendedoraApi";
 import { motivoApi } from "../service/motivoApi";
 
-import '../styles/EntradaJoia.css'; // Reaproveitando os estilos base de formulário
+import '../styles/EntradaJoia.css';
 import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
 import { NovaRevendedoraModal } from "../components/modals/NovaRevendedora";
 
@@ -23,11 +22,13 @@ export function SaidaJoia() {
     const [motivos, setMotivos] = useState([]);
     const [joias, setJoias] = useState([]);
     const [revendedoras, setRevendedoras] = useState([]);
+    
     const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [mensagemFeedback, setMensagemFeedback] = useState("");
 
     const [isRevendedoraOpen, setIsRevendedoraOpen] = useState(false);
     const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
-
 
     const [formValues, setFormValues] = useState({
         motivoSaidaId: "",
@@ -46,7 +47,6 @@ export function SaidaJoia() {
     useEffect(() => {
         async function carregarDadosIniciais() {
             try {
-                // Ajuste as chamadas de API conforme seus endpoints reais
                 const [listaMotivos, listaJoias, listaRevendedoras] = await Promise.all([
                     motivoApi?.listarMotivos() || [],
                     joiaApi?.listarJoias() || [],
@@ -85,6 +85,7 @@ export function SaidaJoia() {
 
         try {
             await movimentacaoApi.realizarMovimentacao(payload);
+            setMensagemFeedback("Saída registrada com sucesso!");
             setIsSuccess(true);
             setFormValues({
                 motivoSaidaId: "",
@@ -94,7 +95,14 @@ export function SaidaJoia() {
             });
         } catch (error) {
             console.error("Erro ao realizar a saída da joia:", error);
+            setMensagemFeedback("Erro ao realizar a saída da joia. Tente novamente.");
+            setIsError(true);
         }
+    };
+
+    const handleCloseFeedback = () => {
+        setIsSuccess(false);
+        setIsError(false);
     };
 
     return (
@@ -114,14 +122,15 @@ export function SaidaJoia() {
                         onClose={() => setIsCategoriaOpen(false)} />
 
                     <SucessoModal
-                        text={"Saída registrada com sucesso!"}
+                        text={mensagemFeedback}
                         IsSuccess={isSuccess}
-                        onClose={() => setIsSuccess(false)}
+                        error={isError}
+                        onClose={handleCloseFeedback}
                     />
 
                     <NovaRevendedoraModal
-                                    isOpen={isRevendedoraOpen}
-                                    onClose={() => setIsRevendedoraOpen(false)} />
+                        isOpen={isRevendedoraOpen}
+                        onClose={() => setIsRevendedoraOpen(false)} />
 
                     <CardForm onSubmit={handleSubmit}>
 
@@ -171,10 +180,16 @@ export function SaidaJoia() {
                             <Button type={"submit"} colorido={true}>
                                 Realizar saída
                             </Button>
+                            <span className="card-form-link">
+                                <p>Jóia existente?</p>
+                                <a href="">Atualizar Estoque</a>
+                            </span>
+                            <span className="card-form-tip">
+                                <p><span>*</span> Campos Obrigatórios</p>
+                            </span>
                         </div>
                     </CardForm>
                 </main>
-
 
                 <Footer />
             </div>

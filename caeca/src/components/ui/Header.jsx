@@ -41,7 +41,7 @@ export function Header({ avatarImg }) {
           <NavLink to="/perfil" onClick={closeAll}>
             <User size={16} style={{ marginRight: '8px' }} /> Meu Perfil
           </NavLink>
-          <NavLink to="/logout" onClick={closeAll} className="logout-link">
+          <NavLink to="/login" onClick={closeAll} className="logout-link">
             <LogOut size={16} style={{ marginRight: '8px' }} /> Sair
           </NavLink>
         </div>

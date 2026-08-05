@@ -1,15 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../styles/novaCategoria.css'
-import { useEffect } from 'react';
 
 export function SucessoModal({ text, IsSuccess, error = false, onClose }) {
     const [progressWidth, setProgressWidth] = useState(0);
 
     const deveExibir = IsSuccess || error;
 
-
     useEffect(() => {
-        if (!IsSuccess) return;
+        if (!deveExibir) return;
 
         const animacaoTimeout = setTimeout(() => {
             setProgressWidth(100);
@@ -24,9 +22,9 @@ export function SucessoModal({ text, IsSuccess, error = false, onClose }) {
             clearTimeout(animacaoTimeout);
             clearTimeout(fechamentoTimeout);
         };
-    }, [IsSuccess, onClose]);
+    }, [deveExibir, onClose]);
 
-    if(!IsSuccess) return(null)
+    if (!deveExibir) return null;
 
     return (
         <div className="modal-overlay">
