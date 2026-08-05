@@ -9,9 +9,9 @@ import { categoriaApi } from "../service/categoriaApi";
 import { fornecedorApi } from "../service/fornecedorApi";
 import { movimentacaoApi } from "../service/movimentacaoApi";
 import { motivoApi } from "../service/motivoApi";
-import { Header } from "../components/ui/Header";
+import { Header } from "../components/layout/Header";
 import { PageHeader } from "../components/ui/PageHeader";
-import { Footer } from "../components/ui/Footer";
+import { Footer } from "../components/layout/Footer";
 import '../styles/EntradaJoia.css'
 import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
 import { CirclePlus } from "lucide-react";

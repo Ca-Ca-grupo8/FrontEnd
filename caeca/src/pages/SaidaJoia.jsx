@@ -3,9 +3,9 @@ import CardForm from "../components/layout/CardForm";
 import { InputField } from "../components/ui/InputField";
 import { SelectField } from "../components/ui/SelectField";
 import { Button } from "../components/ui/Button";
-import { Header } from "../components/ui/Header";
+import { Header } from "../components/layout/Header";
 import { PageHeader } from "../components/ui/PageHeader";
-import { Footer } from "../components/ui/Footer";
+import { Footer } from "../components/layout/Footer";
 import { CirclePlus } from "lucide-react";
 import { SucessoModal } from "../components/modals/SucessoModal";
 

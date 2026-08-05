@@ -32,6 +32,13 @@
   margin: 0;
 }
 
+.page-info-subtitle {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #757575;
+  margin: 0;
+}
+
 .page-info-container::after{
     content: "";
     border: 1px solid #B3B3B3;
