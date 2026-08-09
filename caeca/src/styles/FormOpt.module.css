@@ -1,0 +1,11 @@
+.formContainer {
+    max-width: 370px;
+    width: 370px;
+    height: 375px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 30px;
+    border: 1px solid #C95E95;
+    border-radius: 8px;
+}

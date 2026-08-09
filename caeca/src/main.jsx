@@ -1,31 +1,42 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterContextProvider, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css'
-import App from './App.jsx'
+
+import { Layout } from './components/layout/Layout.jsx';
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { Login } from './pages/Login.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
+import { MovimentacaoEscolhas } from './pages/movimentacao/movimentacaoEscolhas.jsx';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Home />
-  },
-  {
     path: '/login',
-    element: <Login/>,        
+    element: <Login />,
   },
   {
-    path: '/joias/movimentacoes/entrada',
-    element: <EntradaJoia />,
+    element: <Layout />,
+    children: [
+      {
+        path: '/',
+        element: <Home />,
+      },
+      {
+        path: '/movimentacoes',
+        element: <MovimentacaoEscolhas />,
+      },
+      {
+        path: '/movimentacoes/entrada',
+        element: <EntradaJoia />,
+      },
+      {
+        path: '/movimentacoes/saida',
+        element: <SaidaJoia />,
+      },
+    ],
   },
-  {
-    path: '/joias/movimentacoes/saida',
-    element: <SaidaJoia />,
-  }
-])
+]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
