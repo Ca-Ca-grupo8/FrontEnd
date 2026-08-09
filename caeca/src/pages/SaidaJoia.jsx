@@ -101,7 +101,6 @@ export function SaidaJoia() {
         <>
             <div className="page-wrapper">
 
-                <Header />
                 <main className="main-content">
                     <PageHeader titulo={"Saída de jóias"}>
                         <Button type={"button"} colorido={false} onClick={() => setIsCategoriaOpen(true)}>
@@ -176,7 +175,6 @@ export function SaidaJoia() {
                 </main>
 
 
-                <Footer />
             </div>
         </>
     );

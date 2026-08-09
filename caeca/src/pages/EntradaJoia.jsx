@@ -127,7 +127,6 @@ export function EntradaJoia() {
 
     return (
         <>
-            <Header />
             <PageHeader titulo={"Entrada de jóias"}>
                 <Button type={"button"} colorido={false} onClick={() => setIsCategoriaOpen(true)}>
                     Cadastrar nova categoria
@@ -251,7 +250,6 @@ export function EntradaJoia() {
                 </div>
             </CardForm>
 
-            <Footer />
         </>
     )
 }
