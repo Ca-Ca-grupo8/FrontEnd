@@ -9,6 +9,7 @@ import { Login } from './pages/Login.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
 import { MovimentacaoEscolhas } from './pages/movimentacao/movimentacaoEscolhas.jsx';
+import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />,
+      },
+      {
+        path: '/contribuintes',
+        element: <CadastroContribuintes />,
       },
       {
         path: '/movimentacoes',

@@ -70,6 +70,7 @@ export function Header({ avatarImg }) {
             <span className="nav-label">Contribuintes</span>
           </button>
           <div className="dropdown-menu">
+            <NavLink to="/contribuintes" onClick={closeAll}>Contribuintes</NavLink>
             <NavLink to="/contribuintes/revendedoras" onClick={closeAll}>Revendedoras</NavLink>
             <NavLink to="/contribuintes/fornecedores" onClick={closeAll}>Fornecedores</NavLink>
             <NavLink to="/contribuintes/funcionarios" onClick={closeAll}>Funcionários</NavLink>
