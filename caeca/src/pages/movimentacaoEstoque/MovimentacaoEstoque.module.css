@@ -1,0 +1,174 @@
+.page-container {
+  padding: 24px;
+  background-color: #f4f4f6;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Toolbar & Filtros */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f2;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  padding: 8px 16px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.search-icon {
+  margin-right: 8px;
+  opacity: 0.6;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-filter {
+  background-color: #ffffff;
+  border: 1px solid #e2e2e8;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.btn-filter.active {
+  background-color: #ffffff;
+  border-color: #932a5b;
+  color: #932a5b;
+  font-weight: 600;
+}
+
+.btn-period {
+  background-color: #f8c0d8; /* Rosê claro */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #581635;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Células Customizadas */
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.product-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: #d9d9d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #666;
+  font-weight: bold;
+}
+
+.product-title {
+  font-weight: 700;
+  color: #111;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Badges de Entrada e Saída */
+.badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.badge-entry {
+  background-color: #dcfae6;
+  color: #17b26a;
+}
+
+.badge-exit {
+  background-color: #ffe4e8;
+  color: #f04438;
+}
+
+/* Quantidade */
+.quantity {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.qty-positive {
+  color: #17b26a;
+}
+
+.qty-negative {
+  color: #f04438;
+}
+
+/* Paginação */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.page-nav, .page-num {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  border-radius: 8px;
+}
+
+.page-num.active {
+  background-color: #d94a7a;
+  color: white;
+  font-weight: bold;
+}
+
+.page-dots {
+  color: #888;
+}

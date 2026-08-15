@@ -10,6 +10,7 @@ import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
 import { MovimentacaoEscolhas } from './pages/movimentacao/movimentacaoEscolhas.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
+import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/movimentacaoEstoque.jsx';
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
         path: '/movimentacoes/saida',
         element: <SaidaJoia />,
       },
+      {
+        path: '/movimentacoes/estoque',
+        element: <MovimentacaoEstoque />,
+      }
     ],
   },
 ]);
