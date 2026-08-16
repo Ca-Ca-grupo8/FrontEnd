@@ -101,9 +101,9 @@ export function MovimentacaoEstoque() {
                     </div>
 
                     <div className={style['filter-buttons']}>
-                        <Button children={"Tudo"} colorido={false} onClick={() => setFilterType('tudo')} />
-                        <Button children={"Entradas"} colorido={false} onClick={() => setFilterType('entradas')} />
-                        <Button children={"Saídas"} colorido={false} onClick={() => setFilterType('saidas')} />
+                        <Button children={"Tudo"} colorido={filterType === 'tudo'} disabled={filterType === 'tudo'} onClick={() => setFilterType('tudo')} />
+                        <Button children={"Entradas"} colorido={filterType === 'entradas'} disabled={filterType === 'entradas'} onClick={() => setFilterType('entradas')} />
+                        <Button children={"Saídas"} colorido={filterType === 'saidas'} disabled={filterType === 'saidas'} onClick={() => setFilterType('saidas')} />
                         <Button children={"📅 Períodos"} colorido={false} />
                     </div>
                 </div>
