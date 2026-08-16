@@ -1,135 +1,121 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import style from './MovimentacaoEstoque.module.css';
 import { Table } from '../../components/ui/Table';
+import { Button } from '../../components/ui/Button';
+import { Pagination } from '../../components/ui/Pagination';
+import { movimentacaoApi } from '../../service/movimentacaoApi';
+import { PageHeader } from '../../components/ui/PageHeader';
 
 export function MovimentacaoEstoque() {
+    const [data, setData] = useState([]);
     const [filterType, setFilterType] = useState('tudo');
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 2;
 
-    const mockData = [
-        {
-            id: 1,
-            date: '12/05/2024',
-            productName: 'Brinco Argola Ouro 18k',
-            productImg: 'https://via.placeholder.com/40',
-            type: 'ENTRADA',
-            quantity: 100,
-        },
-        {
-            id: 2,
-            date: '12/05/2024',
-            productName: 'Brinco Argola Ouro 19k',
-            productImg: 'https://via.placeholder.com/40',
-            type: 'SAÍDA',
-            quantity: -100,
-        },
-        {
-            id: 3,
-            date: '12/05/2024',
-            productName: 'Brinco Argola Ouro 20k',
-            productImg: 'https://via.placeholder.com/40',
-            type: 'ENTRADA',
-            quantity: 100,
-        },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await movimentacaoApi.buscarMovimentacoes();
+            setData(data);
+            console.log("Movimentações carregadas:", data);
+        };
 
-    const colunas = ["DATA", "PRODUTO", "TIPO", "QUANTIDADE"]
+        fetchData();
+    }, []);
 
-    const columns =
+    // const totalPages = Math.max(1, Math.ceil(mockData.length / pageSize));
+
+    // const paginatedData = useMemo(() => {
+    //     const startIndex = (currentPage - 1) * pageSize;
+    //     return mockData.slice(startIndex, startIndex + pageSize);
+    // }, [currentPage, mockData]);
+
+    const colunas = ["DATA", "PRODUTO", "TIPO", "QUANTIDADE"];
+
+    const funcaoRender =
     {
         render: (row, col) => {
             switch (col) {
                 case 'DATA':
-                    return <span>{row.date}</span>;
+                    const data = new Date(row.data);
+                    const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }).format(data);
+                    return <span>{dataFormatada}</span>;
 
                 case 'PRODUTO':
                     return (
                         <div className={style['product-cell']}>
-                            {row.productImg ? (
-                                <img src={row.productImg} alt={row.productName} className={style['product-thumb']} />
+                            {row.joia.arquivo ? (
+                                <img src={row.joia.arquivo.url} alt={row.joia.nome} className={style['product-thumb']} />
                             ) : (
                                 <div className={style['product-thumb-placeholder']}>[FOTO]</div>
                             )}
-                            <span className={style['product-title']}>{row.productName}</span>
+                            <span className={style['product-title']}>{row.joia.nome}</span>
                         </div>
                     );
 
                 case 'TIPO': {
-                    const isEntry = row.type === 'ENTRADA';
+                    const isEntry = row.motivoMovimentacao.tipoMovimentacao.nome === 'ENTRADA';
                     const badgeTypeClass = isEntry ? style['badge-entry'] : style['badge-exit'];
 
                     return (
                         <span className={`${style.badge} ${badgeTypeClass}`}>
-                            {row.type}
+                            {row.motivoMovimentacao.tipoMovimentacao.nome}
                         </span>
                     );
                 }
 
-                case 'QUANTIDADE':
-                    const isPositive = row.quantity > 0;
-                    const quantityClass = isPositive ? style['qty-positive'] : style['qty-negative'];
+                case 'QUANTIDADE': {
+                    const isEntry = row.motivoMovimentacao.tipoMovimentacao.nome === 'ENTRADA';
+
+                    const quantityClass = isEntry ? style['qty-positive'] : style['qty-negative'];
                     return (
                         <span className={`${style.quantity} ${quantityClass}`}>
-                            {isPositive ? `+ ${row.quantity}` : `- ${Math.abs(row.quantity)}`}
+                            {isEntry ? `+ ${row.quantidade}` : `- ${Math.abs(row.quantidade)}`}
                         </span>
                     );
+                }
+
+                default:
+                    return null;
             }
         }
-    }
+    };
 
-    console.log('columns:', columns)
     return (
-        <div className={style['page-container']}>
-            {/* Filtros da Parte Superior */}
-            <div className={style['toolbar']}>
-                <div className={style['search-input-wrapper']}>
-                    <span className={style['search-icon']}>🔍</span>
-                    <input
-                        type="text"
-                        placeholder="Buscar joia pelo nome"
-                        className={style['search-input']}
-                    />
+        <>
+            <PageHeader titulo="Movimentações de Estoque" subtitulo="Histórico de entradas e saídas de joias" />
+            <div className={style['page-container']}>
+                <div className={style['toolbar']}>
+                    <div className={style['search-input-wrapper']}>
+                        <span className={style['search-icon']}>🔍</span>
+                        <input
+                            type="text"
+                            placeholder="Buscar joia pelo nome"
+                            className={style['search-input']}
+                        />
+                    </div>
+
+                    <div className={style['filter-buttons']}>
+                        <Button children={"Tudo"} colorido={false} onClick={() => setFilterType('tudo')} />
+                        <Button children={"Entradas"} colorido={false} onClick={() => setFilterType('entradas')} />
+                        <Button children={"Saídas"} colorido={false} onClick={() => setFilterType('saidas')} />
+                        <Button children={"📅 Períodos"} colorido={false} />
+                    </div>
                 </div>
 
-                <div className={style['filter-buttons']}>
-                    <button
-                        className={style[`btn-filter ${filterType === 'tudo' ? 'active' : ''}`]}
-                        onClick={() => setFilterType('tudo')}
-                    >
-                        Tudo
-                    </button>
-                    <button
-                        className={style[`btn-filter ${filterType === 'entradas' ? 'active' : ''}`]}
-                        onClick={() => setFilterType('entradas')}
-                    >
-                        Entradas
-                    </button>
-                    <button
-                        className={style[`btn-filter ${filterType === 'saidas' ? 'active' : ''}`]}
-                        onClick={() => setFilterType('saidas')}
-                    >
-                        Saídas
-                    </button>
+                <Table colunas={colunas} funcaoRender={funcaoRender} data={data} />
 
-                    <button className={style['btn-period']}>
-                        📅 Períodos
-                    </button>
-                </div>
+                {/* <Pagination
+                paginaAtual={currentPage}
+                totalPaginas={totalPages}
+                aoMudarPagina={setCurrentPage}
+            /> */}
             </div>
-
-            {/* Tabela Genérica */}
-            <Table columns={colunas} rowsFunction={columns} data={mockData} />
-
-            {/* Paginação */}
-            <div className={style['pagination']}>
-                <button className={style['page-nav']}>← Anterior</button>
-                <button className={style['page-num'] + ' ' + style['active']}>1</button>
-                <button className={style['page-num']}>2</button>
-                <button className={style['page-num']}>3</button>
-                <span className={style['page-dots']}>...</span>
-                <button className={style['page-num']}>67</button>
-                <button className={style['page-num']}>68</button>
-                <button className={style['page-nav']}>Próximo →</button>
-            </div>
-        </div>
+        </>
     );
 }

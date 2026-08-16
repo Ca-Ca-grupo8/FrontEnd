@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         element: <SaidaJoia />,
       },
       {
-        path: '/movimentacoes/estoque',
+        path: '/historico/movimentacoes',
         element: <MovimentacaoEstoque />,
       }
     ],

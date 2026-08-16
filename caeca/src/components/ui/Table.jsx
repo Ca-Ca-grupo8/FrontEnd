@@ -1,13 +1,13 @@
 import React from 'react';
 import Style from '../../styles/Table.module.css';
 
-export function Table({ columns, rowsFunction, data }) {
+export function Table({ colunas, funcaoRender, data }) {
   return (
     <div className={Style['table-container']}>
       <table className={Style['custom-table']}>
         <thead>
           <tr>
-            {columns.map((col, index) => (
+            {colunas.map((col, index) => (
               <th key={index}>
                 {col}
               </th>
@@ -17,9 +17,9 @@ export function Table({ columns, rowsFunction, data }) {
         <tbody>
           {data.map((row, rowIndex) => (
             <tr key={rowIndex}>
-              {columns.map((col, colIndex) => (
+              {colunas.map((col, colIndex) => (
                 <td key={colIndex}>
-                  {rowsFunction.render ? rowsFunction.render(row, col) : row[col.accessor]}
+                  {funcaoRender.render ? funcaoRender.render(row, col) : row[col.accessor]}
                 </td>
               ))}
             </tr>

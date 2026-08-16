@@ -41,6 +41,7 @@
 .filter-buttons {
   display: flex;
   gap: 12px;
+  width: 100%;
 }
 
 .btn-filter {

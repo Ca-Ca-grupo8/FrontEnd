@@ -46,7 +46,7 @@ export function Login() {
       localStorage.setItem("role_usuario", roleUsuario);
       localStorage.setItem("id_usuario", idUsuario);
 
-      navigate("/joias/movimentacoes/entrada")
+      navigate("/")
       return
     } catch (e) {
       setSuccessText("Erro inesperado ocorreu!")
