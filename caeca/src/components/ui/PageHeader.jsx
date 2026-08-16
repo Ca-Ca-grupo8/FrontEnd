@@ -1,22 +1,24 @@
 import { BackButton } from "./BackButton";
 import { Breadcrumbs } from "./Breadcrumbs";
 
-import '../../styles/PageHeader.css'
+import style from '../../styles/PageHeader.module.css'
 import { useLocation } from "react-router-dom";
 
-export function PageHeader({ titulo, subtitulo, children }) {
+export function PageHeader({ titulo, subtitulo, dashed = false, children, ...props }) {
     const location = useLocation();
 
     return (
-        <div className="page-info-container">
+        <div className={style['page-info-container']}>
             <Breadcrumbs />
 
-            <div className="page-info-title-bar">
+            <div className={style['page-info-title-bar']}>
                 <div>
                     {location.pathname != "/" ?
                     <BackButton /> : null}
-                    <h1 className="page-info-title">{titulo}</h1>
-                    <h2 className="page-info-subtitle">{subtitulo}</h2>
+                    <h1 className={style['page-info-title']}>{titulo}</h1>
+                    <h2 className={style['page-info-subtitle'] + ' ' + (dashed ? style['dashed'] : '')} {...props}>
+                        {subtitulo}
+                    </h2>
                 </div>
                 {children}
             </div>
