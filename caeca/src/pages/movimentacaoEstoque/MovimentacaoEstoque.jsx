@@ -5,12 +5,14 @@ import { Button } from '../../components/ui/Button';
 import { Pagination } from '../../components/ui/Pagination';
 import { movimentacaoApi } from '../../service/movimentacaoApi';
 import { PageHeader } from '../../components/ui/PageHeader';
+import { useNavigate } from 'react-router-dom';
 
 export function MovimentacaoEstoque() {
     const [data, setData] = useState([]);
     const [filterType, setFilterType] = useState('tudo');
     const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 2;
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -88,7 +90,11 @@ export function MovimentacaoEstoque() {
 
     return (
         <>
-            <PageHeader titulo="Movimentações de Estoque" subtitulo="Histórico de entradas e saídas de joias" />
+            <PageHeader
+                titulo="Movimentações de Estoque"
+                subtitulo="Ver movimentações de revendedoras"
+                dashed={true}
+                onClick={() => {navigate('/historico/movimentacoes/revendedoras')}} />
             <div className={style['page-container']}>
                 <div className={style['toolbar']}>
                     <div className={style['search-input-wrapper']}>
