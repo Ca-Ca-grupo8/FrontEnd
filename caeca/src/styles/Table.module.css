@@ -1,0 +1,33 @@
+.table-container {
+  background-color: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table thead tr {
+  background-color: #96205C;
+  color: #ffffff;
+}
+
+.custom-table th {
+  padding: 16px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.custom-table td {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f2f2f2;
+  color: #333333;
+  font-size: 14px;
+  vertical-align: middle;
+  text-align: left;
+}

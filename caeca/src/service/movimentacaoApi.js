@@ -18,5 +18,10 @@ export const movimentacaoApi = {
         })
 
         return response.data
+    },
+
+    buscarMovimentacoes: async () => {
+        const response = await api.get("/movimentacoes");
+        return response.data;
     }
 }

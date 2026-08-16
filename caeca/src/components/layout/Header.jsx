@@ -95,7 +95,7 @@ export function Header({ avatarImg }) {
           </button>
           <div className="dropdown-menu">
             <NavLink to="/historico/gerais" onClick={closeAll}>Gerais</NavLink>
-            <NavLink to="/historico/vendas" onClick={closeAll}>Vendas</NavLink>
+            <NavLink to="/historico/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
           </div>
         </div>
 

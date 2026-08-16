@@ -1,9 +1,10 @@
-import '../../styles/Button.css';
+import style from '../../styles/Button.module.css';
 
-export function Button({ children, type = "button", colorido = true, ...props}){
+export function Button({ children, type = "button", colorido = true, disabled = false, ...props}){
     return (
-        <button className={`button-container ${colorido ? 'colorido' : 'transparente'}`}
+        <button className={style['button-container'] + ' ' + (colorido ? style['colorido'] : style['transparente'])}
          type={type}
+         disabled={disabled}
          {...props}>
             {children}
         </button>
