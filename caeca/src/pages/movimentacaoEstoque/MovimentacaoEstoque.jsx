@@ -1,35 +1,74 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import style from './MovimentacaoEstoque.module.css';
 import { Table } from '../../components/ui/Table';
 import { Button } from '../../components/ui/Button';
-import { Pagination } from '../../components/ui/Pagination';
 import { movimentacaoApi } from '../../service/movimentacaoApi';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
+import { TIPO_MOVIMENTACAO } from '../../utils/tipoMovimentacaoEnum';
+import { Toast } from '../../components/ui/Toast';
 
 export function MovimentacaoEstoque() {
     const [data, setData] = useState([]);
-    const [filterType, setFilterType] = useState('tudo');
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 2;
+    const [filters, setFilters] = useState({
+        tipo: TIPO_MOVIMENTACAO.TODOS,
+        nome: '',
+        dataInicio: '',
+        dataFim: ''
+    });
+    const [appliedFilters, setAppliedFilters] = useState(filters);
+    const [toast, setToast] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
-            const data = await movimentacaoApi.buscarMovimentacoes();
-            setData(data);
-            console.log("Movimentações carregadas:", data);
+            try {
+                const movimentacoes = await movimentacaoApi.buscarMovimentacoes(appliedFilters);
+                setData(movimentacoes);
+            } catch {
+                setToast({ message: 'Não foi possível carregar as movimentações.' });
+            }
         };
 
         fetchData();
-    }, []);
+    }, [appliedFilters]);
 
-    // const totalPages = Math.max(1, Math.ceil(mockData.length / pageSize));
+    const atualizarFiltro = (campo, valor) => {
+        setFilters((filtrosAtuais) => ({ ...filtrosAtuais, [campo]: valor }));
+    };
 
-    // const paginatedData = useMemo(() => {
-    //     const startIndex = (currentPage - 1) * pageSize;
-    //     return mockData.slice(startIndex, startIndex + pageSize);
-    // }, [currentPage, mockData]);
+    const fecharToast = useCallback(() => setToast(null), []);
+
+    const validarPeriodo = (filtros) => {
+        const apenasUmaDataPreenchida = Boolean(filtros.dataInicio) !== Boolean(filtros.dataFim);
+        const periodoInvalido = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
+
+        if (periodoInvalido) {
+            setToast({ message: 'A data de início não pode ser maior que a data de fim.' });
+        } else {
+            setToast(null);
+        }
+
+        return !apenasUmaDataPreenchida && !periodoInvalido;
+    };
+
+    const atualizarData = (campo, valor) => {
+        const novosFiltros = { ...filters, [campo]: valor };
+        atualizarFiltro(campo, valor);
+        validarPeriodo(novosFiltros);
+    };
+
+    const periodoValido =
+        Boolean(filters.dataInicio) === Boolean(filters.dataFim) &&
+        (!filters.dataInicio || filters.dataInicio <= filters.dataFim);
+
+    const buscarMovimentacoes = () => {
+        if (!periodoValido) {
+            return;
+        }
+
+        setAppliedFilters({ ...filters });
+    };
 
     const colunas = ["DATA", "PRODUTO", "TIPO", "QUANTIDADE"];
 
@@ -37,7 +76,7 @@ export function MovimentacaoEstoque() {
     {
         render: (row, col) => {
             switch (col) {
-                case 'DATA':
+                case 'DATA': {
                     const data = new Date(row.data);
                     const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
                         day: '2-digit',
@@ -47,6 +86,7 @@ export function MovimentacaoEstoque() {
                         minute: '2-digit'
                     }).format(data);
                     return <span>{dataFormatada}</span>;
+                }
 
                 case 'PRODUTO':
                     return (
@@ -90,6 +130,7 @@ export function MovimentacaoEstoque() {
 
     return (
         <>
+            {toast && <Toast message={toast.message} onClose={fecharToast} />}
             <PageHeader
                 titulo="Movimentações de Estoque"
                 subtitulo="Ver movimentações de revendedoras"
@@ -103,24 +144,49 @@ export function MovimentacaoEstoque() {
                             type="text"
                             placeholder="Buscar joia pelo nome"
                             className={style['search-input']}
+                            value={filters.nome}
+                            onChange={(event) => atualizarFiltro('nome', event.target.value)}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    buscarMovimentacoes();
+                                }
+                            }}
                         />
                     </div>
 
                     <div className={style['filter-buttons']}>
-                        <Button children={"Tudo"} colorido={filterType === 'tudo'} disabled={filterType === 'tudo'} onClick={() => setFilterType('tudo')} />
-                        <Button children={"Entradas"} colorido={filterType === 'entradas'} disabled={filterType === 'entradas'} onClick={() => setFilterType('entradas')} />
-                        <Button children={"Saídas"} colorido={filterType === 'saidas'} disabled={filterType === 'saidas'} onClick={() => setFilterType('saidas')} />
-                        <Button children={"📅 Períodos"} colorido={false} />
+                        <label className={style['type-filter']}>
+                            <span>Tipo</span>
+                            <select
+                                value={filters.tipo}
+                                onChange={(event) => atualizarFiltro('tipo', event.target.value)}
+                            >
+                                <option value={TIPO_MOVIMENTACAO.TODOS}>Todos</option>
+                                <option value={TIPO_MOVIMENTACAO.ENTRADA}>Entradas</option>
+                                <option value={TIPO_MOVIMENTACAO.SAIDA}>Saídas</option>
+                                <option value={TIPO_MOVIMENTACAO.REENTRADA}>Reentradas</option>
+                            </select>
+                        </label>
+                        <label className={style['date-filter']}>
+                            <span>De</span>
+                            <input type="date" value={filters.dataInicio} onChange={(event) => atualizarData('dataInicio', event.target.value)} />
+                        </label>
+                        <label className={style['date-filter']}>
+                            <span>Até</span>
+                            <input type="date" value={filters.dataFim} onChange={(event) => atualizarData('dataFim', event.target.value)} />
+                        </label>
+                        <Button children={"Buscar"} colorido={true} disabled={!periodoValido} onClick={buscarMovimentacoes} />
                     </div>
                 </div>
 
-                <Table colunas={colunas} funcaoRender={funcaoRender} data={data} />
+                {data.length > 0 ? (
+                    <Table colunas={colunas} funcaoRender={funcaoRender} data={data} />
+                ) : (
+                    <div className={style['empty-state']}>
+                        Não há movimentações
+                    </div>
+                )}
 
-                {/* <Pagination
-                paginaAtual={currentPage}
-                totalPaginas={totalPages}
-                aoMudarPagina={setCurrentPage}
-            /> */}
             </div>
         </>
     );

@@ -26,7 +26,9 @@
 }
 
 .button-container:disabled {
+  background-color: #e4e7ec;
+  border: 1px solid #d0d5dd;
+  color: #98a2b3;
   cursor: not-allowed;
-  opacity: 0.8;
   filter: none;
 }

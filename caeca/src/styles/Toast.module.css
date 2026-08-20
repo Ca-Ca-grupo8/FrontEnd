@@ -1,0 +1,31 @@
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: min(360px, calc(100vw - 48px));
+  padding: 14px 16px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.16);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.close {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #667085;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.close:hover {
+  color: #333333;
+}
