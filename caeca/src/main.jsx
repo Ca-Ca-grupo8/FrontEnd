@@ -11,6 +11,7 @@ import { Home } from './pages/home/Home.jsx';
 import { MovimentacaoEscolhas } from './pages/movimentacao/movimentacaoEscolhas.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/movimentacaoEstoque.jsx';
+import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 
 const router = createBrowserRouter([
   {
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: '/historico/movimentacoes',
         element: <MovimentacaoEstoque />,
+      },
+      {
+        path: '/joias/catalogo',
+        element: <InventarioProdutos />,
       }
     ],
   },
