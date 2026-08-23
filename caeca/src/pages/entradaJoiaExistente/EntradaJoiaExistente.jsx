@@ -4,39 +4,24 @@ import { InputField } from "../../components/ui/InputField";
 import { SelectField } from "../../components/ui/SelectField";
 import { Button } from "../../components/ui/Button";
 import { fornecedorApi } from "../../service/fornecedorApi";
-// ATENÇÃO: joiaApi ainda não existe no projeto (não estava entre os services
-// usados em EntradaJoia.jsx: motivoApi, banhoApi, materialApi, categoriaApi,
-// fornecedorApi, movimentacaoApi). É preciso confirmar/criar
-// `listarJoias()` em `../service/joiaApi.js` antes de subir para produção.
+import { motivoApi } from "../../service/motivoApi";
+import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
 import { PageHeader } from "../../components/ui/PageHeader";
 import "./EntradaJoiaExistente.module.css";
 import { NovoFornecedorModal } from "../../components/modals/NovoFornecedor";
+import { SucessoModal } from "../../components/modals/SucessoModal";
 import { CirclePlus } from "lucide-react";
 
 export function EntradaJoiaExistente() {
     const [joias, setJoias] = useState([]);
     const [fornecedor, setFornecedor] = useState([]);
+    const [motivos, setMotivos] = useState([]);
     const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
-
-    // Campos "Quantidade" e "Preço do banho" ainda não têm um service
-    // dedicado no projeto (na EntradaJoia.jsx eles aparecem como
-    // InputField numérico, não como listas). Mantidos mockados até que
-    // exista uma origem real de dados para essas opções.
-    const [quantidadeOpcoes] = useState([
-        { id: 1, nome: "1" },
-        { id: 2, nome: "2" },
-        { id: 5, nome: "5" },
-        { id: 10, nome: "10" },
-    ]);
-    const [precoBanhoOpcoes] = useState([
-        { id: 1, nome: "Ouro 18k" },
-        { id: 2, nome: "Ouro 24k" },
-        { id: 3, nome: "Ródio" },
-        { id: 4, nome: "Prata" },
-    ]);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const [formValues, setFormValues] = useState({
+        motivoEntradaId: "",
         joiaId: "",
         quantidade: "",
         precoCusto: "",
@@ -60,13 +45,19 @@ export function EntradaJoiaExistente() {
     useEffect(() => {
         async function carregarDadosIniciais() {
             try {
-                const [listaJoias, listaFornecedores] = await Promise.all([
+                const [listaJoias, listaFornecedores, listaMotivos] = await Promise.all([
                     joiaApi.listarJoias(),
-                    fornecedorApi.listarFornecedores()
+                    fornecedorApi.listarFornecedores(),
+                    motivoApi?.listarMotivos() || []
                 ]);
+
+                const motivosFiltrados = listaMotivos.filter(
+                    motivo => motivo.tipoMovimentacao.nome === "REENTRADA" || motivo.tipoMovimentacao.id === 3
+                );
 
                 setJoias(listaJoias);
                 setFornecedor(listaFornecedores);
+                setMotivos(motivosFiltrados);
             } catch (error) {
                 console.error("Erro ao carregar dados de inicialização:", error);
             }
@@ -108,8 +99,40 @@ export function EntradaJoiaExistente() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Simulação de envio - integração real com movimentacaoApi fica para depois.
-        console.log("Realizar entrada:", formValues);
+
+        const payload = {
+            idFornecedor: Number(formValues.fornecedorId) || 0,
+            quantidade: Number(formValues.quantidade) || 0,
+            precoBanho: Number(formValues.precoBanho) || 0.0,
+            precoCompraRevendedor: Number(formValues.precoCusto) || 0.0,
+            idRevendedora: null,
+            idMotivoMovimentacao: Number(formValues.motivoEntradaId) || 0,
+            dadosNovaJoia: null,
+            multiplicador: Number(formValues.multiplicador) || 0.0,
+            idJoia: Number(formValues.joiaId) || 0
+        }
+
+        realizarEntradaJoiaExistente(payload);
+    }
+
+    async function realizarEntradaJoiaExistente(payload) {
+        try {
+            const response = await movimentacaoApi.realizarMovimentacao(payload, null);
+            setIsSuccess(true);
+            setFormValues({
+                motivoEntradaId: "",
+                joiaId: "",
+                quantidade: "",
+                precoCusto: "",
+                precoBanho: "",
+                multiplicador: "",
+                fornecedorId: "",
+            });
+            setNomePecaQuery("");
+            return response;
+        } catch (error) {
+            console.error("Erro ao realizar entrada da joia existente:", error);
+        }
     }
 
     return (
@@ -120,7 +143,17 @@ export function EntradaJoiaExistente() {
                 isOpen={isFornecedorOpen}
                 onClose={() => setIsFornecedorOpen(false)} />
 
+            <SucessoModal text={"Entrada realizada com sucesso!"} IsSuccess={isSuccess} onClose={() => { setIsSuccess(false) }} />
+
             <CardForm onSubmit={handleSubmit}>
+
+                <SelectField
+                    data={motivos}
+                    label={"Motivo da entrada"}
+                    value={formValues.motivoEntradaId}
+                    required={true}
+                    onChange={(e) => handleChange("motivoEntradaId", e.target.value)}
+                />
 
                 <div className="combobox-wrapper" ref={nomePecaWrapperRef}>
                     <InputField
@@ -155,13 +188,14 @@ export function EntradaJoiaExistente() {
                     )}
                 </div>
 
-                <SelectField
-                    data={quantidadeOpcoes}
+                <InputField
                     label={"Quantidade"}
-                    value={formValues.quantidade}
+                    type={"number"}
+                    placeholder={"Value"}
                     required={true}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}
-                />
+                    value={formValues.quantidade}
+                    onChange={(e) => handleChange("quantidade", e.target.value)}>
+                </InputField>
 
                 <InputField
                     label={"Preço Original (Custo)"}
@@ -172,13 +206,14 @@ export function EntradaJoiaExistente() {
                     onChange={(e) => handleChange("precoCusto", e.target.value)}>
                 </InputField>
 
-                <SelectField
-                    data={precoBanhoOpcoes}
+                <InputField
                     label={"Preço do banho"}
-                    value={formValues.precoBanho}
+                    type={"number"}
+                    placeholder={"Value"}
                     required={true}
-                    onChange={(e) => handleChange("precoBanho", e.target.value)}
-                />
+                    value={formValues.precoBanho}
+                    onChange={(e) => handleChange("precoBanho", e.target.value)}>
+                </InputField>
 
                 <InputField
                     label={"Multiplicador"}
