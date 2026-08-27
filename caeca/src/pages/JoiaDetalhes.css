@@ -1,0 +1,360 @@
+.jewelry-page {
+  min-height: calc(100vh - 196px);
+  background: #f6f1f3;
+  padding-bottom: 56px;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  color: #2d1622;
+}
+
+.jewelry-content {
+  width: min(920px, calc(100% - 64px));
+  margin: 40px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---------- Hero: the velvet plate ---------- */
+
+.jewelry-hero {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 36px;
+  align-items: stretch;
+  background: #6e1442;
+  border-radius: 18px;
+  padding: 26px;
+  color: #fff;
+  box-shadow: 0 18px 40px -20px rgba(74, 11, 43, 0.55);
+}
+
+/* the dark velvet pad where the piece would sit */
+.jewelry-image {
+  width: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #2a1220;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.jewelry-image:hover {
+  border-color: rgba(199, 154, 59, 0.55);
+}
+
+.jewelry-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.jewelry-image-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.jewelry-state {
+  width: min(920px, calc(100% - 64px));
+  margin: 40px auto 0;
+  padding: 28px;
+  text-align: center;
+  font-size: 1rem;
+  color: #9d7f8c;
+  background: #fff;
+  border: 1px solid #eedfe7;
+  border-radius: 16px;
+}
+
+.jewelry-summary {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.eyebrow-tag {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #ffd8e6;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.jewelry-summary h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.7rem, 2.6vw, 2.2rem);
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.12;
+  margin: 10px 0 24px;
+  color: #fff;
+}
+
+.summary-stats {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-bottom: 26px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.stat-number {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 34px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(231, 246, 236, 0.16);
+  color: #9be3b4;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.status-badge--ok {
+  background: rgba(23, 178, 106, 0.18);
+  color: #7fe0ad;
+}
+
+.status-badge--alert {
+  background: rgba(172, 106, 2, 0.24);
+  color: #ffd488;
+}
+
+.status-badge--critico {
+  background: rgba(162, 7, 56, 0.32);
+  color: #ff9ec0;
+}
+
+.status-badge--inativo {
+  background: rgba(212, 212, 212, 0.16);
+  color: #cfcfcf;
+}
+
+/* ---------- Price tag: the brass signature ---------- */
+
+.price-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #eec66c;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 12px rgba(238, 198, 108, 0.25);
+  line-height: 1;
+}
+
+.history-button {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.history-button:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #eec66c;
+  color: #eec66c;
+}
+
+.history-button:focus-visible,
+.jewelry-image:focus-visible {
+  outline: 2px solid #eec66c;
+  outline-offset: 3px;
+}
+
+/* ---------- Spec ledgers ---------- */
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.info-card {
+  background: #fff;
+  border: 1px solid #eedfe7;
+  border-radius: 16px;
+  padding: 22px 26px 8px;
+  box-shadow: 0 8px 20px -16px rgba(122, 23, 71, 0.3);
+}
+
+.info-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.fornecedor-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.fornecedor-select-field {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #eedfe7;
+  background: #fdfafb;
+  color: #2d1622;
+  font-family: 'Montserrat', system-ui, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fornecedor-select-field:focus-visible {
+  outline: 2px solid #9c2863;
+  outline-offset: 2px;
+}
+
+.info-card-icon {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f9eef3;
+  color: #9c2863;
+}
+
+.info-card-header h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #2d1622;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+.info-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f4ecf0;
+  min-width: 0;
+}
+
+.info-label {
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  color: #9d7f8c;
+}
+
+.info-value {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #2d1622;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-value .status-badge {
+  font-size: 0.78rem;
+  background: #e7f6ec;
+  color: #2f8f52;
+}
+
+@media (max-width: 640px) {
+  .jewelry-content {
+    width: calc(100% - 32px);
+    margin-top: 20px;
+  }
+
+  .jewelry-hero {
+    grid-template-columns: 1fr;
+    justify-items: stretch;
+    padding: 22px;
+  }
+
+  .jewelry-image {
+    width: 100%;
+    height: 168px;
+  }
+
+  .jewelry-summary {
+    text-align: center;
+  }
+
+  .summary-stats,
+  .price-row {
+    justify-content: center;
+  }
+
+  .info-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history-button,
+  .jewelry-image {
+    transition: none;
+  }
+}

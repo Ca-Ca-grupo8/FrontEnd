@@ -8,10 +8,11 @@ import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { Login } from './pages/Login.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
-import { MovimentacaoEscolhas } from './pages/movimentacao/movimentacaoEscolhas.jsx';
+import { MovimentacaoEscolhas } from './pages/movimentacao/MovimentacaoEscolhas.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
-import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/movimentacaoEstoque.jsx';
+import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
+import { JoiaDetalhes } from './pages/JoiaDetalhes.jsx';
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: '/joias/catalogo',
         element: <InventarioProdutos />,
+      },
+      {
+        path: '/joia/:id',
+        element: <JoiaDetalhes />,
       }
     ],
   },
