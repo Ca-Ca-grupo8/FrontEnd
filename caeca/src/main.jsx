@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css'
 
 import { Layout } from './components/layout/Layout.jsx';
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { Login } from './pages/Login.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
@@ -20,7 +21,11 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '/',
@@ -43,15 +48,15 @@ const router = createBrowserRouter([
         element: <SaidaJoia />,
       },
       {
-        path: '/historico/movimentacoes',
+        path: '/joias/movimentacoes',
         element: <MovimentacaoEstoque />,
       },
       {
-        path: '/joias/catalogo',
+        path: '/joias',
         element: <InventarioProdutos />,
       },
       {
-        path: '/joia/:id',
+        path: '/joias/:id',
         element: <JoiaDetalhes />,
       }
     ],

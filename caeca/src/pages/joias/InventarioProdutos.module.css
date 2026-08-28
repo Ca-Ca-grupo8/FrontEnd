@@ -70,6 +70,7 @@
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-decoration: underline;
 }
 
 .badge {

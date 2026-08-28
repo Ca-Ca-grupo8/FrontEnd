@@ -4,6 +4,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { Toast } from '../../components/ui/Toast';
 import { joiaApi } from '../../service/joiaApi';
 import style from './InventarioProdutos.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const colunas = [
     'PRODUTOS',
@@ -15,6 +16,7 @@ const colunas = [
 ];
 
 export function InventarioProdutos() {
+    const navigate = useNavigate()
     const [produtos, setProdutos] = useState([]);
     const [nomeBusca, setNomeBusca] = useState('');
     const [toast, setToast] = useState(null);
@@ -66,7 +68,7 @@ export function InventarioProdutos() {
                             ) : (
                                 <div className={style['product-thumb-placeholder']}>[FOTO]</div>
                             )}
-                            <span className={style['product-title']}>{row.nome || '-'}</span>
+                            <span className={style['product-title']} onClick={() => navigate(`/joias/${row.id}`)}>{row.nome || '-'}</span>
                         </div>
                     );
                 case 'QUANTIDADE':

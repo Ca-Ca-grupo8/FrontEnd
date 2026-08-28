@@ -13,11 +13,6 @@ import './JoiaDetalhes.css'
 const formatarMoeda = (valor) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
 
-const formatarData = (dataISO) =>
-  dataISO
-    ? new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(dataISO))
-    : '—'
-
 const statusConfig = {
   OK: { label: 'OK', variant: 'ok' },
   ALERTA: { label: 'ALERTA', variant: 'alert' },
@@ -25,9 +20,9 @@ const statusConfig = {
   INATIVO: { label: 'INATIVO', variant: 'inativo' },
 }
 
-const obterStatus = (status) => statusConfig[status] || { label: status || '—', variant: 'inativo' }
+const obterStatus = (status) => statusConfig[status] || { label: status || '-', variant: 'inativo' }
 
-function InfoCard({ title, icon: Icon, rows, toolbar }) {
+function InfoCard({ title, icon: Icon, rows, children }) {
   return (
     <section className="info-card" aria-label={title}>
       <header className="info-card-header">
@@ -36,17 +31,18 @@ function InfoCard({ title, icon: Icon, rows, toolbar }) {
         </span>
         <h2>{title}</h2>
       </header>
-      {toolbar}
-      <dl className="info-grid">
-        {rows.map(({ label, value, status }) => (
-          <div className="info-cell" key={label}>
-            <dt className="info-label">{label}</dt>
-            <dd className="info-value">
-              {status ? <span className="status-badge">{value}</span> : value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {children || (
+        <dl className="info-grid">
+          {rows.map(({ label, value, status }) => (
+            <div className="info-cell" key={label}>
+              <dt className="info-label">{label}</dt>
+              <dd className="info-value">
+                {status ? <span className="status-badge">{value}</span> : value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </section>
   )
 }
@@ -56,7 +52,6 @@ export function JoiaDetalhes() {
   const [joia, setJoia] = useState(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState(false)
-  const [fornecedorId, setFornecedorId] = useState('')
 
   useEffect(() => {
     let ignore = false
@@ -65,9 +60,6 @@ export function JoiaDetalhes() {
       try {
         const dados = await joiaApi.buscarPorId(id)
         if (!ignore) setJoia(dados)
-        if (!ignore && dados?.fornecedores?.length) {
-          setFornecedorId(String(dados.fornecedores[0].idFornecedor))
-        }
       } catch {
         if (!ignore) setErro(true)
       } finally {
@@ -98,50 +90,41 @@ export function JoiaDetalhes() {
   }
 
   const fornecedores = joia.fornecedores || []
-  const fornecedor = fornecedores.find((f) => String(f.idFornecedor) === fornecedorId)
   const { label: statusLabel, variant } = obterStatus(joia.status)
   const statusClass = `status-badge--${variant}`
 
-  const fornecedorToolbar = fornecedores.length > 1 && (
-    <div className="fornecedor-select">
-      <select
-        className="fornecedor-select-field"
-        aria-label="Selecionar fornecedor"
-        value={fornecedorId}
-        onChange={(e) => setFornecedorId(e.target.value)}
-      >
-        {fornecedores.map((f) => (
-          <option key={f.idFornecedor} value={f.idFornecedor}>
-            {f.nome}
-          </option>
-        ))}
-      </select>
-    </div>
-  )
-
   const infoCards = [
-    {
-      title: 'Fornecedor',
-      icon: Truck,
-      toolbar: fornecedorToolbar,
-      rows: [
-        { label: 'Nome', value: fornecedor?.nome || '—' },
-        { label: 'Instagram', value: fornecedor?.instagram || '—' },
-        { label: 'Telefone', value: fornecedor?.telefone || '—' },
-        { label: 'Status', value: fornecedor?.ativo ? 'Ativo' : 'Inativo', status: true },
-        { label: 'Dt. cadastro', value: formatarData(fornecedor?.dataCadastro) },
-      ],
-    },
     {
       title: 'Especificações',
       icon: Gem,
       rows: [
-        { label: 'Banho', value: joia.banho?.nome || '—' },
-        { label: 'Material', value: joia.material?.nome || '—' },
-        { label: 'Qt. mínima', value: String(joia.quantidadeMinima ?? '—') },
+        { label: 'Banho', value: joia.banho?.nome || '-' },
+        { label: 'Material', value: joia.material?.nome || '-' },
+        { label: 'Qt. mínima', value: String(joia.quantidadeMinima ?? '-') },
         { label: 'Preço unitário', value: formatarMoeda(joia.preco) },
       ],
     },
+    {
+      title: 'Fornecedor',
+      icon: Truck,
+      children: (
+        fornecedores.length ? (
+          <ul className="fornecedor-list">
+            {fornecedores.map((f) => (
+              <li className="fornecedor-item" key={f.idFornecedor}>
+                <a className="fornecedor-link" href={`/fornecedor/${f.idFornecedor}`}>
+                  <span className="fornecedor-nome">{f.nome}</span>
+                  <span className="fornecedor-instagram">{f.instagram}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="info-value fornecedor-empty">-</p>
+        )
+      ),
+    },
+    
   ]
 
   return (
@@ -168,16 +151,14 @@ export function JoiaDetalhes() {
             <div className="summary-stats">
               <div className="stat">
                 <span className="stat-label">Em estoque</span>
-                <span className="stat-number">{joia.quantidade ?? '—'}</span>
+                <span className="stat-number">{joia.quantidade ?? '-'}</span>
               </div>
               <div className="stat-divider" aria-hidden="true" />
               <div className="stat">
                 <span className="stat-label">Situação</span>
                 <span className={`status-badge ${statusClass}`}>{statusLabel}</span>
               </div>
-            </div>
-
-            <div className="price-row">
+              <div className="stat-divider" aria-hidden="true" />
               <div className="price-block">
                 <span className="stat-label">Preço de venda</span>
                 <span className="price-value">{formatarMoeda(joia.preco)}</span>
