@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Gem, Users, History, TrendingUp, Home, Menu, X, User, LogOut } from 'lucide-react';
 import '../../styles/Header.css';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 export function Header({ avatarImg }) {
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
@@ -24,14 +23,6 @@ export function Header({ avatarImg }) {
 
   const nomeUsuario = localStorage.getItem("nome_usuario") || "Visitante";
   const roleUsuario = localStorage.getItem("role_usuario");
-
-  useEffect(() => {
-    const isLoginPage = window.location.pathname === '/login';
-
-    if (!roleUsuario && !isLoginPage) {
-      navigate('/login', { replace: true });
-    }
-  }, [roleUsuario, navigate]);
 
   const roleUsuarioSplitado = roleUsuario?.split("_") ?? [];
   const roleUsuarioFormatted = roleUsuarioSplitado.includes("USER") ? "Funcionário" : "Administrador";
@@ -70,8 +61,8 @@ export function Header({ avatarImg }) {
             <span className="nav-label">Jóias</span>
           </button>
           <div className="dropdown-menu">
-            <NavLink to="/joias/catalogo" onClick={closeAll}>Catálogo</NavLink>
-            <NavLink to="/joias/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
+            <NavLink to="/joias" onClick={closeAll}>Catálogo</NavLink>
+            <NavLink to="/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
           </div>
         </div>
 
@@ -95,7 +86,7 @@ export function Header({ avatarImg }) {
           </button>
           <div className="dropdown-menu">
             <NavLink to="/historico/gerais" onClick={closeAll}>Gerais</NavLink>
-            <NavLink to="/historico/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
+            <NavLink to="/joias/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
           </div>
         </div>
 

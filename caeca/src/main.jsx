@@ -4,14 +4,16 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css'
 
 import { Layout } from './components/layout/Layout.jsx';
+import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { Login } from './pages/Login.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
-import { MovimentacaoEscolhas } from './pages/movimentacao/movimentacaoEscolhas.jsx';
+import { MovimentacaoEscolhas } from './pages/movimentacao/MovimentacaoEscolhas.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
-import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/movimentacaoEstoque.jsx';
+import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
+import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
 
 const router = createBrowserRouter([
   {
@@ -19,7 +21,11 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   {
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '/',
@@ -42,12 +48,16 @@ const router = createBrowserRouter([
         element: <SaidaJoia />,
       },
       {
-        path: '/historico/movimentacoes',
+        path: '/joias/movimentacoes',
         element: <MovimentacaoEstoque />,
       },
       {
-        path: '/joias/catalogo',
+        path: '/joias',
         element: <InventarioProdutos />,
+      },
+      {
+        path: '/joias/:id',
+        element: <JoiaDetalhes />,
       }
     ],
   },
