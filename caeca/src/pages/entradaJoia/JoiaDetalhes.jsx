@@ -6,8 +6,11 @@ import {
   Package,
   Truck,
 } from 'lucide-react'
-import { PageHeader } from '../components/ui/PageHeader'
-import { joiaApi } from '../service/joiaApi'
+import { PageHeader } from '../../components/ui/PageHeader'
+import { Button } from '../../components/ui/Button'
+import { EditarJoiaModal } from '../../components/modals/EditarJoiaModal'
+import { SucessoModal } from '../../components/modals/SucessoModal'
+import { joiaApi } from '../../service/joiaApi'
 import './JoiaDetalhes.css'
 
 const formatarMoeda = (valor) =>
@@ -52,6 +55,9 @@ export function JoiaDetalhes() {
   const [joia, setJoia] = useState(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState(false)
+  const [editando, setEditando] = useState(false)
+  const [salvo, setSalvo] = useState(false)
+  const [versao, setVersao] = useState(0)
 
   useEffect(() => {
     let ignore = false
@@ -69,7 +75,12 @@ export function JoiaDetalhes() {
 
     carregarJoia()
     return () => { ignore = true }
-  }, [id])
+  }, [id, versao])
+
+  const aoSalvar = () => {
+    setSalvo(true)
+    setVersao((v) => v + 1)
+  }
 
   if (carregando) {
     return (
@@ -129,7 +140,24 @@ export function JoiaDetalhes() {
 
   return (
     <div className="jewelry-page">
-      <PageHeader titulo="Especificações da joia" />
+      <PageHeader titulo="Especificações da joia">
+        <Button type="button" colorido={false} onClick={() => setEditando(true)}>
+          Editar
+        </Button>
+      </PageHeader>
+
+      <EditarJoiaModal
+        isOpen={editando}
+        onClose={() => setEditando(false)}
+        joia={joia}
+        onAtualizar={aoSalvar}
+      />
+
+      <SucessoModal
+        text="Dados atualizados com sucesso!"
+        IsSuccess={salvo}
+        onClose={() => setSalvo(false)}
+      />
 
       <div className="jewelry-content">
         <section className="jewelry-hero" aria-label="Visão geral da joia">

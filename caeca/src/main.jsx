@@ -13,7 +13,7 @@ import { MovimentacaoEscolhas } from './pages/movimentacao/MovimentacaoEscolhas.
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
-import { JoiaDetalhes } from './pages/JoiaDetalhes.jsx';
+import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
 
 const router = createBrowserRouter([
   {

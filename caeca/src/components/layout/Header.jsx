@@ -62,7 +62,7 @@ export function Header({ avatarImg }) {
           </button>
           <div className="dropdown-menu">
             <NavLink to="/joias" onClick={closeAll}>Catálogo</NavLink>
-            <NavLink to="/joias/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
+            <NavLink to="/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export function Header({ avatarImg }) {
           </button>
           <div className="dropdown-menu">
             <NavLink to="/historico/gerais" onClick={closeAll}>Gerais</NavLink>
-            <NavLink to="/historico/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
+            <NavLink to="/joias/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
           </div>
         </div>
 

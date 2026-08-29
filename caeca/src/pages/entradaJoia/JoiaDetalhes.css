@@ -1,13 +1,5 @@
-.jewelry-page {
-  min-height: calc(100vh - 196px);
-  background: #f6f1f3;
-  padding-bottom: 56px;
-  font-family: 'Montserrat', system-ui, sans-serif;
-  color: #2d1622;
-}
-
 .jewelry-content {
-  width: min(1240px, calc(100% - 64px));
+  width: min(1480px, calc(100% - 64px));
   margin: 40px auto 0;
   display: flex;
   flex-direction: column;
@@ -92,10 +84,8 @@
 }
 
 .jewelry-summary h1 {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-size: 2.5rem;
   font-weight: 600;
-  font-style: italic;
   line-height: 1.12;
   margin: 12px 0 30px;
   color: #fff;
@@ -139,30 +129,31 @@
   width: fit-content;
   padding: 4px 14px;
   border-radius: 999px;
-  background: rgba(231, 246, 236, 0.16);
-  color: #9be3b4;
+  background: #4a4a4a;
+  color: #f2f2f2;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   font-size: 0.82rem;
   font-weight: 600;
 }
 
 .status-badge--ok {
-  background: rgba(23, 178, 106, 0.18);
-  color: #7fe0ad;
+  background: #1e8a56;
+  color: #eafff3;
 }
 
 .status-badge--alert {
-  background: rgba(172, 106, 2, 0.24);
-  color: #ffd488;
+  background: #8c5a00;
+  color: #ffe9b3;
 }
 
 .status-badge--critico {
-  background: rgba(162, 7, 56, 0.32);
-  color: #ff9ec0;
+  background: #c01c5b;
+  color: #fff;
 }
 
 .status-badge--inativo {
-  background: rgba(212, 212, 212, 0.16);
-  color: #cfcfcf;
+  background: #5c5c5c;
+  color: #f2f2f2;
 }
 
 /* ---------- Price tag: the brass signature ---------- */
