@@ -1,0 +1,48 @@
+/* Esta página não usa combobox (o campo "Joia" é um SelectField padrão,
+   diferente de EntradaJoiaExistente.jsx), então não há classes de
+   combobox aqui.
+
+   As classes "card-form-actions" e "card-form-link" já existem em
+   EntradaJoia.css. "required-fields-note" e "required-asterisk" já foram
+   definidas em EntradaJoiaExistente.css. Estou redeclarando aqui apenas
+   por segurança (caso este CSS seja carregado isoladamente), mas o ideal
+   é migrar essas 4 classes para um arquivo verdadeiramente global
+   (ex: styles/CardForm.css ou index.css) para não duplicar regras entre
+   EntradaJoia.css, EntradaJoiaExistente.css e ReentradaJoia.css. */
+
+.card-form-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-form-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: #4a4a4a;
+}
+
+.card-form-link a {
+    color: #91194a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.card-form-link a:hover {
+    text-decoration: underline;
+}
+
+.required-fields-note {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4a4a4a;
+    margin-top: 8px;
+}
+
+.required-asterisk {
+    color: #d0021b;
+}
