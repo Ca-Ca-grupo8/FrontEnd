@@ -52,7 +52,7 @@ export function EntradaJoiaExistente() {
                 ]);
 
                 const motivosFiltrados = listaMotivos.filter(
-                    motivo => motivo.tipoMovimentacao.nome === "REENTRADA" || motivo.tipoMovimentacao.id === 3
+                    motivo => motivo.tipoMovimentacao.nome === "ENTRADA" || motivo.tipoMovimentacao.id === 1
                 );
 
                 setJoias(listaJoias);
