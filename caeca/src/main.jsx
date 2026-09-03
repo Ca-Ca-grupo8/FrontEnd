@@ -14,7 +14,6 @@ import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroCon
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
-import { ReentradaJoia } from './pages/reentradaJoia/ReentradaJoia.jsx';
 
 const router = createBrowserRouter([
   {
@@ -43,10 +42,6 @@ const router = createBrowserRouter([
       {
         path: '/movimentacoes/entrada',
         element: <EntradaJoia />,
-      },
-      {
-        path: '/movimentacoes/reentrada',
-        element: <ReentradaJoia />,
       },
       {
         path: '/movimentacoes/saida',
