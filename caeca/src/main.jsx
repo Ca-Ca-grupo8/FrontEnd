@@ -6,6 +6,8 @@ import './index.css'
 import { Layout } from './components/layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
+import { ReentradaJoia } from './pages/reentradaJoia/ReentradaJoia.jsx'
+import { EntradaJoiaExistente } from './pages/entradaJoiaExistente/EntradaJoiaExistente.jsx'
 import { Login } from './pages/Login.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
@@ -42,6 +44,14 @@ const router = createBrowserRouter([
       {
         path: '/movimentacoes/entrada',
         element: <EntradaJoia />,
+      },
+      {
+        path: '/movimentacoes/entradaexistente',
+        element: <EntradaJoiaExistente />,
+      },
+      {
+        path: '/movimentacoes/reentrada',
+        element: <ReentradaJoia />,
       },
       {
         path: '/movimentacoes/saida',

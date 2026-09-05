@@ -127,9 +127,7 @@ export function ReentradaJoia() {
                     <Button type={"submit"} colorido={true}>Realizar reentrada</Button>
                     <span className="card-form-link">
                         <p>Nova joia?</p>
-                        {/* ATENÇÃO: rota real ainda não confirmada - ajustar href
-                            para a página de cadastro de joia nova quando definida. */}
-                        <a href="">Cadastrar nova joia</a>
+                        <a href="/movimentacoes/entrada">Cadastrar nova joia</a>
                     </span>
                     <p className="required-fields-note">
                         <span className="required-asterisk">*</span> Campos obrigatórios

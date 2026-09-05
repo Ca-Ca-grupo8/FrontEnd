@@ -245,7 +245,7 @@ export function EntradaJoia() {
                     <Button type={"submit"} colorido={true}>Confirmar</Button>
                     <span className="card-form-link">
                         <p>Jóia existente?</p>
-                        <a href="">Atualizar Estoque</a>
+                        <a href="/movimentacoes/entradaexistente">Atualizar Estoque</a>
                     </span>
                 </div>
             </CardForm>
