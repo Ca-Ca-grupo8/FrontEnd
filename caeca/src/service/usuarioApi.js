@@ -8,5 +8,9 @@ export const usuarioApi = {
     getMe: async () => {
         const response = await api.get("/usuarios/me")
         return response
+    },
+    logout: async () => {
+        const response = await api.post("/usuarios/logout")
+        return response
     }
 }
