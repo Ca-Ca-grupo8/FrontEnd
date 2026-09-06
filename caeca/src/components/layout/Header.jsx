@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Gem, Users, History, TrendingUp, Home, Menu, X, User, LogOut } from 'lucide-react';
 import '../../styles/Header.css';
 import { NavLink } from 'react-router-dom';
+import api from '../../service/api';
+import { usuarioApi } from '../../service/usuarioApi';
+import { HttpStatusCode } from 'axios';
 
 export function Header({ avatarImg }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +23,17 @@ export function Header({ avatarImg }) {
     setIsOpen(false);
     setActiveDropdown(null);
   };
+
+  const logout = async () => {
+    try {
+      await usuarioApi.logout();
+    } catch(e) {
+    } finally {
+      localStorage.clear();
+      closeAll();
+      navigate('/login');
+    }
+  }
 
   const nomeUsuario = localStorage.getItem("nome_usuario") || "Visitante";
   const roleUsuario = localStorage.getItem("role_usuario");
@@ -43,7 +57,7 @@ export function Header({ avatarImg }) {
           <NavLink to="/perfil" onClick={closeAll}>
             <User size={16} style={{ marginRight: '8px' }} /> Meu Perfil
           </NavLink>
-          <NavLink to="/logout" onClick={closeAll} className="logout-link">
+          <NavLink to="/login" onClick={logout} className="logout-link">
             <LogOut size={16} style={{ marginRight: '8px' }} /> Sair
           </NavLink>
         </div>
