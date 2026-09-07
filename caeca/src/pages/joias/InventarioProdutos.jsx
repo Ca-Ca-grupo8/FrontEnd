@@ -9,6 +9,7 @@ import { materialApi } from '../../service/materialApi';
 import { banhoApi } from '../../service/banhoApi';
 import style from './InventarioProdutos.module.css';
 import { useNavigate } from 'react-router-dom';
+import { Pagination } from '../../components/ui/Pagination';
 
 const colunas = [
     'PRODUTOS',
@@ -39,10 +40,16 @@ export function InventarioProdutos() {
         banho: '',
         joiaStatus: '',
         dataInicio: '',
-        dataFim: ''
+        dataFim: '',
+        ordem: 'asc'
     });
-    const [appliedFilters, setAppliedFilters] = useState(filters);
+    const [appliedFilters, setAppliedFilters] = useState(() => {
+        const { ordem, ...filtrosSemOrdem } = filters;
+        return { ...filtrosSemOrdem, page: 0, sort: `nome,${ordem}` };
+    });
     const [toast, setToast] = useState(null);
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [totalPaginas, setTotalPaginas] = useState(1);
 
     useEffect(() => {
         const carregarOpcoes = async () => {
@@ -66,8 +73,9 @@ export function InventarioProdutos() {
     useEffect(() => {
         const carregarProdutos = async () => {
             try {
-                const produtosEncontrados = await joiaApi.listarJoias(appliedFilters);
-                setProdutos(produtosEncontrados);
+                const pagina = await joiaApi.listarJoias(appliedFilters);
+                setProdutos(pagina.content ?? []);
+                setTotalPaginas(pagina.totalPages ?? 1);
             } catch {
                 setToast({ message: 'Não foi possível carregar os produtos.' });
             }
@@ -110,7 +118,14 @@ export function InventarioProdutos() {
             return;
         }
 
-        setAppliedFilters({ ...filters });
+        setPaginaAtual(1);
+        const { ordem, ...filtrosSemOrdem } = filters;
+        setAppliedFilters({ ...filtrosSemOrdem, page: 0, sort: `nome,${ordem}` });
+    };
+
+    const alterarPagina = (pagina) => {
+        setPaginaAtual(pagina);
+        setAppliedFilters((filtros) => ({ ...filtros, page: pagina - 1 }));
     };
 
     const optionsFiltro = (itens) => (itens || []).map((item) => (
@@ -254,6 +269,16 @@ export function InventarioProdutos() {
                             <span>Até</span>
                             <input type="date" value={filters.dataFim} onChange={(event) => atualizarData('dataFim', event.target.value)} />
                         </label>
+                        <label className={style['type-filter']}>
+                            <span>Ordem</span>
+                            <select
+                                value={filters.ordem}
+                                onChange={(event) => atualizarFiltro('ordem', event.target.value)}
+                            >
+                                <option value="asc">A - Z</option>
+                                <option value="desc">Z - A</option>
+                            </select>
+                        </label>
                         <Button className={style['btn-buscar']} children={"Buscar"} colorido={true} disabled={!periodoValido} onClick={buscarProdutos} />
                     </div>
                 </div>
@@ -265,6 +290,12 @@ export function InventarioProdutos() {
                         Não há produtos para exibir
                     </div>
                 )}
+
+                <Pagination
+                    paginaAtual={paginaAtual}
+                    totalPaginas={totalPaginas}
+                    aoMudarPagina={alterarPagina}
+                />
             </div>
         </>
     );
