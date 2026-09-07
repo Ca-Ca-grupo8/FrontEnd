@@ -25,6 +25,6 @@ export const movimentacaoApi = {
             Object.entries(filtros).filter(([, valor]) => valor !== '' && valor !== null && valor !== undefined)
         );
         const response = await api.get("/movimentacoes", { params });
-        return response.data ?? [];
+        return response.data;
     }
 }

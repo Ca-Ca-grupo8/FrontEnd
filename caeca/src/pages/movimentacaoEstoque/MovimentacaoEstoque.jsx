@@ -7,6 +7,7 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { TIPO_MOVIMENTACAO } from '../../utils/tipoMovimentacaoEnum';
 import { Toast } from '../../components/ui/Toast';
+import { Pagination } from '../../components/ui/Pagination';
 
 export function MovimentacaoEstoque() {
     const [data, setData] = useState([]);
@@ -14,17 +15,24 @@ export function MovimentacaoEstoque() {
         tipo: TIPO_MOVIMENTACAO.TODOS,
         nome: '',
         dataInicio: '',
-        dataFim: ''
+        dataFim: '',
+        ordem: 'desc'
     });
-    const [appliedFilters, setAppliedFilters] = useState(filters);
+    const [appliedFilters, setAppliedFilters] = useState(() => {
+        const { ordem, ...filtrosSemOrdem } = filters;
+        return { ...filtrosSemOrdem, page: 0, sort: `data,${ordem}` };
+    });
     const [toast, setToast] = useState(null);
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [totalPaginas, setTotalPaginas] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const movimentacoes = await movimentacaoApi.buscarMovimentacoes(appliedFilters);
-                setData(movimentacoes);
+                const pagina = await movimentacaoApi.buscarMovimentacoes(appliedFilters);
+                setData(pagina.content ?? []);
+                setTotalPaginas(pagina.totalPages ?? 1);
             } catch {
                 setToast({ message: 'Não foi possível carregar as movimentações.' });
             }
@@ -67,7 +75,14 @@ export function MovimentacaoEstoque() {
             return;
         }
 
-        setAppliedFilters({ ...filters });
+        setPaginaAtual(1);
+        const { ordem, ...filtrosSemOrdem } = filters;
+        setAppliedFilters({ ...filtrosSemOrdem, page: 0, sort: `data,${ordem}` });
+    };
+
+    const alterarPagina = (pagina) => {
+        setPaginaAtual(pagina);
+        setAppliedFilters((filtros) => ({ ...filtros, page: pagina - 1 }));
     };
 
     const colunas = ["DATA", "PRODUTO", "TIPO", "QUANTIDADE"];
@@ -175,6 +190,16 @@ export function MovimentacaoEstoque() {
                             <span>Até</span>
                             <input type="date" value={filters.dataFim} onChange={(event) => atualizarData('dataFim', event.target.value)} />
                         </label>
+                        <label className={style['type-filter']}>
+                            <span>Ordem</span>
+                            <select
+                                value={filters.ordem}
+                                onChange={(event) => atualizarFiltro('ordem', event.target.value)}
+                            >
+                                <option value="desc">Mais recentes</option>
+                                <option value="asc">Mais antigas</option>
+                            </select>
+                        </label>
                         <Button children={"Buscar"} colorido={true} disabled={!periodoValido} onClick={buscarMovimentacoes} />
                     </div>
                 </div>
@@ -186,6 +211,12 @@ export function MovimentacaoEstoque() {
                         Não há movimentações
                     </div>
                 )}
+
+                <Pagination
+                    paginaAtual={paginaAtual}
+                    totalPaginas={totalPaginas}
+                    aoMudarPagina={alterarPagina}
+                />
 
             </div>
         </>
