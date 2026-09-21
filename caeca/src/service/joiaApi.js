@@ -1,4 +1,5 @@
 import api from "./api"
+import { fetchAllPages } from "../utils/fetchAllPages"
 
 export const joiaApi = {
     listarJoias: async (filtros = {}) => {
@@ -7,6 +8,15 @@ export const joiaApi = {
         );
         const response = await api.get("/joias", { params })
         return response.data
+    },
+
+    listarTodasJoias: async (filtros = {}) => {
+        const params = Object.fromEntries(
+            Object.entries(filtros).filter(([, valor]) => valor !== '' && valor !== null && valor !== undefined)
+        );
+        return fetchAllPages((page) =>
+            api.get("/joias", { params: { ...params, page } }).then(r => r.data)
+        );
     },
 
     buscarPorId: async (id) => {

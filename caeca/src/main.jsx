@@ -16,6 +16,8 @@ import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroCon
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
+import { Maletas } from './pages/Maletas/Maletas.jsx';
+import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
 
 const router = createBrowserRouter([
   {
@@ -68,6 +70,14 @@ const router = createBrowserRouter([
       {
         path: '/joias/:id',
         element: <JoiaDetalhes />,
+      },
+      {
+        path: '/joias/maletas',
+        element: <Maletas />,
+      },
+      {
+        path: '/joias/maletas/:id',
+        element: <MaletaDetalhes />,
       }
     ],
   },

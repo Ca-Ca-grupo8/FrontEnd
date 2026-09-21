@@ -1,0 +1,118 @@
+.page-container {
+  padding: 24px;
+  background-color: #f4f4f6;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #f0f0f2;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  padding: 8px 16px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.search-icon {
+  margin-right: 8px;
+  opacity: 0.6;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+}
+
+.empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+
+.type-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: #555;
+  font-size: 13px;
+}
+
+.type-filter select {
+  border: 1px solid #e2e2e8;
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #333;
+  background-color: #ffffff;
+  font: inherit;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  color: #555;
+  font-size: 13px;
+}
+
+.date-filter input {
+  border: 1px solid #e2e2e8;
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #333;
+  background-color: #ffffff;
+  font: inherit;
+}
+
+.product-title {
+  font-weight: 700;
+  color: #111;
+}
+
+.badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.badge-finalizada {
+  background-color: #dcfae6;
+  color: #17b26a;
+}
+
+.badge-aberta {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.total-value {
+  font-weight: 700;
+  color: #111;
+}

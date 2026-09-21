@@ -49,7 +49,7 @@ export function SaidaJoia() {
                 // Ajuste as chamadas de API conforme seus endpoints reais
                 const [listaMotivos, listaJoias, listaRevendedoras] = await Promise.all([
                     motivoApi?.listarMotivos() || [],
-                    joiaApi?.listarJoias() || [],
+                    joiaApi?.listarTodasJoias() || [],
                     revendedoraApi?.listarRevendedoras() || []
                 ]);
 
