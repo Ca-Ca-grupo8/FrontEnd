@@ -150,7 +150,7 @@ export function MovimentacaoEstoque() {
                 titulo="Movimentações de Estoque"
                 subtitulo="Ver movimentações de revendedoras"
                 dashed={true}
-                onClick={() => {navigate('/historico/movimentacoes/revendedoras')}} />
+                onClick={() => {navigate('/joias/maletas')}} />
             <div className={style['page-container']}>
                 <div className={style['toolbar']}>
                     <div className={style['search-input-wrapper']}>

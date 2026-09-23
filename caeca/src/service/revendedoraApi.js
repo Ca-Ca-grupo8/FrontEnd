@@ -1,8 +1,10 @@
 import api from "./api"
+import { fetchAllPages } from "../utils/fetchAllPages"
 
 export const revendedoraApi = {
     listarRevendedoras: async () => {
-        const response = await api.get("/revendedoras")
-        return response.data
+        return fetchAllPages((page) =>
+            api.get("/revendedoras", { params: { page } }).then(r => r.data)
+        );
     }
 }

@@ -46,7 +46,7 @@ export function EntradaJoiaExistente() {
         async function carregarDadosIniciais() {
             try {
                 const [listaJoias, listaFornecedores, listaMotivos] = await Promise.all([
-                    joiaApi.listarJoias(),
+                    joiaApi.listarTodasJoias(),
                     fornecedorApi.listarFornecedores(),
                     motivoApi?.listarMotivos() || []
                 ]);

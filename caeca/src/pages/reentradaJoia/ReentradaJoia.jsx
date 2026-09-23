@@ -33,7 +33,7 @@ export function ReentradaJoia() {
             try {
                 const [listaMotivos, listaJoias] = await Promise.all([
                     motivoApi?.listarMotivos() || [],
-                    joiaApi.listarJoias()
+                    joiaApi.listarTodasJoias()
                 ]);
 
                 const motivosFiltrados = listaMotivos.filter(
