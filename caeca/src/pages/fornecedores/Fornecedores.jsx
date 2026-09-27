@@ -33,7 +33,7 @@ export function Fornecedores() {
                 sort: 'nome,asc',
             };
             if (busca.trim()) params.nome = busca.trim();
-            if (filtroAtividade) params.ativo = filtroAtividade === 'true';
+            if (filtroAtividade) params.is_ativo = filtroAtividade === 'true';
 
             const resultado = await fornecedorApi.listarFornecedores(params);
 
@@ -50,8 +50,31 @@ export function Fornecedores() {
     }, [paginaAtual, busca, filtroAtividade]);
 
     useEffect(() => {
-        carregarFornecedores();
-    }, [carregarFornecedores]);
+        const buscarFornecedores = async () => {
+            try {
+                const params = {
+                    page: paginaAtual - 1,
+                    sort: 'nome,asc',
+                };
+                if (busca.trim()) params.nome = busca.trim();
+                if (filtroAtividade) params.is_ativo = filtroAtividade === 'true';
+
+                const resultado = await fornecedorApi.listarFornecedores(params);
+
+                if (Array.isArray(resultado)) {
+                    setFornecedores(resultado);
+                    setTotalPaginas(1);
+                } else {
+                    setFornecedores(resultado.content ?? []);
+                    setTotalPaginas(resultado.totalPages ?? 1);
+                }
+            } catch {
+                setToast({ message: 'Não foi possível carregar os fornecedores.' });
+            }
+        };
+
+        buscarFornecedores();
+    }, [paginaAtual, busca, filtroAtividade]);
 
     const buscar = () => {
         setPaginaAtual(1);
@@ -61,16 +84,18 @@ export function Fornecedores() {
         setPaginaAtual(pagina);
     };
 
-    const excluirFornecedor = async (id, nome) => {
-        const confirmar = window.confirm(`Deseja excluir o fornecedor "${nome}"?`);
+    const inativarFornecedor = async (fornecedor) => {
+        const confirmar = window.confirm(
+            `Deseja inativar o fornecedor "${fornecedor.nome}"? Ele deixará de aparecer nas listas de seleção.`
+        );
         if (!confirmar) return;
 
         try {
-            await fornecedorApi.excluirFornecedor(id);
-            setToast({ message: `Fornecedor "${nome}" excluído com sucesso.` });
+            await fornecedorApi.alterarStatus(fornecedor.id, false);
+            setToast({ message: `Fornecedor "${fornecedor.nome}" inativado.` });
             carregarFornecedores();
         } catch {
-            setToast({ message: 'Não foi possível excluir o fornecedor.' });
+            setToast({ message: 'Não foi possível inativar o fornecedor.' });
         }
     };
 
@@ -117,9 +142,9 @@ export function Fornecedores() {
                             </button>
                             <button
                                 className={`${style.actionIcon} ${style.deleteIcon}`}
-                                title="Excluir fornecedor"
-                                aria-label={`Excluir ${row.nome}`}
-                                onClick={() => excluirFornecedor(row.id, row.nome)}
+                                title="Inativar fornecedor"
+                                aria-label={`Inativar ${row.nome}`}
+                                onClick={() => inativarFornecedor(row)}
                             >
                                 <Trash2 size={16} />
                             </button>

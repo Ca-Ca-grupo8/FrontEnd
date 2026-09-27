@@ -26,7 +26,7 @@ export const fornecedorApi = {
         return toResponse(response.data)
     },
 
-    excluirFornecedor: async (id) => {
-        await api.delete(`/fornecedores/${id}`)
+    alterarStatus: async (id, isAtivo) => {
+        await api.patch(`/fornecedores/${id}/status`, { isAtivo })
     },
 }
