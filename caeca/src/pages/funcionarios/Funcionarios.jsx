@@ -12,7 +12,6 @@ import style from './Funcionarios.module.css';
 const colunas = [
     'NOME',
     'CARGO',
-    'TELEFONE',
     'ATIVIDADE',
     'STATUS'
 ];
@@ -122,8 +121,6 @@ export function Funcionarios() {
                     );
                 case 'CARGO':
                     return row.cargo || '-';
-                case 'TELEFONE':
-                    return row.telefone || '-';
                 case 'ATIVIDADE':
                     return (
                         <span className={`${style.badge} ${row.isAtivo ? style.badgeActive : style.badgeInactive}`}>
