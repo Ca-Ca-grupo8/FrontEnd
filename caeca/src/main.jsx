@@ -17,6 +17,7 @@ import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEst
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
 import { Fornecedores } from './pages/fornecedores/Fornecedores.jsx';
+import { Funcionarios } from './pages/funcionarios/Funcionarios.jsx';
 
 const router = createBrowserRouter([
   {
@@ -73,6 +74,10 @@ const router = createBrowserRouter([
       {
         path: '/contribuintes/fornecedores',
         element: <Fornecedores />,
+      },
+      {
+        path: '/contribuintes/funcionarios',
+        element: <Funcionarios />,
       }
     ],
   },
