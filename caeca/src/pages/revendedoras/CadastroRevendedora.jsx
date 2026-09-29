@@ -149,7 +149,7 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Nome da revendedora"
                         type="text"
-                        placeholder="Value"
+                        placeholder="Ex.: Ana Beatriz"
                         required
                         value={formValues.nome}
                         onChange={(event) => handleChange("nome", event.target.value)}
@@ -157,7 +157,7 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Email"
                         type="email"
-                        placeholder="Value"
+                        placeholder="ana@email.com"
                         required
                         value={formValues.email}
                         onChange={(event) => handleChange("email", event.target.value)}
@@ -173,7 +173,7 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Telefone reserva"
                         type="tel"
-                        placeholder="Value"
+                        placeholder="Ex.: (11) 97798-0930"
                         value={formValues.telefoneReserva}
                         onChange={(event) => handleChange("telefoneReserva", event.target.value)}
                     />
@@ -199,7 +199,7 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Logradouro"
                         type="text"
-                        placeholder="Value"
+                        placeholder="Ex.: Rua das Flores"
                         required
                         value={formValues.logradouro}
                         onChange={(event) => handleChange("logradouro", event.target.value)}
@@ -207,7 +207,7 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Número"
                         type="number"
-                        placeholder="Value"
+                        placeholder="123"
                         required
                         value={formValues.numero}
                         onChange={(event) => handleChange("numero", event.target.value)}
@@ -215,14 +215,14 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Complemento"
                         type="text"
-                        placeholder="Value"
+                        placeholder="Ex.: Apartamento 12"
                         value={formValues.complemento}
                         onChange={(event) => handleChange("complemento", event.target.value)}
                     />
                     <InputField
                         label="Bairro"
                         type="text"
-                        placeholder="Value"
+                        placeholder="Ex.: Centro"
                         required
                         value={formValues.bairro}
                         onChange={(event) => handleChange("bairro", event.target.value)}
@@ -230,7 +230,7 @@ export function CadastroRevendedora() {
                     <InputField
                         label="Cidade"
                         type="text"
-                        placeholder="Value"
+                        placeholder="Ex.: São Paulo"
                         required
                         value={formValues.cidade}
                         onChange={(event) => handleChange("cidade", event.target.value)}
