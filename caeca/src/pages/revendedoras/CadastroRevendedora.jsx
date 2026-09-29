@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CardForm from "../../components/layout/CardForm";
 import { SucessoModal } from "../../components/modals/SucessoModal";
 import { Button } from "../../components/ui/Button";
@@ -8,6 +8,7 @@ import { SelectField } from "../../components/ui/SelectField";
 import { Toast } from "../../components/ui/Toast";
 import { enderecoApi } from "../../service/enderecoApi";
 import { revendedoraApi } from "../../service/revendedoraApi";
+import { buscarEnderecoPorCep } from "../../service/viacepApi";
 import styles from "./CadastroRevendedora.module.css";
 
 const initialValues = {
@@ -33,11 +34,53 @@ export function CadastroRevendedora() {
     const [formValues, setFormValues] = useState(initialValues);
     const [isSuccess, setIsSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLookingUpCep, setIsLookingUpCep] = useState(false);
+    const [cepLookupMessage, setCepLookupMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [savedAddress, setSavedAddress] = useState(null);
     const cepDigits = formValues.cep.replace(/\D/g, "");
 
+    useEffect(() => {
+        if (cepDigits.length !== 8) {
+            return;
+        }
+
+        const controller = new AbortController();
+
+        buscarEnderecoPorCep(cepDigits, { signal: controller.signal })
+            .then((address) => {
+                if (address.erro) {
+                    setCepLookupMessage("CEP não encontrado.");
+                    return;
+                }
+
+                setFormValues((currentValues) => ({
+                    ...currentValues,
+                    logradouro: address.logradouro || "",
+                    bairro: address.bairro || "",
+                    cidade: address.localidade || "",
+                    uf: address.uf || ""
+                }));
+            })
+            .catch((error) => {
+                if (error.name !== "AbortError") {
+                    setCepLookupMessage("Não foi possível consultar o CEP.");
+                }
+            })
+            .finally(() => {
+                if (!controller.signal.aborted) {
+                    setIsLookingUpCep(false);
+                }
+            });
+
+        return () => controller.abort();
+    }, [cepDigits]);
+
     const handleChange = (field, value) => {
+        if (field === "cep") {
+            setIsLookingUpCep(value.replace(/\D/g, "").length === 8);
+            setCepLookupMessage("");
+        }
         setFormValues((currentValues) => ({ ...currentValues, [field]: value }));
     };
 
@@ -134,14 +177,25 @@ export function CadastroRevendedora() {
                         value={formValues.telefoneReserva}
                         onChange={(event) => handleChange("telefoneReserva", event.target.value)}
                     />
-                    <InputField
-                        label="CEP"
-                        type="text"
-                        placeholder="00000-000"
-                        required
-                        value={formValues.cep}
-                        onChange={(event) => handleChange("cep", event.target.value)}
-                    />
+                    <div className={styles.cepField}>
+                        <InputField
+                            label="CEP"
+                            type="text"
+                            placeholder="00000-000"
+                            required
+                            value={formValues.cep}
+                            onChange={(event) => handleChange("cep", event.target.value)}
+                        />
+                        {(isLookingUpCep || cepLookupMessage) && (
+                            <span
+                                className={`${styles.cepStatus} ${cepLookupMessage ? styles.cepError : ""}`}
+                                role="status"
+                                aria-live="polite"
+                            >
+                                {isLookingUpCep ? "Consultando CEP..." : cepLookupMessage}
+                            </span>
+                        )}
+                    </div>
                     <InputField
                         label="Logradouro"
                         type="text"

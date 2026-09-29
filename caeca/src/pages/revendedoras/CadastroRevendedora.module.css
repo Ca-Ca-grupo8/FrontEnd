@@ -41,6 +41,21 @@
     width: 44%;
 }
 
+.cepField {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cepStatus {
+    color: #555;
+    font-size: 12px;
+}
+
+.cepError {
+    color: #b42318;
+}
+
 @media (max-width: 768px) {
     .formulario :global(.card-form-container) {
         padding: 14px 16px 32px;
