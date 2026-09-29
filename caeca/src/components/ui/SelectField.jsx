@@ -14,7 +14,7 @@ export function SelectField({
             <label className="select-field-label">
                 {label} {required && <span className="required-indicator">*</span>}
             </label>
-            <select value={value} className='select-field-select' onChange={onChange}>
+            <select value={value} className='select-field-select' onChange={onChange} required={required}>
                 <option value="" disabled hidden>Selecione...</option>
                 {data && data.map(d => (<option value={d.id} key={d.id}>{d.nome}</option>))}
             </select>
