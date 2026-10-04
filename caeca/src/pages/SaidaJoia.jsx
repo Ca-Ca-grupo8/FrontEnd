@@ -33,7 +33,8 @@ export function SaidaJoia() {
         motivoSaidaId: "",
         joiaId: "",
         quantidade: "",
-        revendedoraId: ""
+        revendedoraId: "",
+        dataLimite: ""
     });
 
     const handleChange = (field, value) => {
@@ -49,7 +50,7 @@ export function SaidaJoia() {
                 // Ajuste as chamadas de API conforme seus endpoints reais
                 const [listaMotivos, listaJoias, listaRevendedoras] = await Promise.all([
                     motivoApi?.listarMotivos() || [],
-                    joiaApi?.listarJoias() || [],
+                    joiaApi?.listarTodasJoias() || [],
                     revendedoraApi?.listarRevendedoras() || []
                 ]);
 
@@ -68,6 +69,11 @@ export function SaidaJoia() {
         carregarDadosIniciais();
     }, []);
 
+    const motivoSelecionado = motivos.find(m => String(m.id) === formValues.motivoSaidaId);
+
+    const exibirCamposRevendedora = !!motivoSelecionado &&
+        /maleta|revendedora/i.test(motivoSelecionado.nome);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -76,6 +82,7 @@ export function SaidaJoia() {
             idJoia: Number(formValues.joiaId) || 0,
             quantidade: Number(formValues.quantidade) || 0,
             idRevendedora: formValues.revendedoraId ? Number(formValues.revendedoraId) : null,
+            dataLimite: formValues.dataLimite ? formValues.dataLimite + "T00:00:00" : null,
             dadosNovaJoia: null,
             precoBanho: null,
             precoCompraRevendedor: null,
@@ -90,7 +97,8 @@ export function SaidaJoia() {
                 motivoSaidaId: "",
                 joiaId: "",
                 quantidade: "",
-                revendedoraId: ""
+                revendedoraId: "",
+                dataLimite: ""
             });
         } catch (error) {
             console.error("Erro ao realizar a saída da joia:", error);
@@ -131,22 +139,34 @@ export function SaidaJoia() {
                             required={true}
                             onChange={(e) => handleChange("motivoSaidaId", e.target.value)}
                         />
-                        <div className="input-with-action">
-                            <SelectField
-                                data={revendedoras}
-                                label={"Revendedora"}
-                                value={formValues.revendedoraId}
-                                required={false}
-                                onChange={(e) => handleChange("revendedoraId", e.target.value)}
-                            />
+                        {exibirCamposRevendedora && (
+                            <>
+                                <div className="input-with-action">
+                                    <SelectField
+                                        data={revendedoras}
+                                        label={"Revendedora"}
+                                        value={formValues.revendedoraId}
+                                        required={false}
+                                        onChange={(e) => handleChange("revendedoraId", e.target.value)}
+                                    />
 
-                            {/* <div className="add-fornecedor-container">
-                                <CirclePlus
-                                    className="add-fornecedor-content"
-                                    onClick={() => setIsRevendedoraOpen(true)}
+                                    {/* <div className="add-fornecedor-container">
+                                        <CirclePlus
+                                            className="add-fornecedor-content"
+                                            onClick={() => setIsRevendedoraOpen(true)}
+                                        />
+                                    </div> */}
+                                </div>
+
+                                <InputField
+                                    label={"Data limite"}
+                                    type={"date"}
+                                    required={false}
+                                    value={formValues.dataLimite}
+                                    onChange={(e) => handleChange("dataLimite", e.target.value)}
                                 />
-                            </div> */}
-                        </div>
+                            </>
+                        )}
 
                         <SelectField
                             data={joias}

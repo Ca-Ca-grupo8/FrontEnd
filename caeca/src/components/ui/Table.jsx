@@ -1,7 +1,6 @@
-import React from 'react';
 import Style from '../../styles/Table.module.css';
 
-export function Table({ colunas, funcaoRender, data }) {
+export function Table({ colunas, funcaoRender, data, style, onRowClick }) {
   return (
     <div className={Style['table-container']}>
       <table className={Style['custom-table']}>
@@ -16,9 +15,9 @@ export function Table({ colunas, funcaoRender, data }) {
         </thead>
         <tbody>
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
+            <tr key={rowIndex} onClick={onRowClick ? () => onRowClick(row) : undefined} style={onRowClick ? { cursor: 'pointer' } : undefined}>
               {colunas.map((col, colIndex) => (
-                <td key={colIndex}>
+                <td key={colIndex} style={style} >
                   {funcaoRender.render ? funcaoRender.render(row, col) : row[col.accessor]}
                 </td>
               ))}

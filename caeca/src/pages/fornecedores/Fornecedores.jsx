@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Toast } from '../../components/ui/Toast';
@@ -17,64 +17,57 @@ const colunas = [
     'STATUS'
 ];
 
+const POR_PAGINA = 10;
+
 export function Fornecedores() {
     const [fornecedores, setFornecedores] = useState([]);
     const [busca, setBusca] = useState('');
     const [filtroAtividade, setFiltroAtividade] = useState('');
     const [paginaAtual, setPaginaAtual] = useState(1);
-    const [totalPaginas, setTotalPaginas] = useState(1);
     const [toast, setToast] = useState(null);
     const [modalAberto, setModalAberto] = useState(false);
 
     const carregarFornecedores = useCallback(async () => {
         try {
-            const params = {
-                page: paginaAtual - 1,
-                sort: 'nome,asc',
-            };
-            if (busca.trim()) params.nome = busca.trim();
-            if (filtroAtividade) params.is_ativo = filtroAtividade === 'true';
-
-            const resultado = await fornecedorApi.listarFornecedores(params);
-
-            if (Array.isArray(resultado)) {
-                setFornecedores(resultado);
-                setTotalPaginas(1);
-            } else {
-                setFornecedores(resultado.content ?? []);
-                setTotalPaginas(resultado.totalPages ?? 1);
-            }
+            setFornecedores(await fornecedorApi.listarFornecedores());
         } catch {
             setToast({ message: 'Não foi possível carregar os fornecedores.' });
         }
-    }, [paginaAtual, busca, filtroAtividade]);
+    }, []);
 
     useEffect(() => {
         const buscarFornecedores = async () => {
             try {
-                const params = {
-                    page: paginaAtual - 1,
-                    sort: 'nome,asc',
-                };
-                if (busca.trim()) params.nome = busca.trim();
-                if (filtroAtividade) params.is_ativo = filtroAtividade === 'true';
-
-                const resultado = await fornecedorApi.listarFornecedores(params);
-
-                if (Array.isArray(resultado)) {
-                    setFornecedores(resultado);
-                    setTotalPaginas(1);
-                } else {
-                    setFornecedores(resultado.content ?? []);
-                    setTotalPaginas(resultado.totalPages ?? 1);
-                }
+                setFornecedores(await fornecedorApi.listarFornecedores());
             } catch {
                 setToast({ message: 'Não foi possível carregar os fornecedores.' });
             }
         };
 
         buscarFornecedores();
-    }, [paginaAtual, busca, filtroAtividade]);
+    }, []);
+
+    // listarFornecedores já traz a lista inteira (fetchAllPages), então
+    // busca, filtro e paginação são resolvidos aqui no front.
+    const filtrados = useMemo(() => {
+        const termo = busca.trim().toLowerCase();
+
+        return fornecedores.filter((fornecedor) => {
+            const casaComBusca =
+                !termo || fornecedor.nome?.toLowerCase().includes(termo);
+            const casaComAtividade =
+                !filtroAtividade || String(fornecedor.isAtivo) === filtroAtividade;
+
+            return casaComBusca && casaComAtividade;
+        });
+    }, [fornecedores, busca, filtroAtividade]);
+
+    const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+
+    const fornecedoresDaPagina = useMemo(() => {
+        const inicio = (paginaAtual - 1) * POR_PAGINA;
+        return filtrados.slice(inicio, inicio + POR_PAGINA);
+    }, [filtrados, paginaAtual]);
 
     const buscar = () => {
         setPaginaAtual(1);
@@ -203,8 +196,8 @@ export function Fornecedores() {
                     </div>
                 </div>
 
-                {fornecedores.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={fornecedores} />
+                {fornecedoresDaPagina.length > 0 ? (
+                    <Table colunas={colunas} funcaoRender={funcaoRender} data={fornecedoresDaPagina} />
                 ) : (
                     <div className={style.emptyState}>
                         Nenhum fornecedor encontrado
