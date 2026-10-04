@@ -94,8 +94,16 @@
   font-size: 15px;
 }
 
-/* Badges de atividade */
-.badge {
+.nome {
+  font-weight: 700;
+  color: #333;
+  min-width: 200px;
+  display: inline-block;
+}
+
+/* Perfil: usa tons da identidade (vinho e neutro) em vez do verde/vermelho,
+   que aqui já significam outra coisa. */
+.perfil {
   display: inline-flex;
   align-items: center;
   padding: 4px 12px;
@@ -105,64 +113,14 @@
   white-space: nowrap;
 }
 
-.badgeActive {
-  background: #D1FADF;
-  color: #12B76A;
+.perfilAdmin {
+  background: #f6e6ee;
+  color: #8c1d40;
 }
 
-.badgeInactive {
-  background: #FEE4E2;
-  color: #D92D20;
-}
-
-/* Ações da tabela */
-.actionsCell {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.actionIcon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.15s;
-}
-
-.actionIcon:hover {
-  background: #f5f5f5;
-}
-
-.editIcon {
-  color: #96205C;
-}
-
-.deleteIcon {
-  color: #D92D20;
-}
-
-/* Linha da tabela */
-.nameCell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 200px;
-}
-
-.nameCell .name {
-  font-weight: 700;
-  text-decoration: underline;
-  color: #333;
-}
-
-.nameCell .date {
-  font-size: 12px;
-  color: #999;
+.perfilUser {
+  background: #e8e8ea;
+  color: #5b5b5b;
 }
 
 @media (max-width: 768px) {

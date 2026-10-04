@@ -1,152 +1,95 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Toast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
-import { Pagination } from '../../components/ui/Pagination';
-import { funcionarioApi } from '../../service/funcionarioApi';
+import { usuarioApi } from '../../service/usuarioApi';
 import { NovoFuncionarioModal } from '../../components/modals/NovoFuncionario';
-import { Search, Pencil, Trash2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import style from './Funcionarios.module.css';
 
 const colunas = [
     'NOME',
-    'CARGO',
-    'ATIVIDADE',
-    'STATUS'
+    'EMAIL',
+    'PERFIL'
 ];
 
+const PERFIS = {
+    ROLE_ADMIN: 'ROLE_ADMIN',
+    ROLE_USER: 'ROLE_USER'
+};
+
 export function Funcionarios() {
-    const [funcionarios, setFuncionarios] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState('');
-    const [filtroAtividade, setFiltroAtividade] = useState('');
-    const [paginaAtual, setPaginaAtual] = useState(1);
-    const [totalPaginas, setTotalPaginas] = useState(1);
+    const [filtroPerfil, setFiltroPerfil] = useState('');
     const [toast, setToast] = useState(null);
     const [modalAberto, setModalAberto] = useState(false);
 
-    const carregarFuncionarios = useCallback(async () => {
+    const carregarUsuarios = useCallback(async () => {
+        setCarregando(true);
         try {
-            const params = {
-                page: paginaAtual - 1,
-                sort: 'nome,asc',
-            };
-            if (busca.trim()) params.nome = busca.trim();
-            if (filtroAtividade) params.is_ativo = filtroAtividade === 'true';
-
-            const resultado = await funcionarioApi.listarFuncionarios(params);
-
-            if (Array.isArray(resultado)) {
-                setFuncionarios(resultado);
-                setTotalPaginas(1);
-            } else {
-                setFuncionarios(resultado.content ?? []);
-                setTotalPaginas(resultado.totalPages ?? 1);
-            }
+            setUsuarios(await usuarioApi.listarUsuarios());
         } catch {
             setToast({ message: 'Não foi possível carregar os funcionários.' });
+        } finally {
+            setCarregando(false);
         }
-    }, [paginaAtual, busca, filtroAtividade]);
+    }, []);
 
     useEffect(() => {
-        const buscarFuncionarios = async () => {
+        const buscarUsuarios = async () => {
+            setCarregando(true);
             try {
-                const params = {
-                    page: paginaAtual - 1,
-                    sort: 'nome,asc',
-                };
-                if (busca.trim()) params.nome = busca.trim();
-                if (filtroAtividade) params.is_ativo = filtroAtividade === 'true';
-
-                const resultado = await funcionarioApi.listarFuncionarios(params);
-
-                if (Array.isArray(resultado)) {
-                    setFuncionarios(resultado);
-                    setTotalPaginas(1);
-                } else {
-                    setFuncionarios(resultado.content ?? []);
-                    setTotalPaginas(resultado.totalPages ?? 1);
-                }
+                setUsuarios(await usuarioApi.listarUsuarios());
             } catch {
                 setToast({ message: 'Não foi possível carregar os funcionários.' });
+            } finally {
+                setCarregando(false);
             }
         };
 
-        buscarFuncionarios();
-    }, [paginaAtual, busca, filtroAtividade]);
+        buscarUsuarios();
+    }, []);
 
-    const buscar = () => {
-        setPaginaAtual(1);
-    };
+    // O endpoint devolve a lista inteira, sem filtro no servidor — então
+    // busca e perfil são resolvidos aqui, a partir da lista em memória.
+    const usuariosFiltrados = useMemo(() => {
+        const termo = busca.trim().toLowerCase();
 
-    const alterarPagina = (pagina) => {
-        setPaginaAtual(pagina);
-    };
+        return usuarios.filter((usuario) => {
+            const casaComBusca =
+                !termo ||
+                usuario.nome?.toLowerCase().includes(termo) ||
+                usuario.email?.toLowerCase().includes(termo);
 
-    const inativarFuncionario = async (funcionario) => {
-        const confirmar = window.confirm(
-            `Deseja inativar o funcionário "${funcionario.nome}"? Ele deixará de aparecer nas listas de seleção.`
-        );
-        if (!confirmar) return;
+            const casaComPerfil = !filtroPerfil || usuario.role === filtroPerfil;
 
-        try {
-            await funcionarioApi.alterarStatus(funcionario.id, false);
-            setToast({ message: `Funcionário "${funcionario.nome}" inativado.` });
-            carregarFuncionarios();
-        } catch {
-            setToast({ message: 'Não foi possível inativar o funcionário.' });
-        }
-    };
+            return casaComBusca && casaComPerfil;
+        });
+    }, [usuarios, busca, filtroPerfil]);
 
     const fecharToast = useCallback(() => setToast(null), []);
 
-    const formatarData = (data) => {
-        if (!data) return '-';
-        return new Intl.DateTimeFormat('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        }).format(new Date(data));
+    const rotuloDoPerfil = (role) => {
+        if (role === PERFIS.ROLE_ADMIN) {
+            return { texto: 'Administrador', classe: style.perfilAdmin };
+        }
+        return { texto: 'Funcionário', classe: style.perfilUser };
     };
 
     const funcaoRender = {
         render: (row, coluna) => {
             switch (coluna) {
                 case 'NOME':
-                    return (
-                        <div className={style.nameCell}>
-                            <span className={style.name}>{row.nome || '-'}</span>
-                            <span className={style.date}>{formatarData(row.dataCadastro)}</span>
-                        </div>
-                    );
-                case 'CARGO':
-                    return row.cargo || '-';
-                case 'ATIVIDADE':
-                    return (
-                        <span className={`${style.badge} ${row.isAtivo ? style.badgeActive : style.badgeInactive}`}>
-                            {row.isAtivo ? 'Ativo' : 'Inativo'}
-                        </span>
-                    );
-                case 'STATUS':
-                    return (
-                        <div className={style.actionsCell}>
-                            <button
-                                className={`${style.actionIcon} ${style.editIcon}`}
-                                title="Editar funcionário"
-                                aria-label={`Editar ${row.nome}`}
-                            >
-                                <Pencil size={16} />
-                            </button>
-                            <button
-                                className={`${style.actionIcon} ${style.deleteIcon}`}
-                                title="Inativar funcionário"
-                                aria-label={`Inativar ${row.nome}`}
-                                onClick={() => inativarFuncionario(row)}
-                            >
-                                <Trash2 size={16} />
-                            </button>
-                        </div>
-                    );
+                    return <span className={style.nome}>{row.nome || '-'}</span>;
+                case 'EMAIL':
+                    return row.email || '-';
+                case 'PERFIL': {
+                    const perfil = rotuloDoPerfil(row.role);
+                    return <span className={`${style.perfil} ${perfil.classe}`}>{perfil.texto}</span>;
+                }
                 default:
                     return null;
             }
@@ -156,7 +99,7 @@ export function Funcionarios() {
     return (
         <>
             {toast && <Toast message={toast.message} onClose={fecharToast} />}
-            <PageHeader titulo="Funcionários" subtitulo="Gerencie a equipe da sua loja">
+            <PageHeader titulo="Funcionários" subtitulo="Gerencie a equipe e os acessos do sistema">
                 <Button colorido={true} onClick={() => setModalAberto(true)}>
                     Adicionar Funcionário
                 </Button>
@@ -169,57 +112,46 @@ export function Funcionarios() {
                         </span>
                         <input
                             type="text"
-                            placeholder="Pesquisar funcionário"
+                            placeholder="Pesquisar por nome ou email"
                             className={style.searchInput}
                             value={busca}
                             onChange={(e) => setBusca(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') buscar();
-                            }}
                         />
                     </div>
 
                     <div className={style.filterButtons}>
                         <label className={style.typeFilter}>
-                            <span>Atividade</span>
+                            <span>Perfil</span>
                             <select
-                                value={filtroAtividade}
-                                onChange={(e) => {
-                                    setFiltroAtividade(e.target.value);
-                                    setPaginaAtual(1);
-                                }}
+                                value={filtroPerfil}
+                                onChange={(e) => setFiltroPerfil(e.target.value)}
                             >
                                 <option value="">Todos</option>
-                                <option value="true">Ativo</option>
-                                <option value="false">Inativo</option>
+                                <option value={PERFIS.ROLE_ADMIN}>Administrador</option>
+                                <option value={PERFIS.ROLE_USER}>Funcionário</option>
                             </select>
                         </label>
-                        <Button colorido={true} onClick={buscar}>
-                            Buscar
-                        </Button>
                     </div>
                 </div>
 
-                {funcionarios.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={funcionarios} />
+                {carregando ? (
+                    <div className={style.emptyState}>Carregando funcionários...</div>
+                ) : usuariosFiltrados.length > 0 ? (
+                    <Table colunas={colunas} funcaoRender={funcaoRender} data={usuariosFiltrados} />
                 ) : (
                     <div className={style.emptyState}>
-                        Nenhum funcionário encontrado
+                        {usuarios.length === 0
+                            ? 'Nenhum funcionário cadastrado'
+                            : 'Nenhum funcionário encontrado'}
                     </div>
                 )}
-
-                <Pagination
-                    paginaAtual={paginaAtual}
-                    totalPaginas={totalPaginas}
-                    aoMudarPagina={alterarPagina}
-                />
             </div>
 
             <NovoFuncionarioModal
                 isOpen={modalAberto}
                 onClose={() => {
                     setModalAberto(false);
-                    carregarFuncionarios();
+                    carregarUsuarios();
                 }}
             />
         </>

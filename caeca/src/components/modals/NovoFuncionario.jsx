@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { funcionarioApi } from "../../service/funcionarioApi";
+import { usuarioApi } from "../../service/usuarioApi";
 import { InputField } from "../ui/InputField";
+import { SelectField } from "../ui/SelectField";
 import { Button } from "../ui/Button";
 import { SucessoModal } from "./SucessoModal";
+
+const OPCOES_PERFIL = [
+    { id: "ROLE_USER", nome: "Funcionário" },
+    { id: "ROLE_ADMIN", nome: "Administrador" },
+];
 
 export function NovoFuncionarioModal({ isOpen, onClose }) {
     const [formValues, setFormValues] = useState({
         nome: "",
-        cargo: ""
+        email: "",
+        senha: "",
+        perfilUsuario: "",
     });
     const [sucesso, setSucesso] = useState(false);
     const [erro, setErro] = useState(null);
@@ -24,12 +32,14 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
         setErro(null);
 
         try {
-            await funcionarioApi.criarFuncionario({
+            await usuarioApi.criarUsuario({
                 nome: formValues.nome,
-                cargo: formValues.cargo
+                email: formValues.email,
+                senha: formValues.senha,
+                perfilUsuario: formValues.perfilUsuario,
             });
 
-            setFormValues({ nome: "", cargo: "" });
+            setFormValues({ nome: "", email: "", senha: "", perfilUsuario: "" });
             setSucesso(true);
         } catch (error) {
             const msg = error.response?.data?.message || "Erro ao cadastrar funcionário.";
@@ -59,7 +69,7 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
 
                     <div className="modal-header">
                         <h2>Novo Funcionário</h2>
-                        <p>Preencha os dados para cadastrar um novo membro da equipe.</p>
+                        <p>Cadastre alguém e escolha o que ele pode fazer no sistema.</p>
                     </div>
 
                     {erro && (
@@ -70,21 +80,38 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
 
                     <form onSubmit={handleSubmit} className="modal-form">
                         <InputField
-                            label={"Nome do funcionário"}
+                            label={"Nome"}
                             type={"text"}
-                            placeholder={"Ex: Jorge Alvarez"}
+                            placeholder={"Até 10 caracteres"}
                             required={true}
                             value={formValues.nome}
                             onChange={(e) => handleChange("nome", e.target.value)}
                         />
 
                         <InputField
-                            label={"Cargo"}
-                            type={"text"}
-                            placeholder={"Ex: Vendedor"}
+                            label={"Email"}
+                            type={"email"}
+                            placeholder={"nome@empresa.com"}
                             required={true}
-                            value={formValues.cargo}
-                            onChange={(e) => handleChange("cargo", e.target.value)}
+                            value={formValues.email}
+                            onChange={(e) => handleChange("email", e.target.value)}
+                        />
+
+                        <InputField
+                            label={"Senha"}
+                            type={"password"}
+                            placeholder={"De 6 a 20 caracteres"}
+                            required={true}
+                            value={formValues.senha}
+                            onChange={(e) => handleChange("senha", e.target.value)}
+                        />
+
+                        <SelectField
+                            label={"Perfil"}
+                            data={OPCOES_PERFIL}
+                            required={true}
+                            value={formValues.perfilUsuario}
+                            onChange={(e) => handleChange("perfilUsuario", e.target.value)}
                         />
 
                         <div className="modal-actions">
