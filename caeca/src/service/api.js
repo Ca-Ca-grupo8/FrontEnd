@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  // Em dev o proxy do Vite (/api -> localhost:8080) resolve.
+  // Em produção o nginx dentro do container faz o mesmo repasse.
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
