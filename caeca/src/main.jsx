@@ -18,6 +18,7 @@ import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
 import { Maletas } from './pages/Maletas/Maletas.jsx';
 import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
+import { Dashboard } from './pages/dashboard/Dashboard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: '/joias/maletas/:id',
         element: <MaletaDetalhes />,
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
       }
     ],
   },
