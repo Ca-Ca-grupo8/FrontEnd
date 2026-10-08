@@ -14,8 +14,13 @@ export const vendaApi = {
         return response.data;
     },
 
-    finalizar: async (id) => {
-        const response = await api.patch(`/vendas/${id}`, { finalizada: true });
+    atualizarStatus: async (id, idStatus) => {
+        const response = await api.patch(`/vendas/${id}`, { idStatus });
         return response.data;
+    },
+
+    listarStatus: async () => {
+        const response = await api.get("/status-maletas");
+        return response.data ?? [];
     }
 }

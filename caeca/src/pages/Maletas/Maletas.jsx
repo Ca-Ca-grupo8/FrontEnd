@@ -4,6 +4,7 @@ import style from './Maletas.module.css';
 import { Table } from '../../components/ui/Table';
 import { Button } from '../../components/ui/Button';
 import { vendaApi } from '../../service/maletasApi';
+import { StatusMaletaBadge } from './StatusMaletaBadge';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Toast } from '../../components/ui/Toast';
 import { Pagination } from '../../components/ui/Pagination';
@@ -85,11 +86,21 @@ export function Maletas() {
     const formatarMoeda = (valor) =>
         new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 
-    const formatarData = (dataStr) =>
-        new Intl.DateTimeFormat('pt-BR', {
+    const formatarData = (dataStr) => {
+        if (!dataStr) {
+            return '-';
+        }
+
+        const data = new Date(dataStr);
+        if (Number.isNaN(data.getTime())) {
+            return '-';
+        }
+
+        return new Intl.DateTimeFormat('pt-BR', {
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit'
-        }).format(new Date(dataStr));
+        }).format(data);
+    };
 
     const funcaoRender = {
         render: (row, col) => {
@@ -116,14 +127,8 @@ export function Maletas() {
                 case 'TOTAL':
                     return <span className={style['total-value']}>{formatarMoeda(row.totalVenda)}</span>;
 
-                case 'STATUS': {
-                    const finalizada = row.isFinalizada;
-                    return (
-                        <span className={`${style.badge} ${finalizada ? style['badge-finalizada'] : style['badge-aberta']}`}>
-                            {finalizada ? 'Finalizada' : 'Em aberto'}
-                        </span>
-                    );
-                }
+                case 'STATUS':
+                    return <StatusMaletaBadge status={row.status} />;
 
                 default:
                     return null;

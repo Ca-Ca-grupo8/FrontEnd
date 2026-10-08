@@ -3,27 +3,39 @@ import { useParams } from 'react-router-dom'
 import { ShoppingBag } from 'lucide-react'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Table } from '../../components/ui/Table'
-import { Button } from '../../components/ui/Button'
 import { Toast } from '../../components/ui/Toast'
 import { vendaApi } from '../../service/maletasApi'
+import { rotuloStatusMaleta, statusSelecionavel } from './maletaStatus'
+import { StatusMaletaBadge } from './StatusMaletaBadge'
 import '../entradaJoia/JoiaDetalhes.css'
 import style from './Maletas.module.css'
 
 const formatarMoeda = (valor) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
 
-const formatarData = (dataStr) =>
-    new Intl.DateTimeFormat('pt-BR', {
+const formatarData = (dataStr) => {
+    if (!dataStr) {
+        return '-'
+    }
+
+    const data = new Date(dataStr)
+    if (Number.isNaN(data.getTime())) {
+        return '-'
+    }
+
+    return new Intl.DateTimeFormat('pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
-    }).format(new Date(dataStr))
+    }).format(data)
+}
 
 export function MaletaDetalhes() {
     const { id } = useParams()
     const [maleta, setMaleta] = useState(null)
     const [carregando, setCarregando] = useState(true)
     const [erro, setErro] = useState(false)
-    const [finalizada, setFinalizada] = useState(false)
+    const [statusDisponiveis, setStatusDisponiveis] = useState([])
+    const [salvandoStatus, setSalvandoStatus] = useState(false)
     const [toast, setToast] = useState(null)
 
     useEffect(() => {
@@ -31,7 +43,7 @@ export function MaletaDetalhes() {
         async function carregar() {
             try {
                 const dados = await vendaApi.buscarPorId(id)
-                if (!ignore) { setMaleta(dados); setFinalizada(dados.isFinalizada) }
+                if (!ignore) setMaleta(dados)
             } catch {
                 if (!ignore) setErro(true)
             } finally {
@@ -41,6 +53,20 @@ export function MaletaDetalhes() {
         carregar()
         return () => { ignore = true }
     }, [id])
+
+    useEffect(() => {
+        let ignore = false
+        async function carregarStatus() {
+            try {
+                const lista = await vendaApi.listarStatus()
+                if (!ignore) setStatusDisponiveis(lista)
+            } catch {
+                if (!ignore) setToast({ message: 'Não foi possível carregar os status da maleta.' })
+            }
+        }
+        carregarStatus()
+        return () => { ignore = true }
+    }, [])
 
     if (carregando) {
         return (
@@ -62,12 +88,19 @@ export function MaletaDetalhes() {
 
     const totalItens = maleta.movimentacoes.reduce((acc, m) => acc + m.quantidade, 0)
 
-    const finalizarMaleta = async () => {
+    const alterarStatus = async (event) => {
+        const idStatus = event.target.value
+        if (idStatus === '') return
+
+        setSalvandoStatus(true)
         try {
-            await vendaApi.finalizar(id)
-            setFinalizada(true)
+            const atualizada = await vendaApi.atualizarStatus(id, Number(idStatus))
+            setMaleta(atualizada?.idMovimentacaoRevendedora ? atualizada : await vendaApi.buscarPorId(id))
+            setToast({ message: 'Status da maleta atualizado.' })
         } catch {
-            setToast({ message: 'Não foi possível finalizar a maleta.' })
+            setToast({ message: 'Não foi possível atualizar o status da maleta.' })
+        } finally {
+            setSalvandoStatus(false)
         }
     }
 
@@ -103,9 +136,19 @@ export function MaletaDetalhes() {
         <div className="jewelry-page">
             {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
             <PageHeader titulo="Detalhes da Maleta">
-                {!finalizada && (
-                    <Button colorido={true} onClick={finalizarMaleta}>Finalizar maleta</Button>
-                )}
+                <label className={style['status-selector']}>
+                    <span>Status</span>
+                    <select
+                        value={maleta.status?.id ?? ''}
+                        onChange={alterarStatus}
+                        disabled={salvandoStatus || statusDisponiveis.length === 0}
+                    >
+                        <option value="" disabled>Selecione...</option>
+                        {statusDisponiveis.filter(statusSelecionavel).map((status) => (
+                            <option key={status.id} value={status.id}>{rotuloStatusMaleta(status)}</option>
+                        ))}
+                    </select>
+                </label>
             </PageHeader>
 
             <div className="jewelry-content">
@@ -141,9 +184,7 @@ export function MaletaDetalhes() {
                             <div className="stat-divider" aria-hidden="true" />
                             <div className="stat">
                                 <span className="stat-label">Status</span>
-                                <span className={`${style.badge} ${finalizada ? style['badge-finalizada'] : style['badge-aberta']}`}>
-                                    {finalizada ? 'Finalizada' : 'Em aberto'}
-                                </span>
+                                <StatusMaletaBadge status={maleta.status} />
                             </div>
                         </div>
                     </div>
