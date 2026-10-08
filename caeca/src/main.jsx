@@ -20,6 +20,7 @@ import { Fornecedores } from './pages/fornecedores/Fornecedores.jsx';
 import { Funcionarios } from './pages/funcionarios/Funcionarios.jsx';
 import { Maletas } from './pages/Maletas/Maletas.jsx';
 import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
+import { CadastroRevendedora } from './pages/revendedoras/CadastroRevendedora.jsx';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: '/contribuintes',
         element: <CadastroContribuintes />,
+      },
+      {
+        path: '/contribuintes/revendedoras',
+        element: <CadastroRevendedora />,
       },
       {
         path: '/movimentacoes',

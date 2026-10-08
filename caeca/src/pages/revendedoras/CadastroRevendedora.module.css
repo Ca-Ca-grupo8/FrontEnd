@@ -1,0 +1,73 @@
+.page {
+    width: 100%;
+}
+
+.formulario :global(.card-form-container) {
+    align-items: flex-start;
+    padding: 18px 32px 52px;
+}
+
+.formulario :global(.card-form-box) {
+    max-width: 900px;
+    padding: 30px 32px;
+    border-radius: 8px;
+}
+
+.formulario :global(.card-form-grid) {
+    column-gap: 16px;
+    row-gap: 18px;
+}
+
+.formulario :global(.input-field-label),
+.formulario :global(.select-field-label) {
+    font-size: 14px;
+}
+
+.formulario :global(.input-field-container),
+.formulario :global(.select-field-container) {
+    gap: 5px;
+}
+
+.formulario :global(.input-field-input),
+.formulario :global(.select-field-select) {
+    height: 36px;
+    border-radius: 6px;
+    padding-left: 10px;
+}
+
+.ufField {
+    grid-column: span 2;
+    justify-self: center;
+    width: 44%;
+}
+
+.cepField {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cepStatus {
+    color: #555;
+    font-size: 12px;
+}
+
+.cepError {
+    color: #b42318;
+}
+
+@media (max-width: 768px) {
+    .formulario :global(.card-form-container) {
+        padding: 14px 16px 32px;
+    }
+
+    .formulario :global(.card-form-box) {
+        padding: 22px 18px;
+    }
+
+    .ufField {
+        grid-column: span 1;
+        justify-self: stretch;
+        width: 100%;
+    }
+}
