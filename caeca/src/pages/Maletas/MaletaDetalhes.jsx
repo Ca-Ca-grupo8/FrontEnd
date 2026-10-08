@@ -5,7 +5,7 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { Table } from '../../components/ui/Table'
 import { Toast } from '../../components/ui/Toast'
 import { vendaApi } from '../../service/maletasApi'
-import { rotuloStatusMaleta } from './maletaStatus'
+import { rotuloStatusMaleta, statusSelecionavel } from './maletaStatus'
 import { StatusMaletaBadge } from './StatusMaletaBadge'
 import '../entradaJoia/JoiaDetalhes.css'
 import style from './Maletas.module.css'
@@ -144,7 +144,7 @@ export function MaletaDetalhes() {
                         disabled={salvandoStatus || statusDisponiveis.length === 0}
                     >
                         <option value="" disabled>Selecione...</option>
-                        {statusDisponiveis.map((status) => (
+                        {statusDisponiveis.filter(statusSelecionavel).map((status) => (
                             <option key={status.id} value={status.id}>{rotuloStatusMaleta(status)}</option>
                         ))}
                     </select>

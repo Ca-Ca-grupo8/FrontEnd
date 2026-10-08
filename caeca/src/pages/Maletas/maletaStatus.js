@@ -8,6 +8,8 @@ const STATUS_MALETA = Object.freeze({
 
 const CLASSE_PADRAO = 'badge-neutro';
 
+const NOME_NAO_SELECIONAVEL = 'ERRO';
+
 const humanizar = (nome) =>
     nome
         .toLowerCase()
@@ -32,3 +34,6 @@ export const rotuloStatusMaleta = (status) => {
 };
 
 export const classeStatusMaleta = (status) => statusConhecido(status)?.classe ?? CLASSE_PADRAO;
+
+export const statusSelecionavel = (status) =>
+    String(status?.nome ?? '').toUpperCase() !== NOME_NAO_SELECIONAVEL;
