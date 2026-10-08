@@ -16,6 +16,8 @@ import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroCon
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
+import { Fornecedores } from './pages/fornecedores/Fornecedores.jsx';
+import { Funcionarios } from './pages/funcionarios/Funcionarios.jsx';
 import { Maletas } from './pages/Maletas/Maletas.jsx';
 import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
 
@@ -72,12 +74,20 @@ const router = createBrowserRouter([
         element: <JoiaDetalhes />,
       },
       {
-        path: '/joias/maletas',
+path: '/joias/maletas',
         element: <Maletas />,
       },
       {
         path: '/joias/maletas/:id',
         element: <MaletaDetalhes />,
+      },
+      {
+        path: '/contribuintes/fornecedores',
+        element: <Fornecedores />,
+      },
+      {
+        path: '/contribuintes/funcionarios',
+        element: <Funcionarios />,
       }
     ],
   },
