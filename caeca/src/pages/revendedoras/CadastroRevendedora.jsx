@@ -14,6 +14,7 @@ import styles from "./CadastroRevendedora.module.css";
 const initialValues = {
     nome: "",
     email: "",
+    dataNascimento: "",
     telefone: "",
     telefoneReserva: "",
     cep: "",
@@ -124,6 +125,7 @@ export function CadastroRevendedora() {
             await revendedoraApi.criarRevendedora({
                 nome: formValues.nome,
                 email: formValues.email,
+                dataNascimento: formValues.dataNascimento || null,
                 telefone: telefoneDigits,
                 telefoneReserva: formValues.telefoneReserva || null,
                 enderecoId
@@ -161,6 +163,13 @@ export function CadastroRevendedora() {
                         required
                         value={formValues.email}
                         onChange={(event) => handleChange("email", event.target.value)}
+                    />
+                    <InputField
+                        label="Data de nascimento"
+                        type="date"
+                        required
+                        value={formValues.dataNascimento}
+                        onChange={(event) => handleChange("dataNascimento", event.target.value)}
                     />
                     <InputField
                         label="Telefone"

@@ -90,7 +90,7 @@ export function EntradaJoia() {
             dadosNovaJoia: {
                 nome: formValues.nomePeca,
                 quantidade: Number(formValues.quantidade) || 0,
-                quantidadeMinima: Number(formValues.quantidade) || 0,
+                quantidadeMinima: Number(formValues.quantidadeMinima) || 0,
                 categoria: Number(formValues.categoriaId) || 0,
                 banho: Number(formValues.banhoId) || 0,
                 material: Number(formValues.materialId) || 0
@@ -103,6 +103,7 @@ export function EntradaJoia() {
     }
 
     async function cadastrarJoia(payload, image) {
+        console.log(payload)
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, image);
             setIsSuccess(true)
@@ -113,6 +114,8 @@ export function EntradaJoia() {
                 categoriaId: "",
                 banhoId: "",
                 quantidade: "",
+                quantidadeMinima: "",
+                quantidadeMinima: "",
                 precoCusto: "",
                 precoBanho: "",
                 multiplicador: "",
@@ -196,14 +199,25 @@ export function EntradaJoia() {
                     onChange={(e) => handleChange("banhoId", e.target.value)}>
                 </SelectField>
 
-                <InputField
-                    label={"Quantidade"}
-                    type={"number"}
-                    placeholder={"Ex: 15"}
-                    required={true}
-                    value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}>
-                </InputField>
+                <div className="quantidade-row">
+                    <InputField
+                        label={"Quantidade"}
+                        type={"number"}
+                        placeholder={"Ex: 15"}
+                        required={true}
+                        value={formValues.quantidade}
+                        onChange={(e) => handleChange("quantidade", e.target.value)}>
+                    </InputField>
+
+                    <InputField
+                        label={"Quantidade mínima"}
+                        type={"number"}
+                        placeholder={"Ex: 3"}
+                        required={true}
+                        value={formValues.quantidadeMinima}
+                        onChange={(e) => handleChange("quantidadeMinima", e.target.value)}>
+                    </InputField>
+                </div>
 
                 <InputField
                     label={"Preço original (custo)"}
