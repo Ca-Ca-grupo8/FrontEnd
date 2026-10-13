@@ -21,6 +21,7 @@ import { Funcionarios } from './pages/funcionarios/Funcionarios.jsx';
 import { Maletas } from './pages/Maletas/Maletas.jsx';
 import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
 import { CadastroRevendedora } from './pages/revendedoras/CadastroRevendedora.jsx';
+import { Revendedoras } from './pages/revendedoras/Revendedoras.jsx';
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       },
       {
         path: '/contribuintes/revendedoras',
+        element: <Revendedoras />,
+      },
+      {
+        path: '/contribuintes/revendedoras/cadastro',
         element: <CadastroRevendedora />,
       },
       {
