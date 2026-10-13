@@ -109,11 +109,25 @@
 }
 
 .name {
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
     overflow: hidden;
     color: #222;
+    font: inherit;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.name:disabled {
+    color: #777;
+    text-decoration: none;
+    cursor: default;
 }
 
 .date,
