@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Toast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
 import { Pagination } from '../../components/ui/Pagination';
 import { fornecedorApi } from '../../service/fornecedorApi';
 import { NovoFornecedorModal } from '../../components/modals/NovoFornecedor';
+import { emitirToast } from '../../utils/toastBus';
 import { Search, Pencil, Trash2 } from 'lucide-react';
 import style from './Fornecedores.module.css';
 
@@ -24,14 +24,13 @@ export function Fornecedores() {
     const [busca, setBusca] = useState('');
     const [filtroAtividade, setFiltroAtividade] = useState('');
     const [paginaAtual, setPaginaAtual] = useState(1);
-    const [toast, setToast] = useState(null);
     const [modalAberto, setModalAberto] = useState(false);
 
     const carregarFornecedores = useCallback(async () => {
         try {
             setFornecedores(await fornecedorApi.listarFornecedores());
         } catch {
-            setToast({ message: 'Não foi possível carregar os fornecedores.' });
+            // erro exibido pelo interceptor global
         }
     }, []);
 
@@ -40,7 +39,7 @@ export function Fornecedores() {
             try {
                 setFornecedores(await fornecedorApi.listarFornecedores());
             } catch {
-                setToast({ message: 'Não foi possível carregar os fornecedores.' });
+                // erro exibido pelo interceptor global
             }
         };
 
@@ -85,14 +84,12 @@ export function Fornecedores() {
 
         try {
             await fornecedorApi.alterarStatus(fornecedor.id, false);
-            setToast({ message: `Fornecedor "${fornecedor.nome}" inativado.` });
+            emitirToast({ message: `Fornecedor "${fornecedor.nome}" inativado.`, type: 'success' });
             carregarFornecedores();
         } catch {
-            setToast({ message: 'Não foi possível inativar o fornecedor.' });
+            // erro exibido pelo interceptor global
         }
     };
-
-    const fecharToast = useCallback(() => setToast(null), []);
 
     const formatarData = (data) => {
         if (!data) return '-';
@@ -151,7 +148,6 @@ export function Fornecedores() {
 
     return (
         <>
-            {toast && <Toast message={toast.message} onClose={fecharToast} />}
             <PageHeader titulo="Fornecedores" subtitulo="Gerencie seus parceiros de fornecimento">
                 <Button colorido={true} onClick={() => setModalAberto(true)}>
                     Adicionar Fornecedor

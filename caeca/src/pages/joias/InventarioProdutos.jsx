@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Toast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
 import { joiaApi } from '../../service/joiaApi';
 import { categoriaApi } from '../../service/categoriaApi';
 import { materialApi } from '../../service/materialApi';
 import { banhoApi } from '../../service/banhoApi';
+import { emitirToast } from '../../utils/toastBus';
 import style from './InventarioProdutos.module.css';
 import { useNavigate } from 'react-router-dom';
 import { Pagination } from '../../components/ui/Pagination';
@@ -47,7 +47,6 @@ export function InventarioProdutos() {
         const { ordem, ...filtrosSemOrdem } = filters;
         return { ...filtrosSemOrdem, page: 0, sort: `nome,${ordem}` };
     });
-    const [toast, setToast] = useState(null);
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(1);
 
@@ -63,7 +62,7 @@ export function InventarioProdutos() {
                 setMateriais(materiaisEncontrados);
                 setBanhos(banhosEncontrados);
             } catch {
-                setToast({ message: 'Não foi possível carregar as opções de filtro.' });
+                // erro exibido pelo interceptor global
             }
         };
 
@@ -77,14 +76,12 @@ export function InventarioProdutos() {
                 setProdutos(pagina.content ?? []);
                 setTotalPaginas(pagina.totalPages ?? 1);
             } catch {
-                setToast({ message: 'Não foi possível carregar os produtos.' });
+                // erro exibido pelo interceptor global
             }
         };
 
         carregarProdutos();
     }, [appliedFilters]);
-
-    const fecharToast = useCallback(() => setToast(null), []);
 
     const atualizarFiltro = (campo, valor) => {
         setFilters((filtrosAtuais) => ({ ...filtrosAtuais, [campo]: valor }));
@@ -95,9 +92,7 @@ export function InventarioProdutos() {
         const periodoInvalido = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
 
         if (periodoInvalido) {
-            setToast({ message: 'A data de início não pode ser maior que a data de fim.' });
-        } else {
-            setToast(null);
+            emitirToast({ message: 'A data de início não pode ser maior que a data de fim.', type: 'error' });
         }
 
         return !apenasUmaDataPreenchida && !periodoInvalido;
@@ -198,7 +193,6 @@ export function InventarioProdutos() {
 
     return (
         <>
-            {toast && <Toast message={toast.message} onClose={fecharToast} />}
             <PageHeader titulo="Inventário de produtos" subtitulo="Visualize o inventário de produtos" />
             <div className={style['page-container']}>
                 <div className={style.toolbar}>

@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import CardForm from "../../components/layout/CardForm";
-import { SucessoModal } from "../../components/modals/SucessoModal";
 import { Button } from "../../components/ui/Button";
 import { InputField } from "../../components/ui/InputField";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { SelectField } from "../../components/ui/SelectField";
-import { Toast } from "../../components/ui/Toast";
 import { enderecoApi } from "../../service/enderecoApi";
 import { revendedoraApi } from "../../service/revendedoraApi";
 import { buscarEnderecoPorCep } from "../../service/viacepApi";
+import { emitirToast } from "../../utils/toastBus";
 import styles from "./CadastroRevendedora.module.css";
 
 const initialValues = {
@@ -33,11 +32,9 @@ const estados = [
 
 export function CadastroRevendedora() {
     const [formValues, setFormValues] = useState(initialValues);
-    const [isSuccess, setIsSuccess] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLookingUpCep, setIsLookingUpCep] = useState(false);
     const [cepLookupMessage, setCepLookupMessage] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
     const [savedAddress, setSavedAddress] = useState(null);
     const cepDigits = formValues.cep.replace(/\D/g, "");
 
@@ -90,12 +87,11 @@ export function CadastroRevendedora() {
         const telefoneDigits = formValues.telefone.replace(/\D/g, "");
 
         if (telefoneDigits.length !== 11) {
-            setErrorMessage("O telefone deve conter DDD e 9 dígitos (11 números).");
+            emitirToast({ message: "O telefone deve conter DDD e 9 dígitos (11 números).", type: "error" });
             return;
         }
 
         setIsSubmitting(true);
-        setErrorMessage("");
 
         const endereco = {
             cep: cepDigits,
@@ -132,11 +128,14 @@ export function CadastroRevendedora() {
             });
             setFormValues(initialValues);
             setSavedAddress(null);
-            setIsSuccess(true);
+            emitirToast({ message: "Cadastro realizado com sucesso!", type: "success" });
         } catch (error) {
-            setErrorMessage(
-                error.response?.data?.message || error.message || "Não foi possível concluir o cadastro. Tente novamente."
-            );
+            if (!error.response) {
+                emitirToast({
+                    message: error.message || "Não foi possível concluir o cadastro. Tente novamente.",
+                    type: "error"
+                });
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -260,13 +259,6 @@ export function CadastroRevendedora() {
                     </div>
                 </CardForm>
             </div>
-
-            <SucessoModal
-                text="Cadastro realizado com sucesso!"
-                IsSuccess={isSuccess}
-                onClose={() => setIsSuccess(false)}
-            />
-            {errorMessage && <Toast message={errorMessage} onClose={() => setErrorMessage("")} />}
         </div>
     );
 }

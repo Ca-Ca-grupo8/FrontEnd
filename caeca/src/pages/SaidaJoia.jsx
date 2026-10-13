@@ -7,7 +7,7 @@ import { Header } from "../components/layout/Header";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Footer } from "../components/layout/Footer";
 import { CirclePlus } from "lucide-react";
-import { SucessoModal } from "../components/modals/SucessoModal";
+import { emitirToast } from "../utils/toastBus";
 
 // Substitua pelas APIs reais do seu projeto
 import { movimentacaoApi } from "../service/movimentacaoApi";
@@ -23,7 +23,6 @@ export function SaidaJoia() {
     const [motivos, setMotivos] = useState([]);
     const [joias, setJoias] = useState([]);
     const [revendedoras, setRevendedoras] = useState([]);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const [isRevendedoraOpen, setIsRevendedoraOpen] = useState(false);
     const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
@@ -92,7 +91,7 @@ export function SaidaJoia() {
 
         try {
             await movimentacaoApi.realizarMovimentacao(payload);
-            setIsSuccess(true);
+            emitirToast({ message: "Saída registrada com sucesso!", type: "success" });
             setFormValues({
                 motivoSaidaId: "",
                 joiaId: "",
@@ -119,12 +118,6 @@ export function SaidaJoia() {
                     <NovaCategoriaModal
                         isOpen={isCategoriaOpen}
                         onClose={() => setIsCategoriaOpen(false)} />
-
-                    <SucessoModal
-                        text={"Saída registrada com sucesso!"}
-                        IsSuccess={isSuccess}
-                        onClose={() => setIsSuccess(false)}
-                    />
 
                     <NovaRevendedoraModal
                                     isOpen={isRevendedoraOpen}

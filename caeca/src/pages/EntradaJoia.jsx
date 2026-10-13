@@ -16,7 +16,7 @@ import '../styles/EntradaJoia.css'
 import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
 import { CirclePlus } from "lucide-react";
 import { NovoFornecedorModal } from "../components/modals/NovoFornecedor";
-import { SucessoModal } from "../components/modals/SucessoModal";
+import { emitirToast } from "../utils/toastBus";
 
 export function EntradaJoia() {
     const [motivos, setMotivos] = useState([]);
@@ -26,7 +26,6 @@ export function EntradaJoia() {
     const [fornecedor, setFornecedor] = useState([]);
     const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
     const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
-    const [IsSuccess, setIsSuccess] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoEntradaId: "",
@@ -106,7 +105,7 @@ export function EntradaJoia() {
         console.log(payload)
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, image);
-            setIsSuccess(true)
+            emitirToast({ message: "Cadastro realizado com sucesso!", type: "success" });
             setFormValues({
                 motivoEntradaId: "",
                 nomePeca: "",
@@ -143,8 +142,6 @@ export function EntradaJoia() {
             <NovoFornecedorModal
                 isOpen={isFornecedorOpen}
                 onClose={() => setIsFornecedorOpen(false)} />
-
-            <SucessoModal text={"Cadastro realizado com sucesso!"} IsSuccess={IsSuccess} onClose={() => {setIsSuccess(false)}}/>
 
             <CardForm onSubmit={handleSubmit}>
                 

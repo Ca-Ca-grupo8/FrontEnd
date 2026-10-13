@@ -99,8 +99,8 @@ export function Header({ avatarImg }) {
             <span className="nav-label">Histórico</span>
           </button>
           <div className="dropdown-menu">
-            <NavLink to="/historico/gerais" onClick={closeAll}>Gerais</NavLink>
             <NavLink to="/joias/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
+            <NavLink to="/joias/maletas" onClick={closeAll}>Maletas</NavLink>
           </div>
         </div>
 

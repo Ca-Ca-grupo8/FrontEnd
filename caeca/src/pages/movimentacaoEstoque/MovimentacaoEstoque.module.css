@@ -176,6 +176,11 @@
   color: #f04438;
 }
 
+.badge-reentrada {
+  background-color: #e1effe;
+  color: #175cd3;
+}
+
 /* Quantidade */
 .quantity {
   font-weight: 700;

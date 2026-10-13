@@ -1,17 +1,34 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ShoppingBag } from 'lucide-react'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Table } from '../../components/ui/Table'
-import { Toast } from '../../components/ui/Toast'
 import { vendaApi } from '../../service/maletasApi'
+import { emitirToast } from '../../utils/toastBus'
 import { rotuloStatusMaleta, statusSelecionavel } from './maletaStatus'
 import { StatusMaletaBadge } from './StatusMaletaBadge'
+import { TipoMovimentacaoBadge } from './TipoMovimentacaoBadge'
+import { contarItens, ehReentrada } from './tipoMovimentacao'
 import '../entradaJoia/JoiaDetalhes.css'
 import style from './Maletas.module.css'
 
 const formatarMoeda = (valor) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
+
+const valorOuTraco = (valor) => (valor ? formatarMoeda(valor) : '-')
+
+const quantidadeLinha = (movimentacao) => movimentacao.quantidade || '-'
+
+const precoLinha = (movimentacao) =>
+    ehReentrada(movimentacao) ? '-' : valorOuTraco(movimentacao.precoSaida)
+
+const subtotalLinha = (movimentacao) => {
+    if (ehReentrada(movimentacao)) {
+        return '-'
+    }
+
+    return valorOuTraco((movimentacao.quantidade ?? 0) * (movimentacao.precoSaida ?? 0))
+}
 
 const formatarData = (dataStr) => {
     if (!dataStr) {
@@ -31,12 +48,12 @@ const formatarData = (dataStr) => {
 
 export function MaletaDetalhes() {
     const { id } = useParams()
+    const navigate = useNavigate()
     const [maleta, setMaleta] = useState(null)
     const [carregando, setCarregando] = useState(true)
     const [erro, setErro] = useState(false)
     const [statusDisponiveis, setStatusDisponiveis] = useState([])
     const [salvandoStatus, setSalvandoStatus] = useState(false)
-    const [toast, setToast] = useState(null)
 
     useEffect(() => {
         let ignore = false
@@ -61,7 +78,7 @@ export function MaletaDetalhes() {
                 const lista = await vendaApi.listarStatus()
                 if (!ignore) setStatusDisponiveis(lista)
             } catch {
-                if (!ignore) setToast({ message: 'Não foi possível carregar os status da maleta.' })
+                // erro exibido pelo interceptor global
             }
         }
         carregarStatus()
@@ -86,7 +103,7 @@ export function MaletaDetalhes() {
         )
     }
 
-    const totalItens = maleta.movimentacoes.reduce((acc, m) => acc + m.quantidade, 0)
+    const totalItens = contarItens(maleta.movimentacoes)
 
     const alterarStatus = async (event) => {
         const idStatus = event.target.value
@@ -96,15 +113,15 @@ export function MaletaDetalhes() {
         try {
             const atualizada = await vendaApi.atualizarStatus(id, Number(idStatus))
             setMaleta(atualizada?.idMovimentacaoRevendedora ? atualizada : await vendaApi.buscarPorId(id))
-            setToast({ message: 'Status da maleta atualizado.' })
+            emitirToast({ message: 'Status da maleta atualizado.', type: 'success' })
         } catch {
-            setToast({ message: 'Não foi possível atualizar o status da maleta.' })
+            // erro exibido pelo interceptor global
         } finally {
             setSalvandoStatus(false)
         }
     }
 
-    const colunas = ["PRODUTO", "QUANTIDADE", "PREÇO UNIT.", "SUBTOTAL"]
+    const colunas = ["PRODUTO", "TIPO", "QUANTIDADE", "PREÇO UNIT.", "SUBTOTAL"]
 
     const funcaoRender = {
         render: (row, col) => {
@@ -117,15 +134,17 @@ export function MaletaDetalhes() {
                             ) : (
                                 <div className={style['product-thumb-placeholder']}><ShoppingBag size={18} /></div>
                             )}
-                            <span className={style['product-title']}>{row.joia.nome}</span>
+                            <span className={style['product-title']} onClick={() => navigate(`/joias/${row.joia.id}`)}>{row.joia.nome}</span>
                         </div>
                     )
+                case 'TIPO':
+                    return <TipoMovimentacaoBadge tipo={row.tipo} />
                 case 'QUANTIDADE':
-                    return <span>{row.quantidade}</span>
+                    return <span>{quantidadeLinha(row)}</span>
                 case 'PREÇO UNIT.':
-                    return <span>{formatarMoeda(row.precoSaida)}</span>
+                    return <span>{precoLinha(row)}</span>
                 case 'SUBTOTAL':
-                    return <span className={style['total-value']}>{formatarMoeda(row.quantidade * row.precoSaida)}</span>
+                    return <span className={style['total-value']}>{subtotalLinha(row)}</span>
                 default:
                     return null
             }
@@ -134,7 +153,6 @@ export function MaletaDetalhes() {
 
     return (
         <div className="jewelry-page">
-            {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
             <PageHeader titulo="Detalhes da Maleta">
                 <label className={style['status-selector']}>
                     <span>Status</span>
@@ -179,7 +197,7 @@ export function MaletaDetalhes() {
                             <div className="stat-divider" aria-hidden="true" />
                             <div className="price-block">
                                 <span className="stat-label">Total</span>
-                                <span className="price-value">{formatarMoeda(maleta.totalVenda)}</span>
+                                <span className="price-value">{valorOuTraco(maleta.totalVenda)}</span>
                             </div>
                             <div className="stat-divider" aria-hidden="true" />
                             <div className="stat">
