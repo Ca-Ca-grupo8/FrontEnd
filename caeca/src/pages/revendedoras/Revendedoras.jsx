@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Filter, Search } from "lucide-react";
 import { Button } from "../../components/ui/Button";
@@ -57,20 +57,23 @@ export function Revendedoras() {
     const [carregando, setCarregando] = useState(true);
     const [toast, setToast] = useState(null);
 
-    const carregarRevendedoras = useCallback(async () => {
-        setCarregando(true);
-        try {
-            setRevendedoras(await revendedoraApi.listarRevendedoras());
-        } catch {
-            setToast({ message: "Não foi possível carregar as revendedoras." });
-        } finally {
-            setCarregando(false);
-        }
-    }, []);
-
     useEffect(() => {
+        let ignore = false;
+
+        async function carregarRevendedoras() {
+            try {
+                const lista = await revendedoraApi.listarRevendedoras();
+                if (!ignore) setRevendedoras(lista);
+            } catch {
+                if (!ignore) setToast({ message: "Não foi possível carregar as revendedoras." });
+            } finally {
+                if (!ignore) setCarregando(false);
+            }
+        }
+
         carregarRevendedoras();
-    }, [carregarRevendedoras]);
+        return () => { ignore = true; };
+    }, []);
 
     const filtradas = useMemo(() => {
         const termo = busca.trim().toLocaleLowerCase("pt-BR");
@@ -98,7 +101,14 @@ export function Revendedoras() {
                 case "NOME":
                     return (
                         <div className={styles.nameCell}>
-                            <span className={styles.name}>{row.nome || "-"}</span>
+                            <button
+                                type="button"
+                                className={styles.name}
+                                disabled={!row.id && !row.idRevendedora}
+                                onClick={() => navigate(`/contribuintes/revendedoras/${row.id ?? row.idRevendedora}`)}
+                            >
+                                {row.nome || "-"}
+                            </button>
                             <span className={styles.date}>{formatarData(row.dataCadastro)}</span>
                         </div>
                     );
