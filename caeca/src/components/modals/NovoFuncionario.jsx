@@ -14,7 +14,6 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
     const [formValues, setFormValues] = useState({
         nome: "",
         email: "",
-        senha: "",
         perfilUsuario: "",
     });
 
@@ -29,15 +28,17 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
         e.preventDefault();
 
         try {
-            await usuarioApi.criarUsuario({
+            await usuarioApi.criarConvite({
                 nome: formValues.nome,
                 email: formValues.email,
-                senha: formValues.senha,
                 perfilUsuario: formValues.perfilUsuario,
             });
 
-            setFormValues({ nome: "", email: "", senha: "", perfilUsuario: "" });
-            emitirToast({ message: "Funcionário cadastrado com sucesso!", type: "success" });
+            setFormValues({ nome: "", email: "", perfilUsuario: "" });
+            emitirToast({
+                message: `Convite enviado para ${formValues.email}`,
+                type: "success",
+            });
             onClose();
         } catch {
             // erro exibido pelo interceptor global
@@ -73,15 +74,6 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
                         required={true}
                         value={formValues.email}
                         onChange={(e) => handleChange("email", e.target.value)}
-                    />
-
-                    <InputField
-                        label={"Senha"}
-                        type={"password"}
-                        placeholder={"De 6 a 20 caracteres"}
-                        required={true}
-                        value={formValues.senha}
-                        onChange={(e) => handleChange("senha", e.target.value)}
                     />
 
                     <SelectField

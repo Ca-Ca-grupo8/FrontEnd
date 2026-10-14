@@ -8,10 +8,27 @@ const MENSAGENS_POR_STATUS = {
     500: 'Ocorreu um erro no servidor. Tente novamente em instantes.',
 };
 
+const extrairMensagemItem = (item) => {
+    if (typeof item === 'string') {
+        return item;
+    }
+
+    if (!item || typeof item !== 'object') {
+        return null;
+    }
+
+    // Contrato do backend para validação de campos (400):
+    // [ { "campo": "<mensagem>", "erro": "<campo>" } ]
+    // O texto legível vem em `campo`; `erro` carrega o nome do campo.
+    if (typeof item.campo === 'string' && item.campo.trim()) {
+        return item.campo;
+    }
+
+    return item.mensagem || item.message || item.erro || null;
+};
+
 const juntarMensagens = (erros) => {
-    const mensagens = erros
-        .map((item) => (typeof item === 'string' ? item : item?.erro || item?.mensagem || item?.message))
-        .filter(Boolean);
+    const mensagens = erros.map(extrairMensagemItem).filter(Boolean);
 
     return mensagens.length ? mensagens.join(' ') : null;
 };
