@@ -1,0 +1,203 @@
+.pageContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 42px;
+    padding: 24px 32px 32px;
+    background-color: #f1f1f1;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.searchInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: min(100%, 420px);
+}
+
+.searchInputWrapper svg {
+    position: absolute;
+    right: 12px;
+    color: #242424;
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 40px 10px 12px;
+    border: 1px solid #96205c;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    font: inherit;
+    font-size: 13px;
+}
+
+.searchInput::placeholder {
+    color: #aaa;
+}
+
+.searchInput:focus-visible,
+.activityFilter select:focus-visible {
+    outline: 2px solid #96205c;
+    outline-offset: 2px;
+}
+
+.filterContainer {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    min-width: 160px;
+}
+
+.filterButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 112px;
+}
+
+.activityFilter {
+    position: absolute;
+    z-index: 2;
+    top: calc(100% + 8px);
+    right: 0;
+    display: grid;
+    gap: 6px;
+    width: 180px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+    color: #555;
+    font-size: 13px;
+}
+
+.activityFilter select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+    font: inherit;
+}
+
+.emptyState {
+    padding: 48px 24px;
+    border-radius: 8px;
+    background: #fff;
+    color: #777;
+    text-align: center;
+}
+
+.nameCell,
+.contactCell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 120px;
+}
+
+.name {
+    width: fit-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+    color: #222;
+    font: inherit;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.name:disabled {
+    color: #777;
+    text-decoration: none;
+    cursor: default;
+}
+
+.date,
+.contactCell span + span {
+    color: #888;
+    font-size: 12px;
+}
+
+.address {
+    display: block;
+    min-width: 150px;
+    max-width: 280px;
+    overflow-wrap: anywhere;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badgeActive {
+    background: #d1fadf;
+    color: #087443;
+}
+
+.badgeInactive {
+    background: #fee4e2;
+    color: #b42318;
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+@media (max-width: 768px) {
+    .pageContainer {
+        gap: 24px;
+        padding: 16px 16px 24px;
+    }
+
+    .toolbar {
+        align-items: stretch;
+    }
+
+    .searchInputWrapper {
+        width: 100%;
+    }
+
+    .filterContainer {
+        min-width: 0;
+    }
+
+    .filterButton {
+        width: 100%;
+    }
+
+    .address {
+        min-width: 120px;
+    }
+}

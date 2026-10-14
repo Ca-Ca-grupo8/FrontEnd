@@ -5,6 +5,8 @@ import './index.css'
 
 import { Layout } from './components/layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+import { ErrorBoundary } from './components/ErrorBoundary.jsx';
+import { ToastHost } from './components/feedback/ToastHost.jsx';
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { ReentradaJoia } from './pages/reentradaJoia/ReentradaJoia.jsx'
 import { EntradaJoiaExistente } from './pages/entradaJoiaExistente/EntradaJoiaExistente.jsx'
@@ -16,8 +18,13 @@ import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroCon
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
 import { JoiaDetalhes } from './pages/entradaJoia/JoiaDetalhes.jsx';
+import { Fornecedores } from './pages/fornecedores/Fornecedores.jsx';
+import { Funcionarios } from './pages/funcionarios/Funcionarios.jsx';
 import { Maletas } from './pages/Maletas/Maletas.jsx';
 import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
+import { CadastroRevendedora } from './pages/revendedoras/CadastroRevendedora.jsx';
+import { Revendedoras } from './pages/revendedoras/Revendedoras.jsx';
+import { RevendedoraDetalhes } from './pages/revendedoras/RevendedoraDetalhes.jsx';
 import { Dashboard } from './pages/dashboard/Dashboard.jsx';
 
 const router = createBrowserRouter([
@@ -39,6 +46,18 @@ const router = createBrowserRouter([
       {
         path: '/contribuintes',
         element: <CadastroContribuintes />,
+      },
+      {
+        path: '/contribuintes/revendedoras',
+        element: <Revendedoras />,
+      },
+      {
+        path: '/contribuintes/revendedoras/cadastro',
+        element: <CadastroRevendedora />,
+      },
+      {
+        path: '/contribuintes/revendedoras/:id',
+        element: <RevendedoraDetalhes />,
       },
       {
         path: '/movimentacoes',
@@ -73,12 +92,20 @@ const router = createBrowserRouter([
         element: <JoiaDetalhes />,
       },
       {
-        path: '/joias/maletas',
+path: '/joias/maletas',
         element: <Maletas />,
       },
       {
         path: '/joias/maletas/:id',
         element: <MaletaDetalhes />,
+      },
+      {
+        path: '/contribuintes/fornecedores',
+        element: <Fornecedores />,
+      },
+      {
+        path: '/contribuintes/funcionarios',
+        element: <Funcionarios />,
       },
       {
         path: '/dashboard',
@@ -90,6 +117,9 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <ErrorBoundary>
+      <RouterProvider router={router}/>
+      <ToastHost />
+    </ErrorBoundary>
   </StrictMode>,
 )

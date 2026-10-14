@@ -88,9 +88,37 @@
   font: inherit;
 }
 
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-thumb,
+.product-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 8px;
+}
+
+.product-thumb {
+  object-fit: cover;
+}
+
+.product-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d9d9d9;
+  color: #666;
+}
+
 .product-title {
   font-weight: 700;
   color: #111;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .badge {
@@ -104,12 +132,67 @@
 
 .badge-finalizada {
   background-color: #dcfae6;
-  color: #17b26a;
+  color: #0f7a4d;
 }
 
-.badge-aberta {
+.badge-aberto {
   background-color: #fff3cd;
   color: #856404;
+}
+
+.badge-em-consignacao {
+  background-color: #e1effe;
+  color: #175cd3;
+}
+
+.badge-em-acerto {
+  background-color: #f0e9ff;
+  color: #5925dc;
+}
+
+.badge-erro {
+  background-color: #fde4e4;
+  color: #b42318;
+}
+
+.badge-neutro {
+  background-color: #d4d4d4;
+  color: #5b5b5b;
+}
+
+.badge-saida {
+  background-color: #dcfae6;
+  color: #0f7a4d;
+}
+
+.badge-reentrada {
+  background-color: #e1effe;
+  color: #175cd3;
+}
+
+.status-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  color: #555;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.status-selector select {
+  border: 1px solid #e2e2e8;
+  border-radius: 8px;
+  padding: 9px 10px;
+  color: #333;
+  background-color: #ffffff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.status-selector select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .total-value {

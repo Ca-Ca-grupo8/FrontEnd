@@ -1,0 +1,143 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 32px 24px;
+  background-color: #f4f4f4;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.searchInputWrapper {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 420px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #96205C;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  border: 1.5px solid #96205C;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.searchInput:focus {
+  border-color: #7A1A4A;
+  box-shadow: 0 0 0 2px rgba(150, 32, 92, 0.1);
+}
+
+.filterButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.typeFilter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+.typeFilter select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+  outline: none;
+}
+
+.typeFilter select:focus {
+  border-color: #96205C;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  color: #888;
+  font-size: 15px;
+}
+
+.nome {
+  font-weight: 700;
+  color: #333;
+  min-width: 200px;
+  display: inline-block;
+}
+
+/* Perfil: usa tons da identidade (vinho e neutro) em vez do verde/vermelho,
+   que aqui já significam outra coisa. */
+.perfil {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.perfilAdmin {
+  background: #f6e6ee;
+  color: #8c1d40;
+}
+
+.perfilUser {
+  background: #e8e8ea;
+  color: #5b5b5b;
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 0 16px 16px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .searchInputWrapper {
+    max-width: 100%;
+  }
+
+  .filterButtons {
+    justify-content: flex-start;
+  }
+}

@@ -6,7 +6,8 @@ import imgDestaque from "../assets/imagem-joia-login.png";
 import imgMarmore from "../assets/imagem-marmore.png";
 import '../styles/Login.css';
 import { usuarioApi } from "../service/usuarioApi";
-import { SucessoModal } from "../components/modals/SucessoModal";
+import { extrairMensagemErro } from "../utils/apiError";
+import { emitirToast } from "../utils/toastBus";
 import { useNavigate } from "react-router-dom";
 
 export function Login() {
@@ -16,10 +17,6 @@ export function Login() {
     email: "",
     senha: "",
   });
-
-  const [IsSuccess, setIsSuccess] = useState(false)
-  const [Error, setError] = useState(false)
-  const [SuccessText, setSuccessText] = useState("Cadastro realizado com sucesso!");
 
   const handleChange = (field, value) => {
     setFormValues((prev) => ({ ...prev, [field]: value }));
@@ -48,16 +45,14 @@ export function Login() {
 
       navigate("/")
       return
-    } catch (e) {
-      setSuccessText("Erro inesperado ocorreu!")
-      setError(true)
+    } catch (error) {
+      emitirToast({ message: extrairMensagemErro(error, "Erro inesperado ocorreu!"), type: "error" })
     }
   }
 
   return (
     
     <div className="login-container">
-      <SucessoModal text={SuccessText} error={Error} onClose={() => {setError(false)}}/>
       {/* Painel esquerdo — mármore + formulário */}
       <div className="login-left" style={{ backgroundImage: `url(${imgMarmore})` }}>
         <div className="login-form-wrapper">

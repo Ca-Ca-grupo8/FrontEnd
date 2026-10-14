@@ -2,6 +2,7 @@ import { useState } from "react";
 import { fornecedorApi } from "../../service/fornecedorApi";
 import { InputField } from "../ui/InputField";
 import { Button } from "../ui/Button";
+import { emitirToast } from "../../utils/toastBus";
 
 export function NovoFornecedorModal({ isOpen, onClose }) {
     const [formValues, setFormValues] = useState({
@@ -20,20 +21,18 @@ export function NovoFornecedorModal({ isOpen, onClose }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const payload = {
-            nome: formValues.nome,
-            telefone: formValues.telefone,
-            instagram: formValues.instagram
-        };
-
         try {
-            const response = await fornecedorApi.criarFornecedor(payload);
-            console.log("Fornecedor cadastrado:", response);
-            
+            await fornecedorApi.criarFornecedor({
+                nome: formValues.nome,
+                telefone: formValues.telefone,
+                instagram: formValues.instagram
+            });
+
             setFormValues({ nome: "", telefone: "", instagram: "" });
+            emitirToast({ message: "Fornecedor cadastrado com sucesso!", type: "success" });
             onClose();
-        } catch (error) {
-            console.error("Erro ao cadastrar fornecedor:", error);
+        } catch {
+            // erro exibido pelo interceptor global
         }
     };
 
@@ -43,7 +42,7 @@ export function NovoFornecedorModal({ isOpen, onClose }) {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-container" onClick={(e) => e.stopPropagation()}>
                 <button className="modal-close-btn" onClick={onClose}>×</button>
-                
+
                 <div className="modal-header">
                     <h2>Novo Fornecedor</h2>
                     <p>Preencha os dados para cadastrar um novo parceiro.</p>

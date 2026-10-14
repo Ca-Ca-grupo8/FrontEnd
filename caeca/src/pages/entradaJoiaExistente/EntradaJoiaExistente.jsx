@@ -10,7 +10,7 @@ import { joiaApi } from "../../service/joiaApi";
 import { PageHeader } from "../../components/ui/PageHeader";
 import "./EntradaJoiaExistente.module.css";
 import { NovoFornecedorModal } from "../../components/modals/NovoFornecedor";
-import { SucessoModal } from "../../components/modals/SucessoModal";
+import { emitirToast } from "../../utils/toastBus";
 import { CirclePlus } from "lucide-react";
 
 export function EntradaJoiaExistente() {
@@ -18,7 +18,6 @@ export function EntradaJoiaExistente() {
     const [fornecedor, setFornecedor] = useState([]);
     const [motivos, setMotivos] = useState([]);
     const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoEntradaId: "",
@@ -118,7 +117,7 @@ export function EntradaJoiaExistente() {
     async function realizarEntradaJoiaExistente(payload) {
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, null);
-            setIsSuccess(true);
+            emitirToast({ message: "Entrada realizada com sucesso!", type: "success" });
             setFormValues({
                 motivoEntradaId: "",
                 joiaId: "",
@@ -142,8 +141,6 @@ export function EntradaJoiaExistente() {
             <NovoFornecedorModal
                 isOpen={isFornecedorOpen}
                 onClose={() => setIsFornecedorOpen(false)} />
-
-            <SucessoModal text={"Entrada realizada com sucesso!"} IsSuccess={isSuccess} onClose={() => { setIsSuccess(false) }} />
 
             <CardForm onSubmit={handleSubmit}>
 

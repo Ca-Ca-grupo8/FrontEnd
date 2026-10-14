@@ -8,5 +8,19 @@ export const fornecedorApi = {
             api.get("/fornecedores", { params: { page } }).then(r => r.data)
         );
         return allFornecedores.map(f => toResponse(f));
-    }
+    },
+
+    criarFornecedor: async (payload) => {
+        const response = await api.post("/fornecedores", payload)
+        return toResponse(response.data)
+    },
+
+    editarFornecedor: async (id, payload) => {
+        const response = await api.put(`/fornecedores/${id}`, payload)
+        return toResponse(response.data)
+    },
+
+    alterarStatus: async (id, isAtivo) => {
+        await api.patch(`/fornecedores/${id}/status`, { isAtivo })
+    },
 }

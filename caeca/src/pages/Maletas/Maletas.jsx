@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import style from './Maletas.module.css';
 import { Table } from '../../components/ui/Table';
 import { Button } from '../../components/ui/Button';
 import { vendaApi } from '../../service/maletasApi';
+import { StatusMaletaBadge } from './StatusMaletaBadge';
+import { contarItens } from './tipoMovimentacao';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Toast } from '../../components/ui/Toast';
+import { emitirToast } from '../../utils/toastBus';
 import { Pagination } from '../../components/ui/Pagination';
 
 export function Maletas() {
@@ -20,7 +22,6 @@ export function Maletas() {
         const { ordem, ...filtrosSemOrdem } = filters;
         return { ...filtrosSemOrdem, page: 0, sort: `data,${ordem}` };
     });
-    const [toast, setToast] = useState(null);
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(1);
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ export function Maletas() {
                 setData(pagina.content ?? []);
                 setTotalPaginas(pagina.totalPages ?? 1);
             } catch {
-                setToast({ message: 'Não foi possível carregar as Maletas.' });
+                // erro exibido pelo interceptor global
             }
         };
 
@@ -43,15 +44,11 @@ export function Maletas() {
         setFilters((filtrosAtuais) => ({ ...filtrosAtuais, [campo]: valor }));
     };
 
-    const fecharToast = useCallback(() => setToast(null), []);
-
     const validarPeriodo = (filtros) => {
         const periodoInvalido = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
 
         if (periodoInvalido) {
-            setToast({ message: 'A data de início não pode ser maior que a data de fim.' });
-        } else {
-            setToast(null);
+            emitirToast({ message: 'A data de início não pode ser maior que a data de fim.', type: 'error' });
         }
 
         return !periodoInvalido;
@@ -85,11 +82,21 @@ export function Maletas() {
     const formatarMoeda = (valor) =>
         new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 
-    const formatarData = (dataStr) =>
-        new Intl.DateTimeFormat('pt-BR', {
+    const formatarData = (dataStr) => {
+        if (!dataStr) {
+            return '-';
+        }
+
+        const data = new Date(dataStr);
+        if (Number.isNaN(data.getTime())) {
+            return '-';
+        }
+
+        return new Intl.DateTimeFormat('pt-BR', {
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit'
-        }).format(new Date(dataStr));
+        }).format(data);
+    };
 
     const funcaoRender = {
         render: (row, col) => {
@@ -107,23 +114,14 @@ export function Maletas() {
                     return <span>{row.revendedora.nome}</span>;
 
                 case 'ITENS': {
-                    let totalItens = 0;
-                    row.movimentacoes.forEach(m => {
-                       totalItens += m.quantidade
-                    });
+                    const totalItens = contarItens(row.movimentacoes);
                     return <span>{totalItens} ite{totalItens === 1 ? 'm' : 'ns'}</span>;
                 }
                 case 'TOTAL':
-                    return <span className={style['total-value']}>{formatarMoeda(row.totalVenda)}</span>;
+                    return <span className={style['total-value']}>{row.totalVenda ? formatarMoeda(row.totalVenda) : '-'}</span>;
 
-                case 'STATUS': {
-                    const finalizada = row.isFinalizada;
-                    return (
-                        <span className={`${style.badge} ${finalizada ? style['badge-finalizada'] : style['badge-aberta']}`}>
-                            {finalizada ? 'Finalizada' : 'Em aberto'}
-                        </span>
-                    );
-                }
+                case 'STATUS':
+                    return <StatusMaletaBadge status={row.status} />;
 
                 default:
                     return null;
@@ -133,8 +131,7 @@ export function Maletas() {
 
     return (
         <>
-            {toast && <Toast message={toast.message} onClose={fecharToast} />}
-            <PageHeader titulo="Maletas" subtitulo="Histórico de Maletas das revendedoras" dashed={true} />
+            <PageHeader titulo="Maletas" subtitulo="Ver histórico de movimentações das jóias" dashed={true} />
             <div className={style['page-container']}>
                 <div className={style['toolbar']}>
                     <div className={style['search-input-wrapper']}>

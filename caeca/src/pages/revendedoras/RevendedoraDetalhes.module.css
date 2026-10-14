@@ -1,0 +1,223 @@
+.page {
+    min-height: 100%;
+    background: #fffafa;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 0 32px 32px;
+}
+
+.profile {
+    display: grid;
+    grid-template-columns: minmax(210px, 1fr) minmax(280px, 1.15fr) minmax(180px, 0.9fr);
+    gap: 24px;
+    align-items: start;
+    padding: 20px;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 12%);
+}
+
+.identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 0 12px;
+    text-align: center;
+}
+
+.avatar {
+    display: grid;
+    width: 96px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 2px solid #d05b98;
+    border-radius: 50%;
+    color: #c94e8e;
+}
+
+.identity h2,
+.contact h2,
+.activityPanel h2 {
+    margin: 0;
+    color: #252525;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.identity h2 {
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.activity {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 4px;
+    background: #d1fadf;
+    color: #087443;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.activityDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.inactive {
+    background: #fee4e2;
+    color: #b42318;
+}
+
+.createdDate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+}
+
+.contact {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 24px;
+    border-right: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+}
+
+.contact h2,
+.activityPanel h2 {
+    margin-bottom: 2px;
+}
+
+.contactItem {
+    display: flex;
+    min-height: 48px;
+    align-items: stretch;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.contactIcon {
+    display: grid;
+    width: 48px;
+    flex: 0 0 48px;
+    place-items: center;
+    background: #e91e63;
+    color: #171717;
+}
+
+.contactItem > div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 10px;
+}
+
+.contactItem > div > span {
+    color: #c2185b;
+    font-size: 12px;
+}
+
+.contactItem a,
+.contactItem p {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: #333;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.activityPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 8px;
+}
+
+.activitySince {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px;
+    border-radius: 5px;
+    background: #d1fadf;
+    color: #087443;
+    font-size: 12px;
+    text-align: center;
+}
+
+.activitySince strong {
+    font-size: 13px;
+}
+
+.activitySinceInactive {
+    background: #fee4e2;
+    color: #b42318;
+}
+
+.sales {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.state {
+    padding: 32px 20px;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+    background: #fff;
+    color: #666;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .profile {
+        grid-template-columns: minmax(180px, 0.8fr) minmax(260px, 1.2fr);
+    }
+
+    .activityPanel {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .content {
+        gap: 20px;
+        padding: 0 16px 24px;
+    }
+
+    .profile {
+        grid-template-columns: 1fr;
+        gap: 22px;
+        padding: 18px 14px;
+    }
+
+    .contact {
+        padding: 20px 0 0;
+        border: 0;
+        border-top: 1px solid #ddd;
+    }
+
+    .activityPanel {
+        grid-column: auto;
+        padding: 0;
+    }
+}
