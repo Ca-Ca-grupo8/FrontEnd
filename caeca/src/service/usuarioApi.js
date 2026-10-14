@@ -2,7 +2,7 @@ import api from "./api"
 
 export const usuarioApi = {
     login: async (payload) => {
-        const response = api.post("/usuarios/login", payload)
+        const response = api.post("/usuarios/login", payload, { silent: true })
         return response
     },
     getMe: async () => {

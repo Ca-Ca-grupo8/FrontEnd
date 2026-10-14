@@ -16,7 +16,7 @@ import '../styles/EntradaJoia.css'
 import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
 import { CirclePlus } from "lucide-react";
 import { NovoFornecedorModal } from "../components/modals/NovoFornecedor";
-import { SucessoModal } from "../components/modals/SucessoModal";
+import { emitirToast } from "../utils/toastBus";
 
 export function EntradaJoia() {
     const [motivos, setMotivos] = useState([]);
@@ -26,7 +26,6 @@ export function EntradaJoia() {
     const [fornecedor, setFornecedor] = useState([]);
     const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
     const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
-    const [IsSuccess, setIsSuccess] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoEntradaId: "",
@@ -90,7 +89,7 @@ export function EntradaJoia() {
             dadosNovaJoia: {
                 nome: formValues.nomePeca,
                 quantidade: Number(formValues.quantidade) || 0,
-                quantidadeMinima: Number(formValues.quantidade) || 0,
+                quantidadeMinima: Number(formValues.quantidadeMinima) || 0,
                 categoria: Number(formValues.categoriaId) || 0,
                 banho: Number(formValues.banhoId) || 0,
                 material: Number(formValues.materialId) || 0
@@ -103,9 +102,10 @@ export function EntradaJoia() {
     }
 
     async function cadastrarJoia(payload, image) {
+        console.log(payload)
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, image);
-            setIsSuccess(true)
+            emitirToast({ message: "Cadastro realizado com sucesso!", type: "success" });
             setFormValues({
                 motivoEntradaId: "",
                 nomePeca: "",
@@ -113,6 +113,8 @@ export function EntradaJoia() {
                 categoriaId: "",
                 banhoId: "",
                 quantidade: "",
+                quantidadeMinima: "",
+                quantidadeMinima: "",
                 precoCusto: "",
                 precoBanho: "",
                 multiplicador: "",
@@ -140,8 +142,6 @@ export function EntradaJoia() {
             <NovoFornecedorModal
                 isOpen={isFornecedorOpen}
                 onClose={() => setIsFornecedorOpen(false)} />
-
-            <SucessoModal text={"Cadastro realizado com sucesso!"} IsSuccess={IsSuccess} onClose={() => {setIsSuccess(false)}}/>
 
             <CardForm onSubmit={handleSubmit}>
                 
@@ -196,14 +196,25 @@ export function EntradaJoia() {
                     onChange={(e) => handleChange("banhoId", e.target.value)}>
                 </SelectField>
 
-                <InputField
-                    label={"Quantidade"}
-                    type={"number"}
-                    placeholder={"Ex: 15"}
-                    required={true}
-                    value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}>
-                </InputField>
+                <div className="quantidade-row">
+                    <InputField
+                        label={"Quantidade"}
+                        type={"number"}
+                        placeholder={"Ex: 15"}
+                        required={true}
+                        value={formValues.quantidade}
+                        onChange={(e) => handleChange("quantidade", e.target.value)}>
+                    </InputField>
+
+                    <InputField
+                        label={"Quantidade mínima"}
+                        type={"number"}
+                        placeholder={"Ex: 3"}
+                        required={true}
+                        value={formValues.quantidadeMinima}
+                        onChange={(e) => handleChange("quantidadeMinima", e.target.value)}>
+                    </InputField>
+                </div>
 
                 <InputField
                     label={"Preço original (custo)"}

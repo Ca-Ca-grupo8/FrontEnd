@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import style from './MovimentacaoEstoque.module.css';
 import { Table } from '../../components/ui/Table';
 import { Button } from '../../components/ui/Button';
@@ -6,7 +6,7 @@ import { movimentacaoApi } from '../../service/movimentacaoApi';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { TIPO_MOVIMENTACAO } from '../../utils/tipoMovimentacaoEnum';
-import { Toast } from '../../components/ui/Toast';
+import { emitirToast } from '../../utils/toastBus';
 import { Pagination } from '../../components/ui/Pagination';
 
 export function MovimentacaoEstoque() {
@@ -22,7 +22,6 @@ export function MovimentacaoEstoque() {
         const { ordem, ...filtrosSemOrdem } = filters;
         return { ...filtrosSemOrdem, page: 0, sort: `data,${ordem}` };
     });
-    const [toast, setToast] = useState(null);
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(1);
     const navigate = useNavigate();
@@ -34,7 +33,7 @@ export function MovimentacaoEstoque() {
                 setData(pagina.content ?? []);
                 setTotalPaginas(pagina.totalPages ?? 1);
             } catch {
-                setToast({ message: 'Não foi possível carregar as movimentações.' });
+                // erro exibido pelo interceptor global
             }
         };
 
@@ -45,16 +44,12 @@ export function MovimentacaoEstoque() {
         setFilters((filtrosAtuais) => ({ ...filtrosAtuais, [campo]: valor }));
     };
 
-    const fecharToast = useCallback(() => setToast(null), []);
-
     const validarPeriodo = (filtros) => {
         const apenasUmaDataPreenchida = Boolean(filtros.dataInicio) !== Boolean(filtros.dataFim);
         const periodoInvalido = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
 
         if (periodoInvalido) {
-            setToast({ message: 'A data de início não pode ser maior que a data de fim.' });
-        } else {
-            setToast(null);
+            emitirToast({ message: 'A data de início não pode ser maior que a data de fim.', type: 'error' });
         }
 
         return !apenasUmaDataPreenchida && !periodoInvalido;
@@ -111,17 +106,21 @@ export function MovimentacaoEstoque() {
                             ) : (
                                 <div className={style['product-thumb-placeholder']}>[FOTO]</div>
                             )}
-                            <span className={style['product-title']}>{row.joia.nome}</span>
+                            <span className={style['product-title']} onClick={() => navigate(`/joias/${row.joia.id}`)}>{row.joia.nome}</span>
                         </div>
                     );
 
                 case 'TIPO': {
-                    const isEntry = row.motivoMovimentacao.tipoMovimentacao.nome === 'ENTRADA';
-                    const badgeTypeClass = isEntry ? style['badge-entry'] : style['badge-exit'];
+                    const tipo = row.motivoMovimentacao.tipoMovimentacao.nome;
+                    const badgeTypeClass = tipo === 'ENTRADA'
+                        ? style['badge-entry']
+                        : tipo === 'REENTRADA'
+                            ? style['badge-reentrada']
+                            : style['badge-exit'];
 
                     return (
                         <span className={`${style.badge} ${badgeTypeClass}`}>
-                            {row.motivoMovimentacao.tipoMovimentacao.nome}
+                            {tipo}
                         </span>
                     );
                 }
@@ -132,7 +131,7 @@ export function MovimentacaoEstoque() {
                     const quantityClass = isEntry ? style['qty-positive'] : style['qty-negative'];
                     return (
                         <span className={`${style.quantity} ${quantityClass}`}>
-                            {isEntry ? `+ ${row.quantidade}` : `- ${Math.abs(row.quantidade)}`}
+                            {row.quantidade ? row.quantidade : '-'}
                         </span>
                     );
                 }
@@ -145,10 +144,9 @@ export function MovimentacaoEstoque() {
 
     return (
         <>
-            {toast && <Toast message={toast.message} onClose={fecharToast} />}
             <PageHeader
                 titulo="Movimentações de Estoque"
-                subtitulo="Ver movimentações de revendedoras"
+                subtitulo="Ver histórico de movimentações das maletas"
                 dashed={true}
                 onClick={() => {navigate('/joias/maletas')}} />
             <div className={style['page-container']}>

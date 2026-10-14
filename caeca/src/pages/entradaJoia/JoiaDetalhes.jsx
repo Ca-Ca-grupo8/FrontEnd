@@ -9,7 +9,7 @@ import {
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Button } from '../../components/ui/Button'
 import { EditarJoiaModal } from '../../components/modals/EditarJoiaModal'
-import { SucessoModal } from '../../components/modals/SucessoModal'
+import { emitirToast } from '../../utils/toastBus'
 import { joiaApi } from '../../service/joiaApi'
 import './JoiaDetalhes.css'
 
@@ -56,7 +56,6 @@ export function JoiaDetalhes() {
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState(false)
   const [editando, setEditando] = useState(false)
-  const [salvo, setSalvo] = useState(false)
   const [versao, setVersao] = useState(0)
 
   useEffect(() => {
@@ -78,7 +77,7 @@ export function JoiaDetalhes() {
   }, [id, versao])
 
   const aoSalvar = () => {
-    setSalvo(true)
+    emitirToast({ message: 'Dados atualizados com sucesso!', type: 'success' })
     setVersao((v) => v + 1)
   }
 
@@ -151,12 +150,6 @@ export function JoiaDetalhes() {
         onClose={() => setEditando(false)}
         joia={joia}
         onAtualizar={aoSalvar}
-      />
-
-      <SucessoModal
-        text="Dados atualizados com sucesso!"
-        IsSuccess={salvo}
-        onClose={() => setSalvo(false)}
       />
 
       <div className="jewelry-content">

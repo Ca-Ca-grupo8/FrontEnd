@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { extrairMensagemErro } from '../utils/apiError';
+import { emitirToast } from '../utils/toastBus';
 
 const api = axios.create({
   // Em dev o proxy do Vite (/api -> localhost:8080) resolve.
@@ -13,10 +15,20 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const silent = error.config?.silent === true;
+
     if (error.response?.status === 401) {
-      localStorage.clear();
-      window.location.href = '/login';
+      if (!silent) {
+        localStorage.clear();
+        window.location.href = '/login';
+      }
+      return Promise.reject(error);
     }
+
+    if (!silent) {
+      emitirToast({ message: extrairMensagemErro(error), type: 'error' });
+    }
+
     return Promise.reject(error);
   }
 );

@@ -88,9 +88,37 @@
   font: inherit;
 }
 
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.product-thumb,
+.product-thumb-placeholder {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 8px;
+}
+
+.product-thumb {
+  object-fit: cover;
+}
+
+.product-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #d9d9d9;
+  color: #666;
+}
+
 .product-title {
   font-weight: 700;
   color: #111;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .badge {
@@ -130,6 +158,16 @@
 .badge-neutro {
   background-color: #d4d4d4;
   color: #5b5b5b;
+}
+
+.badge-saida {
+  background-color: #dcfae6;
+  color: #0f7a4d;
+}
+
+.badge-reentrada {
+  background-color: #e1effe;
+  color: #175cd3;
 }
 
 .status-selector {

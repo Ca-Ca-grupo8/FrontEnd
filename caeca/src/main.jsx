@@ -5,6 +5,8 @@ import './index.css'
 
 import { Layout } from './components/layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+import { ErrorBoundary } from './components/ErrorBoundary.jsx';
+import { ToastHost } from './components/feedback/ToastHost.jsx';
 import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { ReentradaJoia } from './pages/reentradaJoia/ReentradaJoia.jsx'
 import { EntradaJoiaExistente } from './pages/entradaJoiaExistente/EntradaJoiaExistente.jsx'
@@ -110,6 +112,9 @@ path: '/joias/maletas',
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <ErrorBoundary>
+      <RouterProvider router={router}/>
+      <ToastHost />
+    </ErrorBoundary>
   </StrictMode>,
 )

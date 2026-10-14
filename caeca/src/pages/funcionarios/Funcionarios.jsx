@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Toast } from '../../components/ui/Toast';
 import { Button } from '../../components/ui/Button';
 import { usuarioApi } from '../../service/usuarioApi';
 import { NovoFuncionarioModal } from '../../components/modals/NovoFuncionario';
@@ -24,7 +23,6 @@ export function Funcionarios() {
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState('');
     const [filtroPerfil, setFiltroPerfil] = useState('');
-    const [toast, setToast] = useState(null);
     const [modalAberto, setModalAberto] = useState(false);
 
     const carregarUsuarios = useCallback(async () => {
@@ -32,7 +30,7 @@ export function Funcionarios() {
         try {
             setUsuarios(await usuarioApi.listarUsuarios());
         } catch {
-            setToast({ message: 'Não foi possível carregar os funcionários.' });
+            // erro exibido pelo interceptor global
         } finally {
             setCarregando(false);
         }
@@ -44,7 +42,7 @@ export function Funcionarios() {
             try {
                 setUsuarios(await usuarioApi.listarUsuarios());
             } catch {
-                setToast({ message: 'Não foi possível carregar os funcionários.' });
+                // erro exibido pelo interceptor global
             } finally {
                 setCarregando(false);
             }
@@ -69,8 +67,6 @@ export function Funcionarios() {
             return casaComBusca && casaComPerfil;
         });
     }, [usuarios, busca, filtroPerfil]);
-
-    const fecharToast = useCallback(() => setToast(null), []);
 
     const rotuloDoPerfil = (role) => {
         if (role === PERFIS.ROLE_ADMIN) {
@@ -98,7 +94,6 @@ export function Funcionarios() {
 
     return (
         <>
-            {toast && <Toast message={toast.message} onClose={fecharToast} />}
             <PageHeader titulo="Funcionários" subtitulo="Gerencie a equipe e os acessos do sistema">
                 <Button colorido={true} onClick={() => setModalAberto(true)}>
                     Adicionar Funcionário

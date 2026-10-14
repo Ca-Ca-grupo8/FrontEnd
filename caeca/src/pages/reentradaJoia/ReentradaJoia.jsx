@@ -4,7 +4,7 @@ import { InputField } from "../../components/ui/InputField";
 import { SelectField } from "../../components/ui/SelectField";
 import { Button } from "../../components/ui/Button";
 import { PageHeader } from "../../components/ui/PageHeader";
-import { SucessoModal } from "../../components/modals/SucessoModal";
+import { emitirToast } from "../../utils/toastBus";
 import { motivoApi } from "../../service/motivoApi";
 import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
@@ -13,7 +13,6 @@ import "./ReentradaJoia.module.css";
 export function ReentradaJoia() {
     const [motivos, setMotivos] = useState([]);
     const [joias, setJoias] = useState([]);
-    const [isSuccess, setIsSuccess] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoReentradaId: "",
@@ -78,7 +77,7 @@ export function ReentradaJoia() {
     async function realizarReentrada(payload) {
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, null);
-            setIsSuccess(true);
+            emitirToast({ message: "Reentrada realizada com sucesso!", type: "success" });
             setFormValues({
                 motivoReentradaId: "",
                 joiaId: "",
@@ -93,8 +92,6 @@ export function ReentradaJoia() {
     return (
         <>
             <PageHeader titulo={"Reentrada de joias"} />
-
-            <SucessoModal text={"Reentrada realizada com sucesso!"} IsSuccess={isSuccess} onClose={() => { setIsSuccess(false) }} />
 
             <CardForm onSubmit={handleSubmit}>
 
