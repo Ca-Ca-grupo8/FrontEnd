@@ -11,6 +11,7 @@ import { EntradaJoia } from './pages/EntradaJoia.jsx'
 import { ReentradaJoia } from './pages/reentradaJoia/ReentradaJoia.jsx'
 import { EntradaJoiaExistente } from './pages/entradaJoiaExistente/EntradaJoiaExistente.jsx'
 import { Login } from './pages/Login.jsx';
+import { PrimeiroAcesso } from './pages/primeiroAcesso/PrimeiroAcesso.jsx';
 import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
 import { MovimentacaoEscolhas } from './pages/movimentacao/MovimentacaoEscolhas.jsx';
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,
+  },
+  {
+    path: '/primeiro-acesso',
+    element: <PrimeiroAcesso />,
   },
   {
     element: (
