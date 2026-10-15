@@ -5,6 +5,11 @@ export const dashboardApi = {
         const { data } = await api.get('/dashboard', { params: filtros });
         return data;
     },
+    // KPIs e gráfico mensal do card "Entradas X Saídas".
+    buscarKpisEGrafico: async (filtros) => {
+        const { data } = await api.get('/dashboard/kpis-e-grafico', { params: filtros });
+        return data;
+    },
     buscarTopCinco: async (filtros) => {
         const { data } = await api.get('/dashboard/top-cinco', { params: filtros });
         return data;

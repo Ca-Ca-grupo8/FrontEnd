@@ -14,7 +14,6 @@ import style from './Dashboard.module.css';
 const CORES = {
     entradas: '#7FB9CC',
     saidas: '#3B4FD8',
-    estoque: '#E91E63',
     motivo: '#96205C',
 };
 
@@ -79,25 +78,37 @@ function datasDoPeriodo(tipo) {
     }
 }
 
-const QUADRO_ENTRADAS_SAIDAS = [
-    // TODO: ligar em /dashboard/entradas-saidas quando o
-    // EntradaXSaidaController (hoje comentado) for reativado.
-    { mes: 'Jan', entradas: 1550, saidas: 780, estoque: 820 },
-    { mes: 'Fev', entradas: 1980, saidas: 1150, estoque: 1340 },
-    { mes: 'Mar', entradas: 4820, saidas: 4100, estoque: 5320 },
-    { mes: 'Abr', entradas: 2720, saidas: 3950, estoque: 5330 },
-    { mes: 'Mai', entradas: 1600, saidas: 760, estoque: 790 },
-    { mes: 'Jun', entradas: 3500, saidas: 4600, estoque: 6200 },
-    { mes: 'Jul', entradas: 3550, saidas: 2650, estoque: 3560 },
-    { mes: 'Ago', entradas: 5900, saidas: 5000, estoque: 6450 },
-    { mes: 'Set', entradas: 5250, saidas: 4400, estoque: 6020 },
+// O backend agrupa o gráfico por mês no formato 'yyyy-MM'; o mock exibe a
+// abreviação em português (Jan, Fev, ...).
+const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+const paraMesAbreviado = (agrupado) => {
+    const [, mes] = String(agrupado ?? '').split('-');
+    const indice = Number(mes) - 1;
+    return MESES[indice] ?? agrupado;
+};
+
+// O endpoint devolve { kpis, grafico } com as comparações contra o período
+// anterior já calculadas pelo backend.
+const paraResumo = (kpis = {}) => [
+    { label: 'Total de Entradas', valor: kpis.totalEntradas, anterior: kpis.entradasPassadas },
+    { label: 'Total de Saídas', valor: kpis.totalSaidas, anterior: kpis.saidasPassadas },
+    { label: 'Produtos em estoque', valor: kpis.totalEmEstoque, anterior: kpis.estoquePassado },
 ];
 
-const RESUMO_ENTRADAS_SAIDAS = [
-    { label: 'Total de Entradas', valor: 43230, variacao: 7 },
-    { label: 'Total de Saídas', valor: 32903, variacao: -4 },
-    { label: 'Produtos em estoque', valor: 18583, variacao: 3 },
-];
+const paraGrafico = (grafico = []) =>
+    grafico.map((ponto) => ({
+        mes: paraMesAbreviado(ponto.dataAgrupada),
+        entradas: ponto.totalEntradas,
+        saidas: ponto.totalSaidas,
+    }));
+
+// Variação percentual entre o período atual e o anterior. Sem isso não
+// há comparação possível (ex.: primeiro mês sem histórico).
+function periodoAnterior(atual, anterior) {
+    if (atual == null || anterior == null || anterior === 0) return null;
+    return Math.round(((atual - anterior) / Math.abs(anterior)) * 100);
+}
 
 function Trend({ valor }) {
     const sobe = valor >= 0;
@@ -109,12 +120,13 @@ function Trend({ valor }) {
     );
 }
 
-function ResumoItem({ label, valor, variacao }) {
+function ResumoItem({ label, valor, anterior }) {
+    const variacao = periodoAnterior(valor, anterior);
     return (
         <div className={style.summaryItem}>
             <div className={style.summaryHead}>
                 <span className={style.summaryLabel}>{label}</span>
-                <Trend valor={variacao} />
+                {variacao !== null && <Trend valor={variacao} />}
             </div>
             <div className={style.summaryValue}>{formatarNumero(valor)}</div>
         </div>
@@ -192,7 +204,7 @@ function RankingVendidas({ dados, onAcessar }) {
                             </td>
                             <td>{item.quantidadeSaidas}</td>
                             <td>
-                                <button className={style.accessBtn} onClick={onAcessar}>Acessar</button>
+                                <button className={style.accessBtn} onClick={() => onAcessar(item.nome)}>Acessar</button>
                             </td>
                         </tr>
                     ))}
@@ -236,7 +248,7 @@ function RankingFrias({ dados, onAcessar }) {
                             </td>
                             <td>{item.quantidade}</td>
                             <td>
-                                <button className={style.accessBtn} onClick={onAcessar}>Acessar</button>
+                                <button className={style.accessBtn} onClick={() => onAcessar(item.nome)}>Acessar</button>
                             </td>
                         </tr>
                     ))}
@@ -266,6 +278,7 @@ export function Dashboard() {
     const [motivosReentrada, setMotivosReentrada] = useState([]);
     const [topVendidos, setTopVendidos] = useState([]);
     const [topFrios, setTopFrios] = useState([]);
+    const [entradasSaidas, setEntradasSaidas] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [toast, setToast] = useState(null);
 
@@ -285,7 +298,7 @@ export function Dashboard() {
         };
 
         try {
-            const [saida, giroEstoque, frias, reentrada, saidas, vendidos, frios] =
+            const [saida, giroEstoque, frias, reentrada, saidas, vendidos, frios, exs] =
                 await Promise.all([
                     dashboardApi.buscarValorSaida(comFiltro),
                     dashboardApi.buscarGiroEstoque(comFiltro),
@@ -294,6 +307,7 @@ export function Dashboard() {
                     dashboardApi.buscarMotivosSaida(semFiltro),
                     dashboardApi.buscarTopCinco(comFiltro),
                     dashboardApi.buscarTopCincoMaisFrios(comFiltro),
+                    dashboardApi.buscarKpisEGrafico(comFiltro),
                 ]);
 
             setValorSaida(saida);
@@ -303,6 +317,7 @@ export function Dashboard() {
             setMotivosSaida(saidas ?? []);
             setTopVendidos(vendidos ?? []);
             setTopFrios(frios ?? []);
+            setEntradasSaidas(exs ?? null);
         } catch {
             setToast({ message: 'Não foi possível carregar a dashboard.' });
         } finally {
@@ -341,11 +356,6 @@ export function Dashboard() {
         carregar({ inicio: novoInicio, fim: novoFim, categoriaId });
     };
 
-    const periodoAnterior = (atual, anterior) => {
-        if (atual == null || anterior == null || anterior === 0) return null;
-        return Math.round(((atual - anterior) / Math.abs(anterior)) * 100);
-    };
-
     const kpis = [
         {
             label: 'Valor de Saída',
@@ -366,6 +376,22 @@ export function Dashboard() {
             variacao: periodoAnterior(indiceFrias?.indiceAtual, indiceFrias?.indiceMesAnterior),
         },
     ];
+
+    // Card "Entradas X Saídas", derivado do /kpis-e-grafico.
+    const resumoEntradasSaidas = paraResumo(entradasSaidas?.kpis);
+    const graficoEntradasSaidas = paraGrafico(entradasSaidas?.grafico);
+
+    // O ranking traz o nome da categoria (ou do produto, quando o filtro já
+    // está aplicado). O inventário filtra por id, então o nome é resolvido
+    // antes de navegar; sem correspondência, cai no catálogo completo.
+    const acessarDetalhes = (nome) => {
+        if (categoriaId) {
+            navigate(`/joias?categoria=${categoriaId}`);
+            return;
+        }
+        const categoria = categorias.find((c) => c.nome === nome);
+        navigate(categoria ? `/joias?categoria=${categoria.id}` : '/joias');
+    };
 
     return (
         <>
@@ -479,19 +505,16 @@ export function Dashboard() {
                                 <span className={style.legendItem}>
                                     <span className={style.legendDot} style={{ background: CORES.saidas }} />Saídas
                                 </span>
-                                <span className={style.legendItem}>
-                                    <span className={style.legendDot} style={{ background: CORES.estoque }} />Peças em estoque
-                                </span>
                             </div>
                             <div className={style.summaryList}>
-                                {RESUMO_ENTRADAS_SAIDAS.map((r) => (
+                                {resumoEntradasSaidas.map((r) => (
                                     <ResumoItem key={r.label} {...r} />
                                 ))}
                             </div>
                         </div>
                         <div style={{ width: '100%', height: 300 }}>
                             <ResponsiveContainer>
-                                <BarChart data={QUADRO_ENTRADAS_SAIDAS} barGap={2}
+                                <BarChart data={graficoEntradasSaidas} barGap={2}
                                     margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EEEEEE" />
                                     <XAxis dataKey="mes" tick={{ fontSize: 13, fill: '#666' }}
@@ -501,7 +524,6 @@ export function Dashboard() {
                                     <Tooltip />
                                     <Bar dataKey="entradas" fill={CORES.entradas} barSize={14} />
                                     <Bar dataKey="saidas" fill={CORES.saidas} barSize={14} />
-                                    <Bar dataKey="estoque" fill={CORES.estoque} barSize={14} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -516,8 +538,8 @@ export function Dashboard() {
 
                 {/* Rankings */}
                 <div className={style.rankingGrid}>
-                    <RankingVendidas dados={topVendidos} onAcessar={() => navigate('/joias')} />
-                    <RankingFrias dados={topFrios} onAcessar={() => navigate('/joias')} />
+                    <RankingVendidas dados={topVendidos} onAcessar={acessarDetalhes} />
+                    <RankingFrias dados={topFrios} onAcessar={acessarDetalhes} />
                 </div>
             </div>
         </>

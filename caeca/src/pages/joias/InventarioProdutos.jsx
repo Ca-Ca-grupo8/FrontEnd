@@ -8,7 +8,7 @@ import { materialApi } from '../../service/materialApi';
 import { banhoApi } from '../../service/banhoApi';
 import { emitirToast } from '../../utils/toastBus';
 import style from './InventarioProdutos.module.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Pagination } from '../../components/ui/Pagination';
 
 const colunas = [
@@ -29,13 +29,16 @@ const STATUS_JOIA = {
 
 export function InventarioProdutos() {
     const navigate = useNavigate()
+    // A dashboard entra aqui com ?categoria=<id> vinda dos rankings.
+    const [searchParams] = useSearchParams();
+    const categoriaInicial = searchParams.get('categoria') ?? '';
     const [produtos, setProdutos] = useState([]);
     const [categorias, setCategorias] = useState([]);
     const [materiais, setMateriais] = useState([]);
     const [banhos, setBanhos] = useState([]);
     const [filters, setFilters] = useState({
         nome: '',
-        categoria: '',
+        categoria: categoriaInicial,
         material: '',
         banho: '',
         joiaStatus: '',
