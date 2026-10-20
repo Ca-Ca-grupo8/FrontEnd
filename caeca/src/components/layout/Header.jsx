@@ -104,7 +104,7 @@ export function Header({ avatarImg }) {
           </div>
         </div>
 
-        <NavLink to="/metricas" className="nav-item" onClick={closeAll}>
+        <NavLink to="/dashboard" className="nav-item" onClick={closeAll}>
           <TrendingUp size={24} />
           <span className="nav-label">Métricas</span>
         </NavLink>
