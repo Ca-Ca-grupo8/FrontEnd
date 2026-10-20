@@ -1,0 +1,380 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 32px 32px;
+  background-color: #f4f4f4;
+}
+
+/* ---------- Cards genéricos ---------- */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 24px;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 20px;
+}
+
+/* ---------- Filtros ---------- */
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filtersTitle {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+}
+
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.fieldGroup {
+  display: flex;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+}
+
+.fieldSubLabel {
+  font-size: 13px;
+  color: #666;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid #96205C;
+  border-radius: 8px;
+  padding: 0 10px;
+  min-width: 180px;
+  background: #fff;
+}
+
+.inputWrap svg {
+  color: #96205C;
+  flex-shrink: 0;
+}
+
+.inputWrap select,
+.inputWrap input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: #444;
+  padding: 9px 8px;
+  width: 100%;
+  cursor: pointer;
+}
+
+.select {
+  min-width: 220px;
+}
+
+.filtersDivider {
+  border: none;
+  border-top: 1px solid #E6E6E6;
+  margin: 0;
+}
+
+.quickFilters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quickBtn {
+  border: none;
+  background: #EDEDED;
+  color: #555;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.quickBtn:hover {
+  background: #E4E4E4;
+}
+
+.quickBtnActive {
+  background: #FCD7E3;
+  color: #96205C;
+}
+
+.applyBtn {
+  border: none;
+  background: #8C1D40;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  align-self: center;
+}
+
+.applyBtn:hover {
+  background: #721C3B;
+}
+
+.applyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- KPIs ---------- */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.kpiHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.kpiLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+}
+
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.trendUp {
+  color: #12B76A;
+}
+
+.trendDown {
+  color: #D92D20;
+}
+
+.kpiValue {
+  font-size: 30px;
+  font-weight: 700;
+  color: #8C1D40;
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+
+.kpiPrevious {
+  font-size: 14px;
+  color: #444;
+}
+
+.kpiPrevious strong {
+  color: #111;
+}
+
+/* ---------- Entradas X Saídas ---------- */
+.exsGrid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #555;
+}
+
+.legendDot {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.summaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.summaryItem {
+  border: 1px solid #ECECEC;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.summaryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.summaryLabel {
+  font-size: 13px;
+  color: #666;
+}
+
+.summaryValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* ---------- Motivos ---------- */
+.motivosGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+/* ---------- Rankings ---------- */
+.rankingGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.rankingTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rankingTable th {
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111;
+  padding: 0 10px 14px;
+}
+
+.rankingTable td {
+  padding: 10px;
+  font-size: 14px;
+  color: #333;
+  vertical-align: middle;
+}
+
+.position {
+  font-weight: 600;
+  color: #555;
+  width: 60px;
+}
+
+.thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 6px;
+  border: 1px solid #E0E0E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: #999;
+}
+
+.productName {
+  font-weight: 600;
+}
+
+.productNote {
+  font-size: 12px;
+  color: #999;
+  font-style: italic;
+}
+
+.accessBtn {
+  border: none;
+  background: #8C1D40;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.accessBtn:hover {
+  background: #721C3B;
+}
+
+.empty {
+  color: #888;
+  font-size: 14px;
+  text-align: center;
+  padding: 32px 16px;
+}
+
+@media (max-width: 960px) {
+  .page {
+    padding: 0 16px 24px;
+  }
+
+  .kpiGrid,
+  .motivosGrid,
+  .rankingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .exsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .filtersRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .applyBtn {
+    align-self: flex-start;
+  }
+}

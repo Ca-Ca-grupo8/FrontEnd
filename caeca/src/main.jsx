@@ -26,6 +26,7 @@ import { MaletaDetalhes } from './pages/Maletas/MaletaDetalhes.jsx';
 import { CadastroRevendedora } from './pages/revendedoras/CadastroRevendedora.jsx';
 import { Revendedoras } from './pages/revendedoras/Revendedoras.jsx';
 import { RevendedoraDetalhes } from './pages/revendedoras/RevendedoraDetalhes.jsx';
+import { Dashboard } from './pages/dashboard/Dashboard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -110,6 +111,10 @@ path: '/joias/maletas',
       {
         path: '/contribuintes/funcionarios',
         element: <Funcionarios />,
+      },
+      {
+        path: '/dashboard',
+        element: <Dashboard />,
       }
     ],
   },
