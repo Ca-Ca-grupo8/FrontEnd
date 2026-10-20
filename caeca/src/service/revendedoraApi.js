@@ -10,5 +10,10 @@ export const revendedoraApi = {
         return fetchAllPages((page) =>
             api.get("/revendedoras", { params: { page } }).then(r => r.data)
         );
+    },
+    listarRevendedorasMaletaAberta: async () => {
+        return fetchAllPages((page) =>
+            api.get("/revendedoras/maleta-aberta", { params: { page } }).then(r => r.data)
+        );
     }
 }
