@@ -1,0 +1,126 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #f0e4ea;
+}
+
+.cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.titulo {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #8c2359;
+}
+
+.subtitulo {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: #757575;
+}
+
+.link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
+    border: none;
+    background: none;
+    color: #96205c;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.lista {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f3eef1;
+}
+
+.item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.itemConteudo,
+.itemClicavel {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.itemClicavel {
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.itemClicavel:hover .nome {
+    text-decoration: underline;
+}
+
+.itemClicavel:focus-visible {
+    outline: 2px solid #96205c;
+    outline-offset: 2px;
+}
+
+.info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.nome {
+    overflow: hidden;
+    color: #2b2b2b;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detalhe {
+    font-size: 0.8rem;
+    color: #9a9a9a;
+}
+
+.valor {
+    color: #8c2359;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.valor small {
+    margin-left: 4px;
+    color: #757575;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
