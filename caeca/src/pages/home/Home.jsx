@@ -1,4 +1,4 @@
-import { ArrowDownToLine, ArrowUpFromLine, ChartColumn, History, Package } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, Gem, History, TrendingUp } from "lucide-react";
 import { CardHome } from "./components/CardHome";
 import { HeroHome } from "./components/HeroHome";
 import { KpiCard } from "./components/KpiCard";
@@ -22,9 +22,9 @@ const ACESSOS = [
         path: "/movimentacoes/saida"
     },
     {
-        titulo: "Relatórios",
+        titulo: "Métricas",
         subtitulo: "Giro de estoque e peças mais vendidas.",
-        Icone: ChartColumn,
+        Icone: TrendingUp,
         path: "/dashboard"
     },
     {
@@ -36,7 +36,7 @@ const ACESSOS = [
     {
         titulo: "Inventário",
         subtitulo: "Consulta do catálogo e do estoque atual.",
-        Icone: Package,
+        Icone: Gem,
         path: "/joias"
     }
 ];
@@ -149,7 +149,7 @@ export function Home() {
                             campo="quantidadeSaidas"
                             rotuloValor="saídas"
                             caminhoVerMais="/dashboard"
-                            rotuloVerMais="Ver dashboard"
+                            rotuloVerMais="Ver métricas"
                             caminhoItem={(item) => (item.id ? `/joias/${item.id}` : null)}
                             carregando={carregando}
                             erro={erros.topVendidos}

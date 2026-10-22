@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Gem, Users, History, TrendingUp, Home, Menu, X, User, LogOut } from 'lucide-react';
 import '../../styles/Header.css';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import api from '../../service/api';
 import { usuarioApi } from '../../service/usuarioApi';
 import { HttpStatusCode } from 'axios';
@@ -9,6 +9,8 @@ import { HttpStatusCode } from 'axios';
 export function Header({ avatarImg }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const { pathname } = useLocation();
+  const estaNaHome = pathname === '/';
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -48,8 +50,8 @@ export function Header({ avatarImg }) {
         <div className="user-profile" onClick={() => toggleDropdown('perfil')} style={{ cursor: 'pointer' }}>
           <img src={avatarImg} alt="Foto de perfil" className="user-avatar" />
           <div className="user-info">
-            <span className="user-name">{nomeUsuario}</span>
-            <span className="user-desc">{roleUsuarioFormatted}</span>
+            {!estaNaHome && <span className="user-name">{nomeUsuario}</span>}
+            {!estaNaHome && <span className="user-desc">{roleUsuarioFormatted}</span>}
           </div>
         </div>
         

@@ -11,12 +11,13 @@
     font: inherit;
     text-align: left;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    transition: transform 0.2s, border-color 0.2s;
 }
 
 .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(196, 64, 127, 0.35);
+    background: #a8326b;
+    border-color: #a8326b;
 }
 
 .card:focus-visible {
