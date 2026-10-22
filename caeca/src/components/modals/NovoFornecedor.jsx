@@ -4,7 +4,8 @@ import { InputField } from "../ui/InputField";
 import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
 
-export function NovoFornecedorModal({ isOpen, onClose }) {
+// Formulário em si, sem a casca de modal: pode ser usado inline ou dentro do modal
+export function FormNovoFornecedor({ onSalvo }) {
     const [formValues, setFormValues] = useState({
         nome: "",
         telefone: "",
@@ -30,12 +31,51 @@ export function NovoFornecedorModal({ isOpen, onClose }) {
 
             setFormValues({ nome: "", telefone: "", instagram: "" });
             emitirToast({ message: "Fornecedor cadastrado com sucesso!", type: "success" });
-            onClose();
+            onSalvo?.();
         } catch {
             // erro exibido pelo interceptor global
         }
     };
 
+    return (
+        <form onSubmit={handleSubmit} className="modal-form">
+            <InputField
+                label={"Nome do fornecedor"}
+                type={"text"}
+                placeholder={"Ex: Joias Atacado"}
+                required={true}
+                value={formValues.nome}
+                onChange={(e) => handleChange("nome", e.target.value)}
+            />
+
+            <InputField
+                label={"Telefone"}
+                type={"text"}
+                placeholder={"(00) 00000-0000"}
+                required={true}
+                value={formValues.telefone}
+                onChange={(e) => handleChange("telefone", e.target.value)}
+            />
+
+            <InputField
+                label={"Instagram"}
+                type={"text"}
+                placeholder={"@seufornecedor"}
+                required={true}
+                value={formValues.instagram}
+                onChange={(e) => handleChange("instagram", e.target.value)}
+            />
+
+            <div className="modal-actions">
+                <Button type="submit" colorido={true}>
+                    Cadastrar fornecedor
+                </Button>
+            </div>
+        </form>
+    );
+}
+
+export function NovoFornecedorModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
@@ -48,40 +88,7 @@ export function NovoFornecedorModal({ isOpen, onClose }) {
                     <p>Preencha os dados para cadastrar um novo parceiro.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="modal-form">
-                    <InputField
-                        label={"Nome do fornecedor"}
-                        type={"text"}
-                        placeholder={"Ex: Joias Atacado"}
-                        required={true}
-                        value={formValues.nome}
-                        onChange={(e) => handleChange("nome", e.target.value)}
-                    />
-
-                    <InputField
-                        label={"Telefone"}
-                        type={"text"}
-                        placeholder={"(00) 00000-0000"}
-                        required={true}
-                        value={formValues.telefone}
-                        onChange={(e) => handleChange("telefone", e.target.value)}
-                    />
-
-                    <InputField
-                        label={"Instagram"}
-                        type={"text"}
-                        placeholder={"@seufornecedor"}
-                        required={true}
-                        value={formValues.instagram}
-                        onChange={(e) => handleChange("instagram", e.target.value)}
-                    />
-
-                    <div className="modal-actions">
-                        <Button type="submit" colorido={true}>
-                            Cadastrar fornecedor
-                        </Button>
-                    </div>
-                </form>
+                <FormNovoFornecedor onSalvo={onClose} />
             </div>
         </div>
     );

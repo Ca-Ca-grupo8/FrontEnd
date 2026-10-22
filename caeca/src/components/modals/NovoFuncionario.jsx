@@ -10,7 +10,8 @@ const OPCOES_PERFIL = [
     { id: "ROLE_ADMIN", nome: "Administrador" },
 ];
 
-export function NovoFuncionarioModal({ isOpen, onClose }) {
+// Formulário em si, sem a casca de modal: pode ser usado inline ou dentro do modal
+export function FormNovoFuncionario({ onSalvo }) {
     const [formValues, setFormValues] = useState({
         nome: "",
         email: "",
@@ -39,12 +40,50 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
                 message: `Convite enviado para ${formValues.email}`,
                 type: "success",
             });
-            onClose();
+            onSalvo?.();
         } catch {
             // erro exibido pelo interceptor global
         }
     };
 
+    return (
+        <form onSubmit={handleSubmit} className="modal-form">
+            <InputField
+                label={"Nome"}
+                type={"text"}
+                placeholder={"Até 10 caracteres"}
+                required={true}
+                value={formValues.nome}
+                onChange={(e) => handleChange("nome", e.target.value)}
+            />
+
+            <InputField
+                label={"Email"}
+                type={"email"}
+                placeholder={"nome@empresa.com"}
+                required={true}
+                value={formValues.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+            />
+
+            <SelectField
+                label={"Perfil"}
+                data={OPCOES_PERFIL}
+                required={true}
+                value={formValues.perfilUsuario}
+                onChange={(e) => handleChange("perfilUsuario", e.target.value)}
+            />
+
+            <div className="modal-actions">
+                <Button type="submit" colorido={true}>
+                    Cadastrar funcionário
+                </Button>
+            </div>
+        </form>
+    );
+}
+
+export function NovoFuncionarioModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
@@ -57,39 +96,7 @@ export function NovoFuncionarioModal({ isOpen, onClose }) {
                     <p>Cadastre alguém e escolha o que ele pode fazer no sistema.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="modal-form">
-                    <InputField
-                        label={"Nome"}
-                        type={"text"}
-                        placeholder={"Até 10 caracteres"}
-                        required={true}
-                        value={formValues.nome}
-                        onChange={(e) => handleChange("nome", e.target.value)}
-                    />
-
-                    <InputField
-                        label={"Email"}
-                        type={"email"}
-                        placeholder={"nome@empresa.com"}
-                        required={true}
-                        value={formValues.email}
-                        onChange={(e) => handleChange("email", e.target.value)}
-                    />
-
-                    <SelectField
-                        label={"Perfil"}
-                        data={OPCOES_PERFIL}
-                        required={true}
-                        value={formValues.perfilUsuario}
-                        onChange={(e) => handleChange("perfilUsuario", e.target.value)}
-                    />
-
-                    <div className="modal-actions">
-                        <Button type="submit" colorido={true}>
-                            Cadastrar funcionário
-                        </Button>
-                    </div>
-                </form>
+                <FormNovoFuncionario onSalvo={onClose} />
             </div>
         </div>
     );

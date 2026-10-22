@@ -5,6 +5,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import api from '../../service/api';
 import { usuarioApi } from '../../service/usuarioApi';
 import { HttpStatusCode } from 'axios';
+import { usuarioEhAdmin } from '../../utils/perfil';
 
 export function Header({ avatarImg }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -90,7 +91,9 @@ export function Header({ avatarImg }) {
           <div className="dropdown-menu">
             <NavLink to="/contribuintes" onClick={closeAll}>Contribuintes</NavLink>
             <NavLink to="/contribuintes/revendedoras" onClick={closeAll}>Revendedoras</NavLink>
-            <NavLink to="/contribuintes/fornecedores" onClick={closeAll}>Fornecedores</NavLink>
+            {usuarioEhAdmin() && (
+              <NavLink to="/contribuintes/fornecedores" onClick={closeAll}>Fornecedores</NavLink>
+            )}
             <NavLink to="/contribuintes/funcionarios" onClick={closeAll}>Funcionários</NavLink>
           </div>
         </div>
