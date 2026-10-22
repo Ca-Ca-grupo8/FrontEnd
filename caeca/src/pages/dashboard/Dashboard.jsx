@@ -142,26 +142,31 @@ function GraficoMotivos({ titulo, dados }) {
             ) : (
                 <div style={{ width: '100%', height: 300 }}>
                     <ResponsiveContainer>
-                        <BarChart data={dados} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EEEEEE" />
+                        {/* layout="vertical" deixa as barras deitadas: o eixo
+                            vira categoria na vertical e o valor na horizontal. */}
+                        <BarChart
+                            data={dados}
+                            layout="vertical"
+                            margin={{ top: 8, right: 16, left: 8, bottom: 8 }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#EEEEEE" />
                             <XAxis
-                                dataKey="motivo"
-                                angle={-90}
-                                textAnchor="end"
-                                interval={0}
-                                height={110}
-                                tick={{ fontSize: 12, fill: '#666' }}
-                                axisLine={false}
-                                tickLine={false}
-                            />
-                            <YAxis
+                                type="value"
                                 allowDecimals={false}
                                 tick={{ fontSize: 12, fill: '#888' }}
                                 axisLine={false}
                                 tickLine={false}
                             />
+                            <YAxis
+                                type="category"
+                                dataKey="motivo"
+                                width={140}
+                                tick={{ fontSize: 12, fill: '#666' }}
+                                axisLine={false}
+                                tickLine={false}
+                            />
                             <Tooltip cursor={{ fill: 'rgba(150,32,92,0.05)' }} />
-                            <Bar dataKey="quantidade" barSize={56} radius={[4, 4, 0, 0]}>
+                            <Bar dataKey="quantidade" barSize={18} radius={[0, 4, 4, 0]}>
                                 {dados.map((_, i) => (
                                     <Cell key={i} fill={CORES.motivo} />
                                 ))}
