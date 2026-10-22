@@ -5,6 +5,7 @@ import './index.css'
 
 import { Layout } from './components/layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+import { AdminRoute } from './components/AdminRoute.jsx';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { ToastHost } from './components/feedback/ToastHost.jsx';
 import { Login } from './pages/Login.jsx';
@@ -102,7 +103,7 @@ path: '/joias/maletas',
       },
       {
         path: '/contribuintes/fornecedores',
-        element: <Fornecedores />,
+        element: <AdminRoute><Fornecedores /></AdminRoute>,
       },
       {
         path: '/contribuintes/funcionarios',
