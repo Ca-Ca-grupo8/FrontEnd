@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
-import CardForm from "../../components/layout/CardForm";
+import { Link } from "react-router-dom";
+import { FormFlat } from "../../components/layout/FormFlat";
+import formStyles from "../../components/layout/FormFlat.module.css";
 import { InputField } from "../../components/ui/InputField";
 import { SelectField } from "../../components/ui/SelectField";
 import { Button } from "../../components/ui/Button";
-import { PageHeader } from "../../components/ui/PageHeader";
 import { emitirToast } from "../../utils/toastBus";
 import { motivoApi } from "../../service/motivoApi";
 import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
 import { revendedoraApi } from "../../service/revendedoraApi";
 import { vendaApi } from "../../service/vendaApi";
-import "./ReentradaJoia.module.css";
 
 export function ReentradaJoia() {
     const [motivos, setMotivos] = useState([]);
@@ -167,59 +167,55 @@ export function ReentradaJoia() {
     }
 
     return (
-        <>
-            <PageHeader titulo={"Reentrada de joias"} />
+        <FormFlat onSubmit={handleSubmit}>
 
-            <CardForm onSubmit={handleSubmit}>
+            <SelectField
+                data={motivos}
+                label={"Motivo da reentrada"}
+                value={formValues.motivoReentradaId}
+                required={true}
+                onChange={(e) => handleMotivoChange(e.target.value)}
+            />
 
+            {exibirRevendedora && (
                 <SelectField
-                    data={motivos}
-                    label={"Motivo da reentrada"}
-                    value={formValues.motivoReentradaId}
+                    data={revendedoras}
+                    label={"Revendedora"}
+                    value={formValues.revendedoraId}
                     required={true}
-                    onChange={(e) => handleMotivoChange(e.target.value)}
+                    onChange={(e) => handleRevendedoraChange(e.target.value)}
                 />
+            )}
 
-                {exibirRevendedora && (
-                    <SelectField
-                        data={revendedoras}
-                        label={"Revendedora"}
-                        value={formValues.revendedoraId}
-                        required={true}
-                        onChange={(e) => handleRevendedoraChange(e.target.value)}
-                    />
-                )}
+            <SelectField
+                data={opcoesJoia}
+                label={"Joia"}
+                value={formValues.joiaId}
+                required={true}
+                onChange={(e) => handleChange("joiaId", e.target.value)}
+            />
 
-                <SelectField
-                    data={opcoesJoia}
-                    label={"Joia"}
-                    value={formValues.joiaId}
-                    required={true}
-                    onChange={(e) => handleChange("joiaId", e.target.value)}
-                />
+            <InputField
+                label={"Quantidade"}
+                type={"number"}
+                placeholder={"Value"}
+                required={true}
+                min={quantidadeMaxima !== undefined ? 1 : undefined}
+                max={quantidadeMaxima}
+                value={formValues.quantidade}
+                onChange={(e) => handleQuantidadeChange(e.target.value)}>
+            </InputField>
 
-                <InputField
-                    label={"Quantidade"}
-                    type={"number"}
-                    placeholder={"Value"}
-                    required={true}
-                    min={quantidadeMaxima !== undefined ? 1 : undefined}
-                    max={quantidadeMaxima}
-                    value={formValues.quantidade}
-                    onChange={(e) => handleQuantidadeChange(e.target.value)}>
-                </InputField>
-
-                <div className="card-form-actions">
-                    <Button type={"submit"} colorido={true}>Realizar reentrada</Button>
-                    <span className="card-form-link">
-                        <p>Nova joia?</p>
-                        <a href="/movimentacoes/entrada">Cadastrar nova joia</a>
-                    </span>
-                    <p className="required-fields-note">
-                        <span className="required-asterisk">*</span> Campos obrigatórios
-                    </p>
-                </div>
-            </CardForm>
-        </>
+            <div className={formStyles.acoes}>
+                <Button type={"submit"} colorido={true}>Realizar reentrada</Button>
+                <span className={formStyles.link}>
+                    <p>Nova joia?</p>
+                    <Link to="/movimentacoes?fluxo=entrada">Cadastrar nova joia</Link>
+                </span>
+                <p className={formStyles.nota}>
+                    <span className={formStyles.asterisco}>*</span> Campos obrigatórios
+                </p>
+            </div>
+        </FormFlat>
     )
 }

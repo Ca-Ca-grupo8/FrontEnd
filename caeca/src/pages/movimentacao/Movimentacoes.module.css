@@ -1,0 +1,159 @@
+.page {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 32px 32px 48px;
+}
+
+.titulo {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #9C2863;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr) 280px;
+    gap: 48px;
+    align-items: start;
+    margin-top: 56px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    border-right: 1px solid #f0e4ea;
+    padding-right: 24px;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    font: inherit;
+    color: #4a4a4a;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.navItem:hover {
+    background-color: #fdf3f7;
+}
+
+.navItemAtivo {
+    border-left-color: #96205c;
+    background-color: #fdf3f7;
+    color: #8c2359;
+}
+
+.navTexto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.navNome {
+    font-weight: 700;
+    font-size: 0.98rem;
+}
+
+.navDescricao {
+    font-size: 0.75rem;
+    color: #757575;
+}
+
+.navAcoes {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.navAcoes button {
+    width: 100%;
+}
+
+.main {
+    min-width: 0;
+}
+
+.tituloFluxo {
+    margin: 0 0 44px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0e4ea;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #8c2359;
+}
+
+.aside {
+    border-left: 1px solid #f0e4ea;
+    padding-left: 32px;
+}
+
+.asideTitulo {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    color: #8c2359;
+}
+
+.asideLista {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #666666;
+}
+
+.asideLista li + li {
+    margin-top: 8px;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 32px;
+    }
+
+    .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-right: none;
+        padding-right: 0;
+        border-bottom: 1px solid #f0e4ea;
+        padding-bottom: 16px;
+    }
+
+    .navItem {
+        flex: 1 1 200px;
+        border-left: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .navItemAtivo {
+        border-bottom-color: #96205c;
+    }
+
+    .navAcoes {
+        flex: 1 1 100%;
+    }
+
+    .aside {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid #f0e4ea;
+        padding-top: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 24px 16px 40px;
+    }
+}
