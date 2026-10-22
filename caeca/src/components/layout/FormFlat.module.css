@@ -1,0 +1,81 @@
+.form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+    max-width: 880px;
+}
+
+.inteiro {
+    grid-column: 1 / -1;
+}
+
+.linhaDupla {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 32px;
+}
+
+.linhaDupla > * {
+    flex: 1;
+    min-width: 0;
+}
+
+.acoes {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.acoes button {
+    width: 100%;
+    max-width: 384px;
+}
+
+.link {
+    display: flex;
+    gap: 6px;
+    font-size: 14px;
+    color: #666666;
+}
+
+.link p {
+    margin: 0;
+}
+
+.link a {
+    color: #96205c;
+    font-weight: 600;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
+
+.nota {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #4a4a4a;
+}
+
+.asterisco {
+    color: #d0021b;
+}
+
+@media (max-width: 768px) {
+    .form {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .linhaDupla {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .link {
+        flex-direction: column;
+    }
+}

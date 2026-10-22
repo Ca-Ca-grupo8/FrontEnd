@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import CardForm from "../../components/layout/CardForm";
+import { FormFlat } from "../../components/layout/FormFlat";
+import formStyles from "../../components/layout/FormFlat.module.css";
 import { InputField } from "../../components/ui/InputField";
 import { SelectField } from "../../components/ui/SelectField";
 import { Button } from "../../components/ui/Button";
@@ -7,17 +8,13 @@ import { fornecedorApi } from "../../service/fornecedorApi";
 import { motivoApi } from "../../service/motivoApi";
 import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
-import { PageHeader } from "../../components/ui/PageHeader";
-import "./EntradaJoiaExistente.module.css";
-import { NovoFornecedorModal } from "../../components/modals/NovoFornecedor";
+import comboStyles from "./EntradaJoiaExistente.module.css";
 import { emitirToast } from "../../utils/toastBus";
-import { CirclePlus } from "lucide-react";
 
 export function EntradaJoiaExistente() {
     const [joias, setJoias] = useState([]);
     const [fornecedor, setFornecedor] = useState([]);
     const [motivos, setMotivos] = useState([]);
-    const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoEntradaId: "",
@@ -136,13 +133,7 @@ export function EntradaJoiaExistente() {
 
     return (
         <>
-            <PageHeader titulo={"Entrada de joias - Existente"} />
-
-            <NovoFornecedorModal
-                isOpen={isFornecedorOpen}
-                onClose={() => setIsFornecedorOpen(false)} />
-
-            <CardForm onSubmit={handleSubmit}>
+            <FormFlat onSubmit={handleSubmit}>
 
                 <SelectField
                     data={motivos}
@@ -152,7 +143,7 @@ export function EntradaJoiaExistente() {
                     onChange={(e) => handleChange("motivoEntradaId", e.target.value)}
                 />
 
-                <div className="combobox-wrapper" ref={nomePecaWrapperRef}>
+                <div className={comboStyles.comboboxWrapper} ref={nomePecaWrapperRef}>
                     <InputField
                         label={"Nome da peça"}
                         type={"text"}
@@ -165,19 +156,19 @@ export function EntradaJoiaExistente() {
                     </InputField>
 
                     {isNomePecaOpen && (
-                        <ul className="combobox-list">
+                        <ul className={comboStyles.comboboxList}>
                             {joiasFiltradas.length > 0 ? (
                                 joiasFiltradas.map((joia) => (
                                     <li
                                         key={joia.id}
-                                        className="combobox-item"
+                                        className={comboStyles.comboboxItem}
                                         onClick={() => handleSelectPeca(joia)}
                                     >
                                         {joia.nome}
                                     </li>
                                 ))
                             ) : (
-                                <li className="combobox-item combobox-item-empty">
+                                <li className={`${comboStyles.comboboxItem} ${comboStyles.comboboxItemEmpty}`}>
                                     Nenhuma peça encontrada
                                 </li>
                             )}
@@ -221,27 +212,21 @@ export function EntradaJoiaExistente() {
                     onChange={(e) => handleChange("multiplicador", e.target.value)}>
                 </InputField>
 
-                <div className="input-with-action">
-                    <SelectField
-                        data={fornecedor}
-                        label={"Fornecedor"}
-                        value={formValues.fornecedorId}
-                        required={true}
-                        onChange={(e) => handleChange("fornecedorId", e.target.value)}>
-                    </SelectField>
+                <SelectField
+                    data={fornecedor}
+                    label={"Fornecedor"}
+                    value={formValues.fornecedorId}
+                    required={true}
+                    onChange={(e) => handleChange("fornecedorId", e.target.value)}>
+                </SelectField>
 
-                    <div className="add-fornecedor-container">
-                        <CirclePlus className="add-fornecedor-content" onClick={() => setIsFornecedorOpen(true)} />
-                    </div>
-                </div>
-
-                <div className="card-form-actions">
+                <div className={formStyles.acoes}>
                     <Button type={"submit"} colorido={true}>Realizar entrada</Button>
-                    <p className="required-fields-note">
-                        <span className="required-asterisk">*</span> Campos obrigatórios
+                    <p className={formStyles.nota}>
+                        <span className={formStyles.asterisco}>*</span> Campos obrigatórios
                     </p>
                 </div>
-            </CardForm>
+            </FormFlat>
         </>
     )
 }
