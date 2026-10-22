@@ -39,11 +39,6 @@
   margin: 0;
 }
 
-.page-info-container::after{
-    content: "";
-    border: 1px solid #B3B3B3;
-}
-
 .dashed {
   cursor: pointer;
   text-decoration: underline;

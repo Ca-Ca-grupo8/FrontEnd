@@ -1,6 +1,83 @@
-.containerHome {
+.page {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px 32px 40px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+    gap: 24px;
+}
+
+.principal,
+.lateral {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.lateral {
+    padding: 20px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.lateral > :first-child {
+    padding-top: 0;
+    border-top: none;
+}
+
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 24px;
+    padding: 20px 24px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.secao {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tituloSecao {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #8c2359;
+}
+
+.acessos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    align-items: start;
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .page {
+        gap: 20px;
+        padding: 16px;
+    }
 }

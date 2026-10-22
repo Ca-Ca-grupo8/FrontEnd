@@ -1,20 +1,17 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import './index.css'
 
 import { Layout } from './components/layout/Layout.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
+import { AdminRoute } from './components/AdminRoute.jsx';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { ToastHost } from './components/feedback/ToastHost.jsx';
-import { EntradaJoia } from './pages/EntradaJoia.jsx'
-import { ReentradaJoia } from './pages/reentradaJoia/ReentradaJoia.jsx'
-import { EntradaJoiaExistente } from './pages/entradaJoiaExistente/EntradaJoiaExistente.jsx'
 import { Login } from './pages/Login.jsx';
 import { PrimeiroAcesso } from './pages/primeiroAcesso/PrimeiroAcesso.jsx';
-import { SaidaJoia } from './pages/SaidaJoia.jsx';
 import { Home } from './pages/home/Home.jsx';
-import { MovimentacaoEscolhas } from './pages/movimentacao/MovimentacaoEscolhas.jsx';
+import { Movimentacoes } from './pages/movimentacao/Movimentacoes.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
 import { MovimentacaoEstoque } from './pages/movimentacaoEstoque/MovimentacaoEstoque.jsx';
 import { InventarioProdutos } from './pages/joias/InventarioProdutos.jsx';
@@ -66,23 +63,23 @@ const router = createBrowserRouter([
       },
       {
         path: '/movimentacoes',
-        element: <MovimentacaoEscolhas />,
+        element: <Movimentacoes />,
       },
       {
         path: '/movimentacoes/entrada',
-        element: <EntradaJoia />,
+        element: <Navigate to="/movimentacoes?fluxo=entrada" replace />,
       },
       {
         path: '/movimentacoes/entradaexistente',
-        element: <EntradaJoiaExistente />,
+        element: <Navigate to="/movimentacoes?fluxo=entrada-existente" replace />,
       },
       {
         path: '/movimentacoes/reentrada',
-        element: <ReentradaJoia />,
+        element: <Navigate to="/movimentacoes?fluxo=reentrada" replace />,
       },
       {
         path: '/movimentacoes/saida',
-        element: <SaidaJoia />,
+        element: <Navigate to="/movimentacoes?fluxo=saida" replace />,
       },
       {
         path: '/joias/movimentacoes',
@@ -106,7 +103,7 @@ path: '/joias/maletas',
       },
       {
         path: '/contribuintes/fornecedores',
-        element: <Fornecedores />,
+        element: <AdminRoute><Fornecedores /></AdminRoute>,
       },
       {
         path: '/contribuintes/funcionarios',

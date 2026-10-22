@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { banhoApi } from "../service/banhoApi";
-import CardForm from "../components/layout/CardForm";
+import { FormFlat } from "../components/layout/FormFlat";
+import formStyles from "../components/layout/FormFlat.module.css";
 import { InputField } from "../components/ui/InputField";
 import { SelectField } from "../components/ui/SelectField";
 import { Button } from "../components/ui/Button";
@@ -9,13 +11,7 @@ import { categoriaApi } from "../service/categoriaApi";
 import { fornecedorApi } from "../service/fornecedorApi";
 import { movimentacaoApi } from "../service/movimentacaoApi";
 import { motivoApi } from "../service/motivoApi";
-import { Header } from "../components/layout/Header";
-import { PageHeader } from "../components/ui/PageHeader";
-import { Footer } from "../components/layout/Footer";
 import '../styles/EntradaJoia.css'
-import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
-import { CirclePlus } from "lucide-react";
-import { NovoFornecedorModal } from "../components/modals/NovoFornecedor";
 import { emitirToast } from "../utils/toastBus";
 
 export function EntradaJoia() {
@@ -24,8 +20,6 @@ export function EntradaJoia() {
     const [material, setMaterial] = useState([]);
     const [categoria, setCategoria] = useState([]);
     const [fornecedor, setFornecedor] = useState([]);
-    const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
-    const [isFornecedorOpen, setIsFornecedorOpen] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoEntradaId: "",
@@ -34,6 +28,7 @@ export function EntradaJoia() {
         categoriaId: "",
         banhoId: "",
         quantidade: "",
+        quantidadeMinima: "",
         precoCusto: "",
         precoBanho: "",
         multiplicador: "",
@@ -102,7 +97,6 @@ export function EntradaJoia() {
     }
 
     async function cadastrarJoia(payload, image) {
-        console.log(payload)
         try {
             const response = await movimentacaoApi.realizarMovimentacao(payload, image);
             emitirToast({ message: "Cadastro realizado com sucesso!", type: "success" });
@@ -113,7 +107,6 @@ export function EntradaJoia() {
                 categoriaId: "",
                 banhoId: "",
                 quantidade: "",
-                quantidadeMinima: "",
                 quantidadeMinima: "",
                 precoCusto: "",
                 precoBanho: "",
@@ -129,22 +122,8 @@ export function EntradaJoia() {
 
     return (
         <>
-            <PageHeader titulo={"Entrada de jóias"}>
-                <Button type={"button"} colorido={false} onClick={() => setIsCategoriaOpen(true)}>
-                    Cadastrar nova categoria
-                </Button>
-            </PageHeader>
+            <FormFlat onSubmit={handleSubmit}>
 
-            <NovaCategoriaModal
-                isOpen={isCategoriaOpen}
-                onClose={() => setIsCategoriaOpen(false)} />
-
-            <NovoFornecedorModal
-                isOpen={isFornecedorOpen}
-                onClose={() => setIsFornecedorOpen(false)} />
-
-            <CardForm onSubmit={handleSubmit}>
-                
                 <SelectField
                     data={motivos}
                     label={"Motivo da entrada"}
@@ -153,18 +132,12 @@ export function EntradaJoia() {
                     onChange={(e) => handleChange("motivoEntradaId", e.target.value)}
                 />
 
-                <div className="input-with-action">
-                    <SelectField
-                        data={fornecedor}
-                        label={"Fornecedor"}
-                        value={formValues.fornecedorId}
-                        onChange={(e) => handleChange("fornecedorId", e.target.value)}>
-                    </SelectField>
-
-                    <div className="add-fornecedor-container">
-                        <CirclePlus className="add-fornecedor-content" onClick={() => setIsFornecedorOpen(true)} />
-                    </div>
-                </div>
+                <SelectField
+                    data={fornecedor}
+                    label={"Fornecedor"}
+                    value={formValues.fornecedorId}
+                    onChange={(e) => handleChange("fornecedorId", e.target.value)}>
+                </SelectField>
 
                 <InputField
                     label={"Nome da peça"}
@@ -188,7 +161,7 @@ export function EntradaJoia() {
                     value={formValues.materialId}
                     onChange={(e) => handleChange("materialId", e.target.value)}>
                 </SelectField>
-                
+
                 <SelectField
                     data={banhos}
                     label={"Banho"}
@@ -196,7 +169,7 @@ export function EntradaJoia() {
                     onChange={(e) => handleChange("banhoId", e.target.value)}>
                 </SelectField>
 
-                <div className="quantidade-row">
+                <div className={formStyles.linhaDupla}>
                     <InputField
                         label={"Quantidade"}
                         type={"number"}
@@ -243,7 +216,7 @@ export function EntradaJoia() {
                     onChange={(e) => handleChange("multiplicador", e.target.value)}>
                 </InputField>
 
-                <div className="file-input-wrapper">
+                <div className={formStyles.inteiro}>
                     <InputField
                         label={"Escolha uma imagem"}
                         type={"file"}
@@ -252,14 +225,14 @@ export function EntradaJoia() {
                     </InputField>
                 </div>
 
-                <div className="card-form-actions">
+                <div className={formStyles.acoes}>
                     <Button type={"submit"} colorido={true}>Confirmar</Button>
-                    <span className="card-form-link">
+                    <span className={formStyles.link}>
                         <p>Jóia existente?</p>
-                        <a href="/movimentacoes/entradaexistente">Atualizar Estoque</a>
+                        <Link to="/movimentacoes?fluxo=entrada-existente">Atualizar Estoque</Link>
                     </span>
                 </div>
-            </CardForm>
+            </FormFlat>
 
         </>
     )

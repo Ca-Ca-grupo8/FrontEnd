@@ -1,0 +1,59 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 16px;
+    border-left: 3px solid #fce2ee;
+}
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #757575;
+}
+
+.info {
+    color: #9a9a9a;
+    cursor: help;
+}
+
+.valor {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #8c2359;
+}
+
+.rodape {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.bom {
+    background: #e8f8f0;
+    color: #12b76a;
+}
+
+.ruim {
+    background: #fdecea;
+    color: #d92d20;
+}
+
+.comparacao {
+    font-size: 0.78rem;
+    color: #9a9a9a;
+}
