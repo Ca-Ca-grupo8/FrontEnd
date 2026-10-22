@@ -4,7 +4,7 @@ import { InputField } from "../ui/InputField";
 import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
 
-export function NovoFornecedorModal({ isOpen, onClose }) {
+export function NovoFornecedorModal({ isOpen, onClose, onCriado }) {
     const [formValues, setFormValues] = useState({
         nome: "",
         telefone: "",
@@ -22,17 +22,18 @@ export function NovoFornecedorModal({ isOpen, onClose }) {
         e.preventDefault();
 
         try {
-            await fornecedorApi.criarFornecedor({
+            const fornecedorCriado = await fornecedorApi.criarFornecedor({
                 nome: formValues.nome,
                 telefone: formValues.telefone,
-                instagram: formValues.instagram
+                instagram: formValues.instagram,
             });
 
+            onCriado?.(fornecedorCriado);
             setFormValues({ nome: "", telefone: "", instagram: "" });
             emitirToast({ message: "Fornecedor cadastrado com sucesso!", type: "success" });
             onClose();
         } catch {
-            // erro exibido pelo interceptor global
+            // Erro exibido pelo interceptor global.
         }
     };
 

@@ -10,13 +10,14 @@ import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
 import { revendedoraApi } from "../../service/revendedoraApi";
 import { vendaApi } from "../../service/vendaApi";
-import "./ReentradaJoia.module.css";
+import styles from "./ReentradaJoia.module.css";
 
 export function ReentradaJoia() {
     const [motivos, setMotivos] = useState([]);
     const [joias, setJoias] = useState([]);
     const [revendedoras, setRevendedoras] = useState([]);
     const [joiasRevendedora, setJoiasRevendedora] = useState([]);
+    const [carregandoJoiasRevendedora, setCarregandoJoiasRevendedora] = useState(false);
 
     const [formValues, setFormValues] = useState({
         motivoReentradaId: "",
@@ -81,18 +82,38 @@ export function ReentradaJoia() {
     }
 
     useEffect(() => {
-        if (!exibirRevendedora || !formValues.revendedoraId) return;
+        let ignorar = false;
+
+        setJoiasRevendedora([]);
+
+        if (!exibirRevendedora || !formValues.revendedoraId) {
+            setCarregandoJoiasRevendedora(false);
+            return () => {
+                ignorar = true;
+            };
+        }
+
+        setCarregandoJoiasRevendedora(true);
 
         async function carregarJoiasRevendedora() {
             try {
-                const listaJoiasRevendedora = await vendaApi.listarJoiasSaidaRevendedora(Number(formValues.revendedoraId));
-                setJoiasRevendedora(listaJoiasRevendedora);
+                const lista = await vendaApi.listarJoiasSaidaRevendedora(
+                    Number(formValues.revendedoraId)
+                );
+
+                if (!ignorar) setJoiasRevendedora(lista);
             } catch (error) {
-                console.error("Erro ao carregar joias da revendedora:", error);
+                if (!ignorar) console.error("Erro ao carregar joias da revendedora:", error);
+            } finally {
+                if (!ignorar) setCarregandoJoiasRevendedora(false);
             }
         }
 
         carregarJoiasRevendedora();
+
+        return () => {
+            ignorar = true;
+        };
     }, [exibirRevendedora, formValues.revendedoraId]);
 
     const opcoesJoia = !exibirRevendedora
@@ -120,21 +141,22 @@ export function ReentradaJoia() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (quantidadeMaxima !== undefined) {
-            const quantidade = Number(formValues.quantidade);
-            if (quantidade < 1 || quantidade > quantidadeMaxima) {
-                emitirToast({ message: `A quantidade deve estar entre 1 e ${quantidadeMaxima}.`, type: "error" });
-                return;
-            }
+        const quantidade = Number(formValues.quantidade);
+
+        if (
+            !Number.isInteger(quantidade) ||
+            quantidade < 1 ||
+            (quantidadeMaxima !== undefined && quantidade > quantidadeMaxima)
+        ) {
+            emitirToast({
+                message: quantidadeMaxima !== undefined
+                    ? `Informe uma quantidade entre 1 e ${quantidadeMaxima}.`
+                    : "Informe uma quantidade inteira maior que zero.",
+                type: "error",
+            });
+            return;
         }
 
-        // ATENÇÃO (validar com backend): esta tela não coleta fornecedor,
-        // preço de custo, preço do banho nem multiplicador - diferente de
-        // EntradaJoia/EntradaJoiaExistente. Estou enviando 0 / 0.0 para
-        // esses campos por padrão, assumindo que o backend aceita reentrada
-        // sem esses dados (já cadastrados quando a joia entrou pela primeira
-        // vez). Se o endpoint /movimentacoes exigir esses valores para uma
-        // REENTRADA, isso precisa ser ajustado.
         const payload = {
             idMotivoMovimentacao: Number(formValues.motivoReentradaId) || 0,
             idJoia: Number(formValues.joiaId) || 0,
@@ -192,22 +214,38 @@ export function ReentradaJoia() {
 
                 <SelectField
                     data={opcoesJoia}
-                    label={"Joia"}
+                    label="Joia"
                     value={formValues.joiaId}
-                    required={true}
+                    required
+                    disabled={
+                        exibirRevendedora &&
+                        (carregandoJoiasRevendedora ||
+                            !formValues.revendedoraId ||
+                            opcoesJoia.length === 0)
+                    }
+                    placeholder={
+                        carregandoJoiasRevendedora
+                            ? "Carregando joias..."
+                            : exibirRevendedora && !formValues.revendedoraId
+                                ? "Selecione uma revendedora primeiro"
+                                : exibirRevendedora && opcoesJoia.length === 0
+                                    ? "Nenhuma joia disponível"
+                                    : "Selecione..."
+                    }
                     onChange={(e) => handleChange("joiaId", e.target.value)}
                 />
 
                 <InputField
-                    label={"Quantidade"}
-                    type={"number"}
-                    placeholder={"Value"}
-                    required={true}
-                    min={quantidadeMaxima !== undefined ? 1 : undefined}
+                    label="Quantidade"
+                    type="number"
+                    placeholder="Ex.: 1"
+                    required
+                    min={1}
                     max={quantidadeMaxima}
+                    step={1}
                     value={formValues.quantidade}
-                    onChange={(e) => handleQuantidadeChange(e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleQuantidadeChange(e.target.value)}
+                />
 
                 <div className="card-form-actions">
                     <Button type={"submit"} colorido={true}>Realizar reentrada</Button>
@@ -215,8 +253,8 @@ export function ReentradaJoia() {
                         <p>Nova joia?</p>
                         <a href="/movimentacoes/entrada">Cadastrar nova joia</a>
                     </span>
-                    <p className="required-fields-note">
-                        <span className="required-asterisk">*</span> Campos obrigatórios
+                    <p className={styles["required-fields-note"]}>
+                        <span className={styles["required-asterisk"]}>*</span> Campos obrigatórios
                     </p>
                 </div>
             </CardForm>
