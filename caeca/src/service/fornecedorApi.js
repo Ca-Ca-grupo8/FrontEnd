@@ -3,6 +3,11 @@ import api from "./api"
 import { fetchAllPages } from "../utils/fetchAllPages"
 
 export const fornecedorApi = {
+    buscarPorId: async (id) => {
+        const response = await api.get(`/fornecedores/${id}`)
+        return toResponse(response.data)
+    },
+
     listarFornecedores: async () => {
         const allFornecedores = await fetchAllPages((page) =>
             api.get("/fornecedores", { params: { page } }).then(r => r.data)
