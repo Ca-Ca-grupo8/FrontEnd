@@ -13,6 +13,7 @@ import { Login } from './pages/Login.jsx';
 import { PrimeiroAcesso } from './pages/primeiroAcesso/PrimeiroAcesso.jsx';
 import { Home } from './pages/home/Home.jsx';
 import { Dashboard } from './pages/dashboard/Dashboard.jsx';
+import { MeuPerfil } from './pages/perfil/MeuPerfil.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
 import { Revendedoras } from './pages/revendedoras/Revendedoras.jsx';
 import { CadastroRevendedora } from './pages/revendedoras/CadastroRevendedora.jsx';
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
+        path: '/perfil',
+        element: <MeuPerfil />,
+      },
+      {
         path: '/contribuintes',
         element: <CadastroContribuintes />,
       },
@@ -92,10 +97,6 @@ const router = createBrowserRouter([
       {
         path: '/movimentacoes',
         element: <Movimentacoes />,
-      },
-      {
-        path: '/movimentacoes/escolhas',
-        element: <MovimentacaoEscolhas />,
       },
       {
         path: '/movimentacoes/entrada',

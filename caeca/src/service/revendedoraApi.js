@@ -6,6 +6,10 @@ export const revendedoraApi = {
         const response = await api.post("/revendedoras", payload);
         return response.data;
     },
+    editarRevendedora: async (id, payload) => {
+        const response = await api.put(`/revendedoras/${id}`, payload);
+        return response.data;
+    },
     listarRevendedoras: async () => {
         return fetchAllPages((page) =>
             api.get("/revendedoras", { params: { page } }).then(r => r.data)

@@ -4,11 +4,7 @@ import { InputField } from "../ui/InputField";
 import { SelectField } from "../ui/SelectField";
 import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
-
-const OPCOES_PERFIL = [
-    { id: "ROLE_USER", nome: "Funcionário" },
-    { id: "ROLE_ADMIN", nome: "Administrador" },
-];
+import { OPCOES_PERFIL } from "../../utils/perfilOpcoes";
 
 // Formulário em si, sem a casca de modal: pode ser usado inline ou dentro do modal
 export function FormNovoFuncionario({ onSalvo }) {

@@ -152,7 +152,7 @@ export function InventarioProdutos() {
                             ) : (
                                 <div className={style['product-thumb-placeholder']}>[FOTO]</div>
                             )}
-                            <span className={style['product-title']} onClick={() => navigate(`/joias/${row.id}`)}>{row.nome || '-'}</span>
+                            <span className={style['product-title']} onClick={(e) => { e.stopPropagation(); navigate(`/joias/${row.id}`) }}>{row.nome || '-'}</span>
                         </div>
                     );
                 case 'QUANTIDADE':
@@ -281,7 +281,12 @@ export function InventarioProdutos() {
                 </div>
 
                 {produtos.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={produtos} />
+                    <Table
+                        colunas={colunas}
+                        funcaoRender={funcaoRender}
+                        data={produtos}
+                        onRowClick={(row) => navigate(`/joias/${row.id}`)}
+                    />
                 ) : (
                     <div className={style['empty-state']}>
                         Não há produtos para exibir
