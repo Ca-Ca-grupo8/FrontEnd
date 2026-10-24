@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
@@ -19,6 +20,7 @@ const PERFIS = {
 };
 
 export function Funcionarios() {
+    const navigate = useNavigate();
     const [usuarios, setUsuarios] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState('');
@@ -132,7 +134,12 @@ export function Funcionarios() {
                 {carregando ? (
                     <div className={style.emptyState}>Carregando funcionários...</div>
                 ) : usuariosFiltrados.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={usuariosFiltrados} />
+                    <Table
+                        colunas={colunas}
+                        funcaoRender={funcaoRender}
+                        data={usuariosFiltrados}
+                        onRowClick={(row) => navigate(`/contribuintes/funcionarios/${row.id ?? row.idUsuario}`)}
+                    />
                 ) : (
                     <div className={style.emptyState}>
                         {usuarios.length === 0

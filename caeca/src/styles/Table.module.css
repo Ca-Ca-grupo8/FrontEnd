@@ -31,3 +31,7 @@
   vertical-align: middle;
   text-align: left;
 }
+
+.custom-table tr.row-clickable:hover td {
+  background-color: #ececec;
+}

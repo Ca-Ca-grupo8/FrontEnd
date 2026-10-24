@@ -1,29 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { CalendarDays, Mail, MapPin, Phone, UserRound } from "lucide-react";
-import { PageHeader } from "../../components/ui/PageHeader";
+import { Mail, MapPin, Phone, UserRound } from "lucide-react";
 import { Pagination } from "../../components/ui/Pagination";
+import { EditarRevendedoraModal } from "../../components/modals/EditarRevendedoraModal";
+import { Button } from "../../components/ui/Button";
+import { usuarioEhAdmin } from "../../utils/perfil";
+import { MensagemPerfil, PerfilPessoa } from "../../components/ui/PerfilPessoa";
 import { Table } from "../../components/ui/Table";
 import { Toast } from "../../components/ui/Toast";
 import { vendaApi } from "../../service/maletasApi";
 import { revendedoraApi } from "../../service/revendedoraApi";
+import { formatarData } from "../../utils/formatarData";
 import { StatusMaletaBadge } from "../Maletas/StatusMaletaBadge";
-import styles from "./RevendedoraDetalhes.module.css";
 
 const colunas = ["CÓDIGO", "DATA", "TOTAL (R$)", "REVENDEDORA", "STATUS"];
 const POR_PAGINA = 10;
-
-function formatarData(data) {
-    if (!data) return "-";
-    const dataValida = new Date(data);
-    if (Number.isNaN(dataValida.getTime())) return "-";
-
-    return new Intl.DateTimeFormat("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    }).format(dataValida);
-}
 
 function formatarMoeda(valor) {
     if (valor === null || valor === undefined || Number.isNaN(Number(valor))) return "-";
@@ -67,6 +58,8 @@ export function RevendedoraDetalhes() {
     const [paginaAtual, setPaginaAtual] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState(1);
     const [toast, setToast] = useState(null);
+    const [editando, setEditando] = useState(false);
+    const [versao, setVersao] = useState(0);
 
     useEffect(() => {
         let ignore = false;
@@ -95,7 +88,7 @@ export function RevendedoraDetalhes() {
 
         carregarRevendedora();
         return () => { ignore = true; };
-    }, [id]);
+    }, [id, versao]);
 
     useEffect(() => {
         if (!revendedora?.nome) return undefined;
@@ -151,83 +144,67 @@ export function RevendedoraDetalhes() {
         }
     };
 
-    if (carregando || erro || !revendedora) {
-        return (
-            <div className={styles.page}>
-                <PageHeader titulo="Informações sobre a revendedora" />
-                <div className={styles.state}>
-                    {carregando ? "Carregando informações da revendedora..." : "Não foi possível carregar a revendedora."}
-                </div>
-            </div>
-        );
-    }
+    const estado = carregando
+        ? "Carregando informações da revendedora..."
+        : erro || !revendedora
+            ? "Não foi possível carregar a revendedora."
+            : null;
 
     return (
-        <div className={styles.page}>
+        <>
             {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
-            <PageHeader titulo="Informações sobre a revendedora" />
-
-            <main className={styles.content}>
-                <section className={styles.profile} aria-label="Dados da revendedora">
-                    <div className={styles.identity}>
-                        <div className={styles.avatar} aria-hidden="true"><UserRound size={46} strokeWidth={1.4} /></div>
-                        <h2>{revendedora.nome || "Revendedora"}</h2>
-                        <span className={`${styles.activity} ${atividade === false ? styles.inactive : ""}`}>
-                            <span className={styles.activityDot} />
-                            {atividade === null ? "Atividade não informada" : atividade ? "Revendedora ativa" : "Revendedora inativa"}
-                        </span>
-                        <p className={styles.createdDate}>
-                            <CalendarDays size={15} aria-hidden="true" />
-                            {revendedora.dataCadastro ? `adicionada ${formatarData(revendedora.dataCadastro)}` : "Data de cadastro não informada"}
-                        </p>
-                    </div>
-
-                    <div className={styles.contact}>
-                        <h2>Informações de contato</h2>
-                        <div className={styles.contactItem}>
-                            <span className={styles.contactIcon}><Mail size={18} /></span>
-                            <div><span>Email</span><a href={revendedora.email ? `mailto:${revendedora.email}` : undefined}>{revendedora.email || "-"}</a></div>
-                        </div>
-                        <div className={styles.contactItem}>
-                            <span className={styles.contactIcon}><MapPin size={18} /></span>
-                            <div><span>Endereço</span><p>{obterEndereco(revendedora)}</p></div>
-                        </div>
-                        <div className={styles.contactItem}>
-                            <span className={styles.contactIcon}><Phone size={18} /></span>
-                            <div><span>Telefone</span><a href={revendedora.telefone ? `tel:${revendedora.telefone}` : undefined}>{revendedora.telefone || "-"}</a></div>
-                        </div>
-                        {revendedora.telefoneReserva && (
-                            <div className={styles.contactItem}>
-                                <span className={styles.contactIcon}><Phone size={18} /></span>
-                                <div><span>Telefone reserva</span><a href={`tel:${revendedora.telefoneReserva}`}>{revendedora.telefoneReserva}</a></div>
-                            </div>
-                        )}
-                    </div>
-
-                    <aside className={styles.activityPanel}>
-                        <h2>Atividade recente</h2>
-                        <div className={`${styles.activitySince} ${atividade === false ? styles.activitySinceInactive : ""}`}>
-                            <span>Cadastro realizado em</span>
-                            <strong>{formatarData(revendedora.dataCadastro)}</strong>
-                        </div>
-                    </aside>
-                </section>
-
-                <section className={styles.sales} aria-label="Vendas da revendedora">
-                    {carregandoVendas ? (
-                        <div className={styles.state}>Carregando vendas...</div>
-                    ) : vendas.length > 0 ? (
-                        <Table colunas={colunas} funcaoRender={funcaoRender} data={vendas} />
-                    ) : (
-                        <div className={styles.state}>Nenhuma venda encontrada para esta revendedora.</div>
-                    )}
-                    <Pagination
-                        paginaAtual={paginaAtual}
-                        totalPaginas={totalPaginas}
-                        aoMudarPagina={setPaginaAtual}
-                    />
-                </section>
-            </main>
-        </div>
+            <PerfilPessoa
+                titulo="Informações sobre a revendedora"
+                ariaLabel="Dados da revendedora"
+                estado={estado}
+                acoes={usuarioEhAdmin() && revendedora && (
+                    <Button type="button" colorido={false} onClick={() => setEditando(true)}>
+                        Editar
+                    </Button>
+                )}
+                icone={UserRound}
+                nome={revendedora?.nome}
+                ativo={atividade}
+                textoStatus={{
+                    ativo: "Revendedora ativa",
+                    inativo: "Revendedora inativa",
+                    indefinido: "Atividade não informada"
+                }}
+                dataCadastro={revendedora?.dataCadastro ?? null}
+                contatos={revendedora ? [
+                    { rotulo: "Email", valor: revendedora.email, href: revendedora.email && `mailto:${revendedora.email}`, icone: Mail },
+                    { rotulo: "Endereço", valor: obterEndereco(revendedora), icone: MapPin },
+                    { rotulo: "Telefone", valor: revendedora.telefone, href: revendedora.telefone && `tel:${revendedora.telefone}`, icone: Phone },
+                    ...(revendedora.telefoneReserva
+                        ? [{ rotulo: "Telefone reserva", valor: revendedora.telefoneReserva, href: `tel:${revendedora.telefoneReserva}`, icone: Phone }]
+                        : [])
+                ] : []}
+                painel={revendedora && {
+                    titulo: "Atividade recente",
+                    rotulo: "Cadastro realizado em",
+                    valor: formatarData(revendedora.dataCadastro)
+                }}
+            >
+                {carregandoVendas ? (
+                    <MensagemPerfil>Carregando vendas...</MensagemPerfil>
+                ) : vendas.length > 0 ? (
+                    <Table colunas={colunas} funcaoRender={funcaoRender} data={vendas} />
+                ) : (
+                    <MensagemPerfil>Nenhuma venda encontrada para esta revendedora.</MensagemPerfil>
+                )}
+                <Pagination
+                    paginaAtual={paginaAtual}
+                    totalPaginas={totalPaginas}
+                    aoMudarPagina={setPaginaAtual}
+                />
+            </PerfilPessoa>
+            <EditarRevendedoraModal
+                isOpen={editando}
+                onClose={() => setEditando(false)}
+                revendedora={revendedora}
+                id={id}
+                onAtualizar={() => setVersao((v) => v + 1)}
+            />
+        </>
     );
 }

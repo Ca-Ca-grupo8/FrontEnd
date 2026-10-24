@@ -15,7 +15,7 @@ export function Table({ colunas, funcaoRender, data, style, onRowClick }) {
         </thead>
         <tbody>
           {data.map((row, rowIndex) => (
-            <tr key={rowIndex} onClick={onRowClick ? () => onRowClick(row) : undefined} style={onRowClick ? { cursor: 'pointer' } : undefined}>
+            <tr key={rowIndex} className={onRowClick ? Style['row-clickable'] : undefined} onClick={onRowClick ? () => onRowClick(row) : undefined} style={onRowClick ? { cursor: 'pointer' } : undefined}>
               {colunas.map((col, colIndex) => (
                 <td key={colIndex} style={style} >
                   {funcaoRender.render ? funcaoRender.render(row, col) : row[col.accessor]}

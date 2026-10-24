@@ -120,7 +120,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: left;
-    text-decoration: underline;
+    text-decoration: none;
     cursor: pointer;
 }
 
