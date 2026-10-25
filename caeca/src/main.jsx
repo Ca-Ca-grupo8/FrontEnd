@@ -16,7 +16,6 @@ import { Dashboard } from './pages/dashboard/Dashboard.jsx';
 import { MeuPerfil } from './pages/perfil/MeuPerfil.jsx';
 import { CadastroContribuintes } from './pages/cadastroContribuintes/CadastroContribuintes.jsx';
 import { Revendedoras } from './pages/revendedoras/Revendedoras.jsx';
-import { CadastroRevendedora } from './pages/revendedoras/CadastroRevendedora.jsx';
 import { RevendedoraDetalhes } from './pages/revendedoras/RevendedoraDetalhes.jsx';
 import { Fornecedores } from './pages/fornecedores/Fornecedores.jsx';
 import { Fornecedor } from './pages/específicos/fornecedor/Fornecedor.jsx';
@@ -69,10 +68,6 @@ const router = createBrowserRouter([
       {
         path: '/contribuintes/revendedoras',
         element: <Revendedoras />,
-      },
-      {
-        path: '/contribuintes/revendedoras/cadastro',
-        element: <CadastroRevendedora />,
       },
       {
         path: '/contribuintes/revendedoras/:id',

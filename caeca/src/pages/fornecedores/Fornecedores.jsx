@@ -5,7 +5,6 @@ import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { Pagination } from '../../components/ui/Pagination';
 import { fornecedorApi } from '../../service/fornecedorApi';
-import { NovoFornecedorModal } from '../../components/modals/NovoFornecedor';
 import { emitirToast } from '../../utils/toastBus';
 import { Search } from 'lucide-react';
 import style from './Fornecedores.module.css';
@@ -25,7 +24,6 @@ export function Fornecedores() {
     const [busca, setBusca] = useState('');
     const [filtroAtividade, setFiltroAtividade] = useState('');
     const [paginaAtual, setPaginaAtual] = useState(1);
-    const [modalAberto, setModalAberto] = useState(false);
 
     const carregarFornecedores = useCallback(async () => {
         try {
@@ -130,7 +128,7 @@ export function Fornecedores() {
     return (
         <>
             <PageHeader titulo="Fornecedores" subtitulo="Gerencie seus parceiros de fornecimento">
-                <Button colorido={true} onClick={() => setModalAberto(true)}>
+                <Button colorido={true} onClick={() => navigate('/contribuintes?tipo=fornecedor')}>
                     Adicionar Fornecedor
                 </Button>
             </PageHeader>
@@ -192,14 +190,6 @@ export function Fornecedores() {
                     aoMudarPagina={alterarPagina}
                 />
             </div>
-
-            <NovoFornecedorModal
-                isOpen={modalAberto}
-                onClose={() => {
-                    setModalAberto(false);
-                    carregarFornecedores();
-                }}
-            />
         </>
     );
 }

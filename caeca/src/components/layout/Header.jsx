@@ -6,6 +6,7 @@ import api from '../../service/api';
 import { usuarioApi } from '../../service/usuarioApi';
 import { HttpStatusCode } from 'axios';
 import { usuarioEhAdmin } from '../../utils/perfil';
+import { obterIniciais } from '../../utils/obterIniciais';
 
 export function Header({ avatarImg }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +50,11 @@ export function Header({ avatarImg }) {
       
       <div className={`user-profile-wrapper ${activeDropdown === 'perfil' ? 'show-dropdown' : ''}`}>
         <div className="user-profile" onClick={() => toggleDropdown('perfil')} style={{ cursor: 'pointer' }}>
-          <img src={avatarImg} alt="Foto de perfil" className="user-avatar" />
+          {avatarImg ? (
+            <img src={avatarImg} alt="Foto de perfil" className="user-avatar" />
+          ) : (
+            <span className="user-avatar user-avatar-iniciais" aria-label="Iniciais do usuário">{obterIniciais(nomeUsuario)}</span>
+          )}
           <div className="user-info">
             {!estaNaHome && <span className="user-name">{nomeUsuario}</span>}
             {!estaNaHome && <span className="user-desc">{roleUsuarioFormatted}</span>}

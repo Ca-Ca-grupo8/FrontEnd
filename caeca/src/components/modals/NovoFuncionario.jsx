@@ -78,22 +78,3 @@ export function FormNovoFuncionario({ onSalvo }) {
         </form>
     );
 }
-
-export function NovoFuncionarioModal({ isOpen, onClose }) {
-    if (!isOpen) return null;
-
-    return (
-        <div className="modal-overlay" onClick={onClose}>
-            <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-                <button className="modal-close-btn" onClick={onClose}>×</button>
-
-                <div className="modal-header">
-                    <h2>Novo Funcionário</h2>
-                    <p>Cadastre alguém e escolha o que ele pode fazer no sistema.</p>
-                </div>
-
-                <FormNovoFuncionario onSalvo={onClose} />
-            </div>
-        </div>
-    );
-}

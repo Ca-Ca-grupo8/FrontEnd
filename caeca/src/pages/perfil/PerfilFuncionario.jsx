@@ -5,6 +5,7 @@ import { EditarFuncionarioModal } from '../../components/modals/EditarFuncionari
 import { AreasAcesso, PerfilPessoa } from '../../components/ui/PerfilPessoa'
 import { funcionarioApi } from '../../service/funcionarioApi'
 import { funcionarioMapper } from '../../utils/funcionarioMapper'
+import { obterIniciais } from '../../utils/obterIniciais'
 
 const ROLE_ADMIN = 'ROLE_ADMIN'
 
@@ -28,14 +29,6 @@ const AREAS = [
   { nome: 'Fornecedores', apenasAdmin: true },
   { nome: 'Funcionários', apenasAdmin: false }
 ]
-
-const obterIniciais = (nome) => {
-  const partes = (nome || '').trim().split(/\s+/).filter(Boolean)
-  if (partes.length === 0) return '?'
-  const primeira = partes[0][0]
-  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : ''
-  return (primeira + ultima).toUpperCase()
-}
 
 export function PerfilFuncionario({ id, titulo, propriaConta }) {
   const [funcionario, setFuncionario] = useState(null)

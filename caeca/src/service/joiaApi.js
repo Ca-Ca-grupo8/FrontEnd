@@ -30,6 +30,11 @@ export const joiaApi = {
         return response.data
     },
 
+    listarPorFornecedor: async (fornecedorId, { page = 0, size = 10 } = {}) => {
+        const response = await api.get(`/joias/fornecedor/${fornecedorId}`, { params: { page, size } })
+        return response.data
+    },
+
     atualizarJoia: async (id, payload) => {
         const response = await api.patch(`/joias/${id}`, payload)
         return response.data

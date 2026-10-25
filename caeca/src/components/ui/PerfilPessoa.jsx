@@ -108,6 +108,10 @@ export function MensagemPerfil({ children }) {
     return <div className={styles.state}>{children}</div>;
 }
 
+export function TituloSecaoPerfil({ children }) {
+    return <h2 className={styles.tituloSecao}>{children}</h2>;
+}
+
 export function AreasAcesso({ titulo, descricao, areas }) {
     return (
         <section className={styles.card} aria-label={titulo}>

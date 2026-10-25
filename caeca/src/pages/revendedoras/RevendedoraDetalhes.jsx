@@ -5,7 +5,8 @@ import { Pagination } from "../../components/ui/Pagination";
 import { EditarRevendedoraModal } from "../../components/modals/EditarRevendedoraModal";
 import { Button } from "../../components/ui/Button";
 import { usuarioEhAdmin } from "../../utils/perfil";
-import { MensagemPerfil, PerfilPessoa } from "../../components/ui/PerfilPessoa";
+import { obterIniciais } from "../../utils/obterIniciais";
+import { MensagemPerfil, PerfilPessoa, TituloSecaoPerfil } from "../../components/ui/PerfilPessoa";
 import { Table } from "../../components/ui/Table";
 import { Toast } from "../../components/ui/Toast";
 import { vendaApi } from "../../service/maletasApi";
@@ -163,6 +164,7 @@ export function RevendedoraDetalhes() {
                     </Button>
                 )}
                 icone={UserRound}
+                iniciais={obterIniciais(revendedora?.nome)}
                 nome={revendedora?.nome}
                 ativo={atividade}
                 textoStatus={{
@@ -185,6 +187,7 @@ export function RevendedoraDetalhes() {
                     valor: formatarData(revendedora.dataCadastro)
                 }}
             >
+                <TituloSecaoPerfil>Maletas relacionadas</TituloSecaoPerfil>
                 {carregandoVendas ? (
                     <MensagemPerfil>Carregando vendas...</MensagemPerfil>
                 ) : vendas.length > 0 ? (

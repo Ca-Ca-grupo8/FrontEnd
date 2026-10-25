@@ -142,7 +142,7 @@ export function Revendedoras() {
         <>
             {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
             <PageHeader titulo="Revendedoras">
-                <Button onClick={() => navigate("/contribuintes/revendedoras/cadastro")}>
+                <Button onClick={() => navigate("/contribuintes?tipo=revendedora")}>
                     Adicionar Revendedora
                 </Button>
             </PageHeader>

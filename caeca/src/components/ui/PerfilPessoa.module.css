@@ -225,6 +225,13 @@
     font-weight: 500;
 }
 
+.tituloSecao {
+    margin: 0;
+    color: #252525;
+    font-size: 18px;
+    font-weight: 500;
+}
+
 .cardDescricao {
     margin: 0;
     color: #666;
