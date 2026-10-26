@@ -8,6 +8,7 @@ import { emitirToast } from '../../utils/toastBus'
 import { rotuloStatusMaleta, statusSelecionavel } from './maletaStatus'
 import { StatusMaletaBadge } from './StatusMaletaBadge'
 import { TipoMovimentacaoBadge } from './TipoMovimentacaoBadge'
+import { usuarioEhAdmin } from '../../utils/perfil'
 import { contarItens, ehReentrada } from './tipoMovimentacao'
 import '../entradaJoia/JoiaDetalhes.css'
 import style from './Maletas.module.css'
@@ -154,19 +155,21 @@ export function MaletaDetalhes() {
     return (
         <div className="jewelry-page">
             <PageHeader titulo="Detalhes da Maleta">
-                <label className={style['status-selector']}>
-                    <span>Status</span>
-                    <select
-                        value={maleta.status?.id ?? ''}
-                        onChange={alterarStatus}
-                        disabled={salvandoStatus || statusDisponiveis.length === 0}
-                    >
-                        <option value="" disabled>Selecione...</option>
-                        {statusDisponiveis.filter(statusSelecionavel).map((status) => (
-                            <option key={status.id} value={status.id}>{rotuloStatusMaleta(status)}</option>
-                        ))}
-                    </select>
-                </label>
+                {usuarioEhAdmin() && (
+                    <label className={style['status-selector']}>
+                        <span>Status</span>
+                        <select
+                            value={maleta.status?.id ?? ''}
+                            onChange={alterarStatus}
+                            disabled={salvandoStatus || statusDisponiveis.length === 0}
+                        >
+                            <option value="" disabled>Selecione...</option>
+                            {statusDisponiveis.filter(statusSelecionavel).map((status) => (
+                                <option key={status.id} value={status.id}>{rotuloStatusMaleta(status)}</option>
+                            ))}
+                        </select>
+                    </label>
+                )}
             </PageHeader>
 
             <div className="jewelry-content">

@@ -19,15 +19,15 @@ const SITUACOES = {
 // Espelha o menu e as rotas da aplicação: Fornecedores fica atrás do AdminRoute
 // e só aparece no menu para administradores.
 const AREAS = [
-  { nome: 'Dashboard', apenasAdmin: false },
+  { nome: 'Dashboard', apenasAdmin: true },
   { nome: 'Catálogo', apenasAdmin: false },
   { nome: 'Movimentações', apenasAdmin: false },
   { nome: 'Histórico de movimentações', apenasAdmin: false },
   { nome: 'Maletas', apenasAdmin: false },
-  { nome: 'Contribuintes', apenasAdmin: false },
+  { nome: 'Contribuintes', apenasAdmin: true },
   { nome: 'Revendedoras', apenasAdmin: false },
   { nome: 'Fornecedores', apenasAdmin: true },
-  { nome: 'Funcionários', apenasAdmin: false }
+  { nome: 'Funcionários', apenasAdmin: true }
 ]
 
 export function PerfilFuncionario({ id, titulo, propriaConta }) {

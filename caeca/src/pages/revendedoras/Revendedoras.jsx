@@ -9,6 +9,7 @@ import { SearchFilter } from "../../components/ui/filters/SearchFilter";
 import { SelectFilter } from "../../components/ui/filters/SelectFilter";
 import { revendedoraApi } from "../../service/revendedoraApi";
 import { useListFilters } from "../../hooks/useListFilters";
+import { usuarioEhAdmin } from "../../utils/perfil";
 import styles from "./Revendedoras.module.css";
 import listStyle from "../../styles/ListPage.module.css";
 
@@ -152,7 +153,9 @@ export function Revendedoras() {
     return (
         <>
             <PageHeader titulo="Revendedoras">
-                <BotaoAdicionar rotulo="Adicionar Revendedora" onClick={() => navigate("/contribuintes?tipo=revendedora")} />
+                {usuarioEhAdmin() && (
+                    <BotaoAdicionar rotulo="Adicionar Revendedora" onClick={() => navigate("/contribuintes?tipo=revendedora")} />
+                )}
             </PageHeader>
 
             <main className={listStyle.pageContainer}>

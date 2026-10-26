@@ -55,7 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/dashboard',
-        element: <Dashboard />,
+        element: <AdminRoute><Dashboard /></AdminRoute>,
       },
       {
         path: '/perfil',
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/contribuintes',
-        element: <CadastroContribuintes />,
+        element: <AdminRoute><CadastroContribuintes /></AdminRoute>,
       },
       {
         path: '/contribuintes/revendedoras',
@@ -83,11 +83,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/contribuintes/funcionarios',
-        element: <Funcionarios />,
+        element: <AdminRoute><Funcionarios /></AdminRoute>,
       },
       {
         path: '/contribuintes/funcionarios/:id',
-        element: <Funcionario />,
+        element: <AdminRoute><Funcionario /></AdminRoute>,
       },
       {
         path: '/movimentacoes',
