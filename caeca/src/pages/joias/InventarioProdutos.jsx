@@ -13,7 +13,9 @@ import { banhoApi } from '../../service/banhoApi';
 import { useListFilters } from '../../hooks/useListFilters';
 import { validarPeriodo } from '../../utils/validarPeriodo';
 import style from './InventarioProdutos.module.css';
+import listStyle from '../../styles/ListPage.module.css';
 import { useNavigate } from 'react-router-dom';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 
 const colunas = [
     'PRODUTOS',
@@ -176,8 +178,10 @@ export function InventarioProdutos() {
 
     return (
         <>
-            <PageHeader titulo="Inventário de produtos" subtitulo="Visualize o inventário de produtos" />
-            <div className={style['page-container']}>
+            <PageHeader titulo="Inventário de produtos" subtitulo="Visualize o inventário de produtos">
+                <BotaoAdicionar rotulo="Adicionar joia" onClick={() => navigate('/movimentacoes?fluxo=entrada')} />
+            </PageHeader>
+            <div className={listStyle.pageContainer}>
                 <FilterBar ariaLabel="Filtros do inventário" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
                     <SearchFilter
                         rotulo="Buscar produto"

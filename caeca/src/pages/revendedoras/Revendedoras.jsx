@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../../components/ui/Button";
+import { BotaoAdicionar } from "../../components/ui/BotaoAdicionar";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { Pagination } from "../../components/ui/Pagination";
 import { Table } from "../../components/ui/Table";
@@ -10,6 +10,7 @@ import { SelectFilter } from "../../components/ui/filters/SelectFilter";
 import { revendedoraApi } from "../../service/revendedoraApi";
 import { useListFilters } from "../../hooks/useListFilters";
 import styles from "./Revendedoras.module.css";
+import listStyle from "../../styles/ListPage.module.css";
 
 const colunas = ["NOME", "CONTATO", "ENDEREÇO", "ATIVIDADE"];
 const POR_PAGINA = 10;
@@ -151,12 +152,10 @@ export function Revendedoras() {
     return (
         <>
             <PageHeader titulo="Revendedoras">
-                <Button onClick={() => navigate("/contribuintes?tipo=revendedora")}>
-                    Adicionar Revendedora
-                </Button>
+                <BotaoAdicionar rotulo="Adicionar Revendedora" onClick={() => navigate("/contribuintes?tipo=revendedora")} />
             </PageHeader>
 
-            <main className={styles.pageContainer}>
+            <main className={listStyle.pageContainer}>
                 <FilterBar ariaLabel="Filtros de revendedoras" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
                     <SearchFilter
                         rotulo="Pesquisar revendedora"

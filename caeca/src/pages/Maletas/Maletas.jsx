@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 import style from './Maletas.module.css';
+import listStyle from '../../styles/ListPage.module.css';
 import { Table } from '../../components/ui/Table';
 import { vendaApi } from '../../service/maletasApi';
 import { StatusMaletaBadge } from './StatusMaletaBadge';
@@ -113,8 +115,10 @@ export function Maletas() {
 
     return (
         <>
-            <PageHeader titulo="Maletas" subtitulo="Ver histórico de movimentações das jóias" dashed={true} />
-            <div className={style['page-container']}>
+            <PageHeader titulo="Maletas" subtitulo="Ver histórico de movimentações das jóias" dashed={true}>
+                <BotaoAdicionar rotulo="Adicionar maleta" onClick={() => navigate('/movimentacoes?fluxo=saida')} />
+            </PageHeader>
+            <div className={listStyle.pageContainer}>
                 <FilterBar ariaLabel="Filtros de maletas" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
                     <SearchFilter
                         rotulo="Buscar revendedora"

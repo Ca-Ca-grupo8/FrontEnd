@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import style from './MovimentacaoEstoque.module.css';
+import listStyle from '../../styles/ListPage.module.css';
 import { Table } from '../../components/ui/Table';
 import { movimentacaoApi } from '../../service/movimentacaoApi';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 import { TIPO_MOVIMENTACAO } from '../../utils/tipoMovimentacaoEnum';
 import { Pagination } from '../../components/ui/Pagination';
 import { FilterBar } from '../../components/ui/filters/FilterBar';
@@ -134,8 +136,10 @@ export function MovimentacaoEstoque() {
                 titulo="Movimentações de Estoque"
                 subtitulo="Ver histórico de movimentações das maletas"
                 dashed={true}
-                onClick={() => {navigate('/joias/maletas')}} />
-            <div className={style['page-container']}>
+                onClick={() => {navigate('/joias/maletas')}}>
+                <BotaoAdicionar rotulo="Adicionar movimentação" onClick={() => navigate('/movimentacoes')} />
+            </PageHeader>
+            <div className={listStyle.pageContainer}>
                 <FilterBar ariaLabel="Filtros de movimentações" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
                     <SearchFilter
                         rotulo="Buscar joia"

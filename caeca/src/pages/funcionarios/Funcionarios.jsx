@@ -2,14 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Button } from '../../components/ui/Button';
 import { Pagination } from '../../components/ui/Pagination';
 import { FilterBar } from '../../components/ui/filters/FilterBar';
 import { SearchFilter } from '../../components/ui/filters/SearchFilter';
 import { SelectFilter } from '../../components/ui/filters/SelectFilter';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 import { usuarioApi } from '../../service/usuarioApi';
 import { useListFilters } from '../../hooks/useListFilters';
 import style from './Funcionarios.module.css';
+import listStyle from '../../styles/ListPage.module.css';
 
 const colunas = [
     'NOME',
@@ -108,11 +109,9 @@ export function Funcionarios() {
     return (
         <>
             <PageHeader titulo="Funcionários" subtitulo="Gerencie a equipe e os acessos do sistema">
-                <Button colorido={true} onClick={() => navigate('/contribuintes?tipo=funcionario')}>
-                    Adicionar Funcionário
-                </Button>
+                <BotaoAdicionar rotulo="Adicionar Funcionário" onClick={() => navigate('/contribuintes?tipo=funcionario')} />
             </PageHeader>
-            <div className={style.pageContainer}>
+            <div className={listStyle.pageContainer}>
                 <FilterBar ariaLabel="Filtros de funcionários" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
                     <SearchFilter
                         rotulo="Pesquisar funcionário"

@@ -2,15 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Button } from '../../components/ui/Button';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 import { Pagination } from '../../components/ui/Pagination';
 import { FilterBar } from '../../components/ui/filters/FilterBar';
 import { SearchFilter } from '../../components/ui/filters/SearchFilter';
 import { SelectFilter } from '../../components/ui/filters/SelectFilter';
 import { fornecedorApi } from '../../service/fornecedorApi';
 import { emitirToast } from '../../utils/toastBus';
+import { usuarioEhAdmin } from '../../utils/perfil';
 import { useListFilters } from '../../hooks/useListFilters';
 import style from './Fornecedores.module.css';
+import listStyle from '../../styles/ListPage.module.css';
 
 const colunas = [
     'NOME',
@@ -132,11 +134,11 @@ export function Fornecedores() {
     return (
         <>
             <PageHeader titulo="Fornecedores" subtitulo="Gerencie seus parceiros de fornecimento">
-                <Button colorido={true} onClick={() => navigate('/contribuintes?tipo=fornecedor')}>
-                    Adicionar Fornecedor
-                </Button>
+                {usuarioEhAdmin() && (
+                    <BotaoAdicionar rotulo="Adicionar Fornecedor" onClick={() => navigate('/contribuintes?tipo=fornecedor')} />
+                )}
             </PageHeader>
-            <div className={style.pageContainer}>
+            <div className={listStyle.pageContainer}>
                 <FilterBar ariaLabel="Filtros de fornecedores" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
                     <SearchFilter
                         rotulo="Pesquisar fornecedor"
