@@ -179,10 +179,12 @@ function GraficoMotivos({ titulo, dados }) {
     );
 }
 
-function RankingVendidas({ dados, onAcessar }) {
+function RankingVendidas({ dados, porCategoria, onAcessar }) {
     return (
         <section className={style.card}>
-            <h3 className={style.cardTitle}>Top 5 Categorias Mais Vendidas</h3>
+            <h3 className={style.cardTitle}>
+                {porCategoria ? 'Top 5 Categorias Mais Vendidas' : 'Top 5 Produtos Mais Vendidas'}
+            </h3>
             <table className={style.rankingTable}>
                 <thead>
                     <tr>
@@ -209,7 +211,7 @@ function RankingVendidas({ dados, onAcessar }) {
                             </td>
                             <td>{item.quantidadeSaidas}</td>
                             <td>
-                                <button className={style.accessBtn} onClick={() => onAcessar(item.nome)}>Acessar</button>
+                                <button className={style.accessBtn} onClick={() => onAcessar(item)}>Acessar</button>
                             </td>
                         </tr>
                     ))}
@@ -222,10 +224,12 @@ function RankingVendidas({ dados, onAcessar }) {
     );
 }
 
-function RankingFrias({ dados, onAcessar }) {
+function RankingFrias({ dados, porCategoria, onAcessar }) {
     return (
         <section className={style.card}>
-            <h3 className={style.cardTitle}>Top 5 Categorias Mais Frias (Sem Giros)</h3>
+            <h3 className={style.cardTitle}>
+                {porCategoria ? 'Top 5 Categorias Mais Frias (Sem Giros)' : 'Top 5 Produtos Mais Frias (Sem Giros)'}
+            </h3>
             <table className={style.rankingTable}>
                 <thead>
                     <tr>
@@ -253,7 +257,7 @@ function RankingFrias({ dados, onAcessar }) {
                             </td>
                             <td>{item.quantidade}</td>
                             <td>
-                                <button className={style.accessBtn} onClick={() => onAcessar(item.nome)}>Acessar</button>
+                                <button className={style.accessBtn} onClick={() => onAcessar(item)}>Acessar</button>
                             </td>
                         </tr>
                     ))}
@@ -284,6 +288,10 @@ export function Dashboard() {
     const [topVendidos, setTopVendidos] = useState([]);
     const [topFrios, setTopFrios] = useState([]);
     const [entradasSaidas, setEntradasSaidas] = useState(null);
+    // Categoria da última carga concluída. O select muda na hora, mas os
+    // dados só trocam ao aplicar; sem isto o título do ranking mudaria
+    // antes da tabela, mostrando "Produtos" por cima de dados de categorias.
+    const [categoriaAplicada, setCategoriaAplicada] = useState('');
     const [carregando, setCarregando] = useState(true);
     const [toast, setToast] = useState(null);
 
@@ -323,6 +331,7 @@ export function Dashboard() {
             setTopVendidos(vendidos ?? []);
             setTopFrios(frios ?? []);
             setEntradasSaidas(exs ?? null);
+            setCategoriaAplicada(filtros.categoriaId ?? '');
         } catch {
             setToast({ message: 'Não foi possível carregar a dashboard.' });
         } finally {
@@ -386,17 +395,15 @@ export function Dashboard() {
     const resumoEntradasSaidas = paraResumo(entradasSaidas?.kpis);
     const graficoEntradasSaidas = paraGrafico(entradasSaidas?.grafico);
 
-    // O ranking traz o nome da categoria (ou do produto, quando o filtro já
-    // está aplicado). O inventário filtra por id, então o nome é resolvido
-    // antes de navegar; sem correspondência, cai no catálogo completo.
-    const acessarDetalhes = (nome) => {
-        if (categoriaId) {
-            navigate(`/joias?categoria=${categoriaId}`);
-            return;
-        }
-        const categoria = categorias.find((c) => c.nome === nome);
-        navigate(categoria ? `/joias?categoria=${categoria.id}` : '/joias');
-    };
+    // Sem filtro de categoria o ranking de mais vendidos lista categorias
+    // (o id retornado é o da categoria); com filtro ele lista produtos (aí o
+    // id é o da jóia). O destino do "Acessar" acompanha o dado exibido, por
+    // isso usa a categoria já aplicada (a mesma que determinou a consulta).
+    // Os frios são sempre produtos, mesmo sem filtro.
+    const acessarCategoria = (item) => navigate(`/joias?categoria=${item.id}`);
+    const acessarProduto = (item) => navigate(`/joias/${item.id}`);
+    const acessarVendidos = (item) =>
+        categoriaAplicada ? acessarProduto(item) : acessarCategoria(item);
 
     return (
         <>
@@ -543,8 +550,16 @@ export function Dashboard() {
 
                 {/* Rankings */}
                 <div className={style.rankingGrid}>
-                    <RankingVendidas dados={topVendidos} onAcessar={acessarDetalhes} />
-                    <RankingFrias dados={topFrios} onAcessar={acessarDetalhes} />
+                    <RankingVendidas
+                        dados={topVendidos}
+                        porCategoria={!categoriaAplicada}
+                        onAcessar={acessarVendidos}
+                    />
+                    <RankingFrias
+                        dados={topFrios}
+                        porCategoria={!categoriaAplicada}
+                        onAcessar={acessarProduto}
+                    />
                 </div>
             </div>
         </>
