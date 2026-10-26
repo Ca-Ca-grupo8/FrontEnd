@@ -4,90 +4,6 @@
     font-family: system-ui, -apple-system, sans-serif;
 }
 
-.toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    gap: 16px;
-}
-
-.search-input-wrapper {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 500px;
-    padding: 8px 16px;
-    background-color: #f0f0f2;
-    border: 1px solid #dcdcdc;
-    border-radius: 10px;
-}
-
-.search-icon {
-    margin-right: 8px;
-    opacity: 0.6;
-}
-
-.search-input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #333;
-    font-size: 14px;
-}
-
-.filter-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    width: 100%;
-    align-items: center;
-}
-
-.btn-buscar {
-    height: 36px;
-    width: auto;
-    padding: 0 18px;
-    font-size: 13px;
-}
-
-.type-filter {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    color: #555;
-    font-size: 13px;
-}
-
-.type-filter select {
-    border: 1px solid #e2e2e8;
-    border-radius: 8px;
-    padding: 9px 10px;
-    color: #333;
-    background-color: #ffffff;
-    font: inherit;
-}
-
-.date-filter {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-    color: #555;
-    font-size: 13px;
-}
-
-.date-filter input {
-    border: 1px solid #e2e2e8;
-    border-radius: 8px;
-    padding: 9px 10px;
-    color: #333;
-    background-color: #ffffff;
-    font: inherit;
-}
-
 .product-cell {
     display: flex;
     align-items: center;
@@ -167,9 +83,5 @@
     .page-container {
         padding: 16px;
         overflow-x: auto;
-    }
-
-    .toolbar {
-        margin-bottom: 16px;
     }
 }

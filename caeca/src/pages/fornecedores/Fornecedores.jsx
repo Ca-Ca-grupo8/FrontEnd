@@ -1,12 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { Pagination } from '../../components/ui/Pagination';
+import { FilterBar } from '../../components/ui/filters/FilterBar';
+import { SearchFilter } from '../../components/ui/filters/SearchFilter';
+import { SelectFilter } from '../../components/ui/filters/SelectFilter';
 import { fornecedorApi } from '../../service/fornecedorApi';
 import { emitirToast } from '../../utils/toastBus';
-import { Search } from 'lucide-react';
+import { useListFilters } from '../../hooks/useListFilters';
 import style from './Fornecedores.module.css';
 
 const colunas = [
@@ -18,62 +21,63 @@ const colunas = [
 
 const POR_PAGINA = 10;
 
+const FILTROS_PADRAO = {
+    busca: '',
+    atividade: ''
+};
+
+const OPCOES_ATIVIDADE = [
+    { value: '', label: 'Todos' },
+    { value: 'true', label: 'Ativo' },
+    { value: 'false', label: 'Inativo' }
+];
+
 export function Fornecedores() {
     const navigate = useNavigate();
     const [fornecedores, setFornecedores] = useState([]);
-    const [busca, setBusca] = useState('');
-    const [filtroAtividade, setFiltroAtividade] = useState('');
-    const [paginaAtual, setPaginaAtual] = useState(1);
-
-    const carregarFornecedores = useCallback(async () => {
-        try {
-            setFornecedores(await fornecedorApi.listarFornecedores());
-        } catch {
-            // erro exibido pelo interceptor global
-        }
-    }, []);
+    const [carregando, setCarregando] = useState(true);
+    const [versaoLista, setVersaoLista] = useState(0);
+    const { valores, pagina, setFilter, setPagina, limpar, temFiltrosAtivos } = useListFilters(FILTROS_PADRAO);
 
     useEffect(() => {
-        const buscarFornecedores = async () => {
-            try {
-                setFornecedores(await fornecedorApi.listarFornecedores());
-            } catch {
-                // erro exibido pelo interceptor global
-            }
-        };
+        let ignore = false;
 
-        buscarFornecedores();
-    }, []);
+        fornecedorApi.listarFornecedores()
+            .then((lista) => {
+                if (!ignore) setFornecedores(lista);
+            })
+            .catch(() => {
+                // erro exibido pelo interceptor global
+            })
+            .finally(() => {
+                if (!ignore) setCarregando(false);
+            });
+
+        return () => { ignore = true; };
+    }, [versaoLista]);
 
     // listarFornecedores já traz a lista inteira (fetchAllPages), então
     // busca, filtro e paginação são resolvidos aqui no front.
     const filtrados = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
+        const termo = valores.busca.trim().toLowerCase();
 
         return fornecedores.filter((fornecedor) => {
             const casaComBusca =
                 !termo || fornecedor.nome?.toLowerCase().includes(termo);
             const casaComAtividade =
-                !filtroAtividade || String(fornecedor.isAtivo) === filtroAtividade;
+                !valores.atividade || String(fornecedor.isAtivo) === valores.atividade;
 
             return casaComBusca && casaComAtividade;
         });
-    }, [fornecedores, busca, filtroAtividade]);
+    }, [fornecedores, valores]);
 
     const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+    const paginaEfetiva = Math.min(pagina, totalPaginas);
 
     const fornecedoresDaPagina = useMemo(() => {
-        const inicio = (paginaAtual - 1) * POR_PAGINA;
+        const inicio = (paginaEfetiva - 1) * POR_PAGINA;
         return filtrados.slice(inicio, inicio + POR_PAGINA);
-    }, [filtrados, paginaAtual]);
-
-    const buscar = () => {
-        setPaginaAtual(1);
-    };
-
-    const alterarPagina = (pagina) => {
-        setPaginaAtual(pagina);
-    };
+    }, [filtrados, paginaEfetiva]);
 
     const inativarFornecedor = async (fornecedor) => {
         const confirmar = window.confirm(
@@ -84,7 +88,7 @@ export function Fornecedores() {
         try {
             await fornecedorApi.alterarStatus(fornecedor.id, false);
             emitirToast({ message: `Fornecedor "${fornecedor.nome}" inativado.`, type: 'success' });
-            carregarFornecedores();
+            setVersaoLista((versao) => versao + 1);
         } catch {
             // erro exibido pelo interceptor global
         }
@@ -133,45 +137,24 @@ export function Fornecedores() {
                 </Button>
             </PageHeader>
             <div className={style.pageContainer}>
-                <div className={style.toolbar}>
-                    <div className={style.searchInputWrapper}>
-                        <span className={style.searchIcon}>
-                            <Search size={16} />
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Pesquisar fornecedor"
-                            className={style.searchInput}
-                            value={busca}
-                            onChange={(e) => setBusca(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') buscar();
-                            }}
-                        />
-                    </div>
+                <FilterBar ariaLabel="Filtros de fornecedores" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
+                    <SearchFilter
+                        rotulo="Pesquisar fornecedor"
+                        placeholder="Pesquisar fornecedor"
+                        valor={valores.busca}
+                        onChange={(valor) => setFilter('busca', valor)}
+                    />
+                    <SelectFilter
+                        rotulo="Atividade"
+                        valor={valores.atividade}
+                        onChange={(valor) => setFilter('atividade', valor)}
+                        opcoes={OPCOES_ATIVIDADE}
+                    />
+                </FilterBar>
 
-                    <div className={style.filterButtons}>
-                        <label className={style.typeFilter}>
-                            <span>Atividade</span>
-                            <select
-                                value={filtroAtividade}
-                                onChange={(e) => {
-                                    setFiltroAtividade(e.target.value);
-                                    setPaginaAtual(1);
-                                }}
-                            >
-                                <option value="">Todos</option>
-                                <option value="true">Ativo</option>
-                                <option value="false">Inativo</option>
-                            </select>
-                        </label>
-                        <Button colorido={true} onClick={buscar}>
-                            Buscar
-                        </Button>
-                    </div>
-                </div>
-
-                {fornecedoresDaPagina.length > 0 ? (
+                {carregando ? (
+                    <div className={style.emptyState}>Carregando fornecedores...</div>
+                ) : fornecedoresDaPagina.length > 0 ? (
                     <Table
                         colunas={colunas}
                         funcaoRender={funcaoRender}
@@ -185,9 +168,9 @@ export function Fornecedores() {
                 )}
 
                 <Pagination
-                    paginaAtual={paginaAtual}
+                    paginaAtual={paginaEfetiva}
                     totalPaginas={totalPaginas}
-                    aoMudarPagina={alterarPagina}
+                    aoMudarPagina={setPagina}
                 />
             </div>
         </>

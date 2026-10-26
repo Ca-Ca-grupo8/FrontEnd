@@ -1,11 +1,9 @@
 import api from "./api"
+import { limparParams } from "../utils/limparParams"
 
 export const vendaApi = {
-    buscarMaletas: async (filtros = {}) => {
-        const params = Object.fromEntries(
-            Object.entries(filtros).filter(([, valor]) => valor !== '' && valor !== null && valor !== undefined)
-        );
-        const response = await api.get("/vendas", { params });
+    buscarMaletas: async (filtros = {}, { signal } = {}) => {
+        const response = await api.get("/vendas", { params: limparParams(filtros), signal });
         return response.data;
     },
 

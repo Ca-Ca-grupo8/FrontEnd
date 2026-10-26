@@ -15,6 +15,11 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Requisições canceladas (AbortController) não são erro para o usuário.
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+
     const silent = error.config?.silent === true;
 
     if (error.response?.status === 401) {
