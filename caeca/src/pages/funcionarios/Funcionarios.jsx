@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { usuarioApi } from '../../service/usuarioApi';
-import { NovoFuncionarioModal } from '../../components/modals/NovoFuncionario';
 import { Search } from 'lucide-react';
 import style from './Funcionarios.module.css';
 
@@ -19,22 +19,11 @@ const PERFIS = {
 };
 
 export function Funcionarios() {
+    const navigate = useNavigate();
     const [usuarios, setUsuarios] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [busca, setBusca] = useState('');
     const [filtroPerfil, setFiltroPerfil] = useState('');
-    const [modalAberto, setModalAberto] = useState(false);
-
-    const carregarUsuarios = useCallback(async () => {
-        setCarregando(true);
-        try {
-            setUsuarios(await usuarioApi.listarUsuarios());
-        } catch {
-            // erro exibido pelo interceptor global
-        } finally {
-            setCarregando(false);
-        }
-    }, []);
 
     useEffect(() => {
         const buscarUsuarios = async () => {
@@ -95,7 +84,7 @@ export function Funcionarios() {
     return (
         <>
             <PageHeader titulo="Funcionários" subtitulo="Gerencie a equipe e os acessos do sistema">
-                <Button colorido={true} onClick={() => setModalAberto(true)}>
+                <Button colorido={true} onClick={() => navigate('/contribuintes?tipo=funcionario')}>
                     Adicionar Funcionário
                 </Button>
             </PageHeader>
@@ -132,7 +121,12 @@ export function Funcionarios() {
                 {carregando ? (
                     <div className={style.emptyState}>Carregando funcionários...</div>
                 ) : usuariosFiltrados.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={usuariosFiltrados} />
+                    <Table
+                        colunas={colunas}
+                        funcaoRender={funcaoRender}
+                        data={usuariosFiltrados}
+                        onRowClick={(row) => navigate(`/contribuintes/funcionarios/${row.id ?? row.idUsuario}`)}
+                    />
                 ) : (
                     <div className={style.emptyState}>
                         {usuarios.length === 0
@@ -141,14 +135,6 @@ export function Funcionarios() {
                     </div>
                 )}
             </div>
-
-            <NovoFuncionarioModal
-                isOpen={modalAberto}
-                onClose={() => {
-                    setModalAberto(false);
-                    carregarUsuarios();
-                }}
-            />
         </>
     );
 }

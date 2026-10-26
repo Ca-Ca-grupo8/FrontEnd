@@ -1,5 +1,5 @@
 const STATUS_MALETA = Object.freeze({
-    ABERTO: { classe: 'badge-aberto', rotulo: 'Aberto' },
+    EM_PREPARACAO: { classe: 'badge-aberto', rotulo: 'Em preparação' },
     EM_CONSIGNACAO: { classe: 'badge-em-consignacao', rotulo: 'Em consignação' },
     EM_ACERTO: { classe: 'badge-em-acerto', rotulo: 'Em acerto' },
     FINALIZADA: { classe: 'badge-finalizada', rotulo: 'Finalizada' },

@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import CardForm from "../components/layout/CardForm";
+import { FormFlat } from "../components/layout/FormFlat";
+import formStyles from "../components/layout/FormFlat.module.css";
 import { InputField } from "../components/ui/InputField";
 import { SelectField } from "../components/ui/SelectField";
 import { Button } from "../components/ui/Button";
-import { Header } from "../components/layout/Header";
-import { PageHeader } from "../components/ui/PageHeader";
-import { Footer } from "../components/layout/Footer";
-import { CirclePlus } from "lucide-react";
 import { emitirToast } from "../utils/toastBus";
 
 // Substitua pelas APIs reais do seu projeto
@@ -16,16 +13,14 @@ import { revendedoraApi } from "../service/revendedoraApi";
 import { motivoApi } from "../service/motivoApi";
 
 import '../styles/EntradaJoia.css'; // Reaproveitando os estilos base de formulário
-import { NovaCategoriaModal } from "../components/modals/NovaCategoriaModal";
 import { NovaRevendedoraModal } from "../components/modals/NovaRevendedora";
 
-export function SaidaJoia() {
+export function SaidaJoia({ sugestao }) {
     const [motivos, setMotivos] = useState([]);
     const [joias, setJoias] = useState([]);
     const [revendedoras, setRevendedoras] = useState([]);
 
     const [isRevendedoraOpen, setIsRevendedoraOpen] = useState(false);
-    const [isCategoriaOpen, setIsCategoriaOpen] = useState(false);
 
 
     const [formValues, setFormValues] = useState({
@@ -68,6 +63,18 @@ export function SaidaJoia() {
         carregarDadosIniciais();
     }, []);
 
+    const [sugestaoAplicada, setSugestaoAplicada] = useState(null);
+
+    if (sugestao && sugestao !== sugestaoAplicada) {
+        setSugestaoAplicada(sugestao);
+        setFormValues(prev => ({
+            ...prev,
+            joiaId: String(sugestao.joia.idJoia),
+            motivoSaidaId: String(sugestao.joia.idMotivo),
+            quantidade: String(sugestao.joia.quantidadeMedia)
+        }));
+    }
+
     const motivoSelecionado = motivos.find(m => String(m.id) === formValues.motivoSaidaId);
 
     const exibirCamposRevendedora = !!motivoSelecionado &&
@@ -106,89 +113,71 @@ export function SaidaJoia() {
 
     return (
         <>
-            <div className="page-wrapper">
+            <NovaRevendedoraModal
+                isOpen={isRevendedoraOpen}
+                onClose={() => setIsRevendedoraOpen(false)} />
 
-                <main className="main-content">
-                    <PageHeader titulo={"Saída de jóias"}>
-                        <Button type={"button"} colorido={false} onClick={() => setIsCategoriaOpen(true)}>
-                            Cadastrar nova categoria
-                        </Button>
-                    </PageHeader>
+            <FormFlat onSubmit={handleSubmit}>
 
-                    <NovaCategoriaModal
-                        isOpen={isCategoriaOpen}
-                        onClose={() => setIsCategoriaOpen(false)} />
+                <SelectField
+                    data={motivos}
+                    label={"Motivo da saída"}
+                    value={formValues.motivoSaidaId}
+                    required={true}
+                    onChange={(e) => handleChange("motivoSaidaId", e.target.value)}
+                />
+                {exibirCamposRevendedora && (
+                    <>
+                        <div className="input-with-action">
+                            <SelectField
+                                data={revendedoras}
+                                label={"Revendedora"}
+                                value={formValues.revendedoraId}
+                                required={false}
+                                onChange={(e) => handleChange("revendedoraId", e.target.value)}
+                            />
 
-                    <NovaRevendedoraModal
-                                    isOpen={isRevendedoraOpen}
-                                    onClose={() => setIsRevendedoraOpen(false)} />
-
-                    <CardForm onSubmit={handleSubmit}>
-
-                        <SelectField
-                            data={motivos}
-                            label={"Motivo da saída"}
-                            value={formValues.motivoSaidaId}
-                            required={true}
-                            onChange={(e) => handleChange("motivoSaidaId", e.target.value)}
-                        />
-                        {exibirCamposRevendedora && (
-                            <>
-                                <div className="input-with-action">
-                                    <SelectField
-                                        data={revendedoras}
-                                        label={"Revendedora"}
-                                        value={formValues.revendedoraId}
-                                        required={false}
-                                        onChange={(e) => handleChange("revendedoraId", e.target.value)}
-                                    />
-
-                                    {/* <div className="add-fornecedor-container">
-                                        <CirclePlus
-                                            className="add-fornecedor-content"
-                                            onClick={() => setIsRevendedoraOpen(true)}
-                                        />
-                                    </div> */}
-                                </div>
-
-                                <InputField
-                                    label={"Data limite"}
-                                    type={"date"}
-                                    required={false}
-                                    value={formValues.dataLimite}
-                                    onChange={(e) => handleChange("dataLimite", e.target.value)}
+                            {/* <div className="add-fornecedor-container">
+                                <CirclePlus
+                                    className="add-fornecedor-content"
+                                    onClick={() => setIsRevendedoraOpen(true)}
                                 />
-                            </>
-                        )}
-
-                        <SelectField
-                            data={joias}
-                            label={"Jóia"}
-                            value={formValues.joiaId}
-                            required={true}
-                            onChange={(e) => handleChange("joiaId", e.target.value)}
-                        />
+                            </div> */}
+                        </div>
 
                         <InputField
-                            label={"Quantidade"}
-                            type={"number"}
-                            placeholder={"Ex: 10"}
-                            required={true}
-                            value={formValues.quantidade}
-                            onChange={(e) => handleChange("quantidade", e.target.value)}
+                            label={"Data limite"}
+                            type={"date"}
+                            required={false}
+                            value={formValues.dataLimite}
+                            onChange={(e) => handleChange("dataLimite", e.target.value)}
                         />
+                    </>
+                )}
 
+                <SelectField
+                    data={joias}
+                    label={"Jóia"}
+                    value={formValues.joiaId}
+                    required={true}
+                    onChange={(e) => handleChange("joiaId", e.target.value)}
+                />
 
-                        <div className="card-form-actions">
-                            <Button type={"submit"} colorido={true}>
-                                Realizar saída
-                            </Button>
-                        </div>
-                    </CardForm>
-                </main>
+                <InputField
+                    label={"Quantidade"}
+                    type={"number"}
+                    placeholder={"Ex: 10"}
+                    required={true}
+                    value={formValues.quantidade}
+                    onChange={(e) => handleChange("quantidade", e.target.value)}
+                />
 
-
-            </div>
+                <div className={formStyles.acoes}>
+                    <Button type={"submit"} colorido={true}>
+                        Realizar saída
+                    </Button>
+                </div>
+            </FormFlat>
         </>
     );
 }

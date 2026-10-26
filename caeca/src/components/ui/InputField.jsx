@@ -1,6 +1,6 @@
 import '../../styles/InputField.css';
 
-export function InputField({ label, type, placeholder, required = false, value, onChange}){
+export function InputField({ label, type, placeholder, required = false, value, onChange, min, max, step, onFocus, autoComplete }) {
     return (
         <div className="input-field-container">
             <label className="input-field-label">
@@ -12,7 +12,12 @@ export function InputField({ label, type, placeholder, required = false, value, 
                 className="input-field-input"
                 required={required}
                 value={value}
+                min={min}
+                max={max}
+                step={step}
                 onChange={onChange}
+                onFocus={onFocus}
+                autoComplete={autoComplete}
             />
         </div>
     )

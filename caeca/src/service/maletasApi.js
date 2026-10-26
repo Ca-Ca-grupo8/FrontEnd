@@ -22,5 +22,10 @@ export const vendaApi = {
     listarStatus: async () => {
         const response = await api.get("/status-maletas");
         return response.data ?? [];
+    },
+
+    buscarResumo: async () => {
+        const response = await api.get("/vendas/resumo");
+        return response.data;
     }
 }

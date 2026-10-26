@@ -1,30 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
 import { Button } from '../../components/ui/Button';
 import { Pagination } from '../../components/ui/Pagination';
 import { fornecedorApi } from '../../service/fornecedorApi';
-import { NovoFornecedorModal } from '../../components/modals/NovoFornecedor';
 import { emitirToast } from '../../utils/toastBus';
-import { Search, Pencil, Trash2 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import style from './Fornecedores.module.css';
 
 const colunas = [
     'NOME',
     'INSTAGRAM',
     'TELEFONE',
-    'ATIVIDADE',
     'STATUS'
 ];
 
 const POR_PAGINA = 10;
 
 export function Fornecedores() {
+    const navigate = useNavigate();
     const [fornecedores, setFornecedores] = useState([]);
     const [busca, setBusca] = useState('');
     const [filtroAtividade, setFiltroAtividade] = useState('');
     const [paginaAtual, setPaginaAtual] = useState(1);
-    const [modalAberto, setModalAberto] = useState(false);
 
     const carregarFornecedores = useCallback(async () => {
         try {
@@ -114,31 +113,11 @@ export function Fornecedores() {
                     return row.instagram || '-';
                 case 'TELEFONE':
                     return row.telefone || '-';
-                case 'ATIVIDADE':
+                case 'STATUS':
                     return (
                         <span className={`${style.badge} ${row.isAtivo ? style.badgeActive : style.badgeInactive}`}>
                             {row.isAtivo ? 'Ativo' : 'Inativo'}
                         </span>
-                    );
-                case 'STATUS':
-                    return (
-                        <div className={style.actionsCell}>
-                            <button
-                                className={`${style.actionIcon} ${style.editIcon}`}
-                                title="Editar fornecedor"
-                                aria-label={`Editar ${row.nome}`}
-                            >
-                                <Pencil size={16} />
-                            </button>
-                            <button
-                                className={`${style.actionIcon} ${style.deleteIcon}`}
-                                title="Inativar fornecedor"
-                                aria-label={`Inativar ${row.nome}`}
-                                onClick={() => inativarFornecedor(row)}
-                            >
-                                <Trash2 size={16} />
-                            </button>
-                        </div>
                     );
                 default:
                     return null;
@@ -149,7 +128,7 @@ export function Fornecedores() {
     return (
         <>
             <PageHeader titulo="Fornecedores" subtitulo="Gerencie seus parceiros de fornecimento">
-                <Button colorido={true} onClick={() => setModalAberto(true)}>
+                <Button colorido={true} onClick={() => navigate('/contribuintes?tipo=fornecedor')}>
                     Adicionar Fornecedor
                 </Button>
             </PageHeader>
@@ -193,7 +172,12 @@ export function Fornecedores() {
                 </div>
 
                 {fornecedoresDaPagina.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={fornecedoresDaPagina} />
+                    <Table
+                        colunas={colunas}
+                        funcaoRender={funcaoRender}
+                        data={fornecedoresDaPagina}
+                        onRowClick={(row) => navigate(`/contribuintes/fornecedores/${row.id}`)}
+                    />
                 ) : (
                     <div className={style.emptyState}>
                         Nenhum fornecedor encontrado
@@ -206,14 +190,6 @@ export function Fornecedores() {
                     aoMudarPagina={alterarPagina}
                 />
             </div>
-
-            <NovoFornecedorModal
-                isOpen={modalAberto}
-                onClose={() => {
-                    setModalAberto(false);
-                    carregarFornecedores();
-                }}
-            />
         </>
     );
 }

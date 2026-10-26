@@ -29,6 +29,16 @@
   border: 2px solid rgba(255, 255, 255, 0.6);
 }
 
+.user-avatar-iniciais {
+  display: grid;
+  place-items: center;
+  background-color: #FFACC0;
+  color: #96205C;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
 .user-info {
   display: flex;
   flex-direction: column;

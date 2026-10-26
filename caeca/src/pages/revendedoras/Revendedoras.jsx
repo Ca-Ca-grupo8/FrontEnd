@@ -105,7 +105,10 @@ export function Revendedoras() {
                                 type="button"
                                 className={styles.name}
                                 disabled={!row.id && !row.idRevendedora}
-                                onClick={() => navigate(`/contribuintes/revendedoras/${row.id ?? row.idRevendedora}`)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/contribuintes/revendedoras/${row.id ?? row.idRevendedora}`);
+                                }}
                             >
                                 {row.nome || "-"}
                             </button>
@@ -139,7 +142,7 @@ export function Revendedoras() {
         <>
             {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
             <PageHeader titulo="Revendedoras">
-                <Button onClick={() => navigate("/contribuintes/revendedoras/cadastro")}>
+                <Button onClick={() => navigate("/contribuintes?tipo=revendedora")}>
                     Adicionar Revendedora
                 </Button>
             </PageHeader>
@@ -192,7 +195,12 @@ export function Revendedoras() {
                 {carregando ? (
                     <div className={styles.emptyState}>Carregando revendedoras...</div>
                 ) : revendedorasDaPagina.length > 0 ? (
-                    <Table colunas={colunas} funcaoRender={funcaoRender} data={revendedorasDaPagina} />
+                    <Table
+                        colunas={colunas}
+                        funcaoRender={funcaoRender}
+                        data={revendedorasDaPagina}
+                        onRowClick={(row) => navigate(`/contribuintes/revendedoras/${row.id ?? row.idRevendedora}`)}
+                    />
                 ) : (
                     <div className={styles.emptyState}>
                         {revendedoras.length === 0

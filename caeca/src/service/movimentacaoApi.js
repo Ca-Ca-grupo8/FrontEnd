@@ -20,6 +20,11 @@ export const movimentacaoApi = {
         return response.data
     },
 
+    listarTopJoiasSaida: async () => {
+        const response = await api.get("/movimentacoes/top-joias-saida");
+        return response.data.joias ?? [];
+    },
+
     buscarMovimentacoes: async (filtros = {}) => {
         const params = Object.fromEntries(
             Object.entries(filtros).filter(([, valor]) => valor !== '' && valor !== null && valor !== undefined)

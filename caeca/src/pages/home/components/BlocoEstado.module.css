@@ -1,0 +1,20 @@
+.skeleton {
+    width: 100%;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #f1f1f1 25%, #e6e6e6 50%, #f1f1f1 75%);
+    background-size: 200% 100%;
+    animation: brilho 1.4s infinite;
+}
+
+.mensagem {
+    margin: 0;
+    padding: 32px 0;
+    text-align: center;
+    color: #9a9a9a;
+    font-size: 0.9rem;
+}
+
+@keyframes brilho {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

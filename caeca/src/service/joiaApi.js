@@ -19,8 +19,19 @@ export const joiaApi = {
         );
     },
 
+    // Rota a ser criada no backend: jóias com quantidade abaixo da quantidadeMinima.
+    listarAbaixoDoMinimo: async (limite = 5) => {
+        const response = await api.get("/joias/abaixo-do-minimo", { params: { limite } })
+        return response.data
+    },
+
     buscarPorId: async (id) => {
         const response = await api.get(`/joias/${id}`)
+        return response.data
+    },
+
+    listarPorFornecedor: async (fornecedorId, { page = 0, size = 10 } = {}) => {
+        const response = await api.get(`/joias/fornecedor/${fornecedorId}`, { params: { page, size } })
         return response.data
     },
 

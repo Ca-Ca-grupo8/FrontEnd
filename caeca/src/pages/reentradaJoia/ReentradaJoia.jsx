@@ -1,24 +1,36 @@
 import { useEffect, useState } from "react";
-import CardForm from "../../components/layout/CardForm";
+import { Link } from "react-router-dom";
+import { FormFlat } from "../../components/layout/FormFlat";
+import formStyles from "../../components/layout/FormFlat.module.css";
 import { InputField } from "../../components/ui/InputField";
 import { SelectField } from "../../components/ui/SelectField";
 import { Button } from "../../components/ui/Button";
-import { PageHeader } from "../../components/ui/PageHeader";
 import { emitirToast } from "../../utils/toastBus";
 import { motivoApi } from "../../service/motivoApi";
 import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
-import "./ReentradaJoia.module.css";
+import { revendedoraApi } from "../../service/revendedoraApi";
+import { vendaApi } from "../../service/vendaApi";
 
 export function ReentradaJoia() {
     const [motivos, setMotivos] = useState([]);
     const [joias, setJoias] = useState([]);
+    const [revendedoras, setRevendedoras] = useState([]);
+    const [joiasRevendedora, setJoiasRevendedora] = useState([]);
 
     const [formValues, setFormValues] = useState({
         motivoReentradaId: "",
         joiaId: "",
         quantidade: "",
+        revendedoraId: "",
     });
+
+    const motivoSelecionado = motivos.find(motivo => String(motivo.id) === formValues.motivoReentradaId);
+    const nomeMotivoSelecionado = motivoSelecionado?.nome
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase() ?? "";
+    const exibirRevendedora = nomeMotivoSelecionado.includes("retorno de consignacao");
 
     const handleChange = (field, value) => {
         setFormValues(prev => ({
@@ -30,9 +42,10 @@ export function ReentradaJoia() {
     useEffect(() => {
         async function carregarDadosIniciais() {
             try {
-                const [listaMotivos, listaJoias] = await Promise.all([
+                const [listaMotivos, listaJoias, listaRevendedoras] = await Promise.all([
                     motivoApi?.listarMotivos() || [],
-                    joiaApi.listarTodasJoias()
+                    joiaApi.listarTodasJoias(),
+                    revendedoraApi.listarRevendedorasMaletaAberta()
                 ]);
 
                 const motivosFiltrados = listaMotivos.filter(
@@ -41,6 +54,7 @@ export function ReentradaJoia() {
 
                 setMotivos(motivosFiltrados);
                 setJoias(listaJoias);
+                setRevendedoras(listaRevendedoras);
             } catch (error) {
                 console.error("Erro ao carregar dados de inicialização:", error);
             }
@@ -49,8 +63,70 @@ export function ReentradaJoia() {
         carregarDadosIniciais();
     }, []);
 
+    const handleMotivoChange = (value) => {
+        setFormValues(prev => ({
+            ...prev,
+            motivoReentradaId: value,
+            revendedoraId: "",
+            joiaId: ""
+        }))
+    }
+
+    const handleRevendedoraChange = (value) => {
+        setFormValues(prev => ({
+            ...prev,
+            revendedoraId: value,
+            joiaId: ""
+        }))
+    }
+
+    useEffect(() => {
+        if (!exibirRevendedora || !formValues.revendedoraId) return;
+
+        async function carregarJoiasRevendedora() {
+            try {
+                const listaJoiasRevendedora = await vendaApi.listarJoiasSaidaRevendedora(Number(formValues.revendedoraId));
+                setJoiasRevendedora(listaJoiasRevendedora);
+            } catch (error) {
+                console.error("Erro ao carregar joias da revendedora:", error);
+            }
+        }
+
+        carregarJoiasRevendedora();
+    }, [exibirRevendedora, formValues.revendedoraId]);
+
+    const opcoesJoia = !exibirRevendedora
+        ? joias
+        : formValues.revendedoraId
+            ? joiasRevendedora
+            : [];
+
+    const joiaSelecionadaRevendedora = exibirRevendedora
+        ? joiasRevendedora.find(joia => String(joia.id) === formValues.joiaId)
+        : undefined;
+    const quantidadeMaxima = joiaSelecionadaRevendedora?.quantidade;
+
+    const handleQuantidadeChange = (value) => {
+        if (quantidadeMaxima !== undefined && value !== "") {
+            if (!/^\d+$/.test(value) || Number(value) < 1) return;
+            if (Number(value) > quantidadeMaxima) {
+                handleChange("quantidade", String(quantidadeMaxima));
+                return;
+            }
+        }
+        handleChange("quantidade", value);
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (quantidadeMaxima !== undefined) {
+            const quantidade = Number(formValues.quantidade);
+            if (quantidade < 1 || quantidade > quantidadeMaxima) {
+                emitirToast({ message: `A quantidade deve estar entre 1 e ${quantidadeMaxima}.`, type: "error" });
+                return;
+            }
+        }
 
         // ATENÇÃO (validar com backend): esta tela não coleta fornecedor,
         // preço de custo, preço do banho nem multiplicador - diferente de
@@ -63,7 +139,7 @@ export function ReentradaJoia() {
             idMotivoMovimentacao: Number(formValues.motivoReentradaId) || 0,
             idJoia: Number(formValues.joiaId) || 0,
             quantidade: Number(formValues.quantidade) || 0,
-            idRevendedora: null,
+            idRevendedora: exibirRevendedora ? Number(formValues.revendedoraId) : null,
             dadosNovaJoia: null,
             precoBanho: null,
             precoCompraRevendedor: null,
@@ -82,6 +158,7 @@ export function ReentradaJoia() {
                 motivoReentradaId: "",
                 joiaId: "",
                 quantidade: "",
+                revendedoraId: "",
             });
             return response;
         } catch (error) {
@@ -90,47 +167,55 @@ export function ReentradaJoia() {
     }
 
     return (
-        <>
-            <PageHeader titulo={"Reentrada de joias"} />
+        <FormFlat onSubmit={handleSubmit}>
 
-            <CardForm onSubmit={handleSubmit}>
+            <SelectField
+                data={motivos}
+                label={"Motivo da reentrada"}
+                value={formValues.motivoReentradaId}
+                required={true}
+                onChange={(e) => handleMotivoChange(e.target.value)}
+            />
 
+            {exibirRevendedora && (
                 <SelectField
-                    data={motivos}
-                    label={"Motivo da reentrada"}
-                    value={formValues.motivoReentradaId}
+                    data={revendedoras}
+                    label={"Revendedora"}
+                    value={formValues.revendedoraId}
                     required={true}
-                    onChange={(e) => handleChange("motivoReentradaId", e.target.value)}
+                    onChange={(e) => handleRevendedoraChange(e.target.value)}
                 />
+            )}
 
-                <SelectField
-                    data={joias}
-                    label={"Joia"}
-                    value={formValues.joiaId}
-                    required={true}
-                    onChange={(e) => handleChange("joiaId", e.target.value)}
-                />
+            <SelectField
+                data={opcoesJoia}
+                label={"Joia"}
+                value={formValues.joiaId}
+                required={true}
+                onChange={(e) => handleChange("joiaId", e.target.value)}
+            />
 
-                <InputField
-                    label={"Quantidade"}
-                    type={"number"}
-                    placeholder={"Value"}
-                    required={true}
-                    value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}>
-                </InputField>
+            <InputField
+                label={"Quantidade"}
+                type={"number"}
+                placeholder={"Value"}
+                required={true}
+                min={quantidadeMaxima !== undefined ? 1 : undefined}
+                max={quantidadeMaxima}
+                value={formValues.quantidade}
+                onChange={(e) => handleQuantidadeChange(e.target.value)}>
+            </InputField>
 
-                <div className="card-form-actions">
-                    <Button type={"submit"} colorido={true}>Realizar reentrada</Button>
-                    <span className="card-form-link">
-                        <p>Nova joia?</p>
-                        <a href="/movimentacoes/entrada">Cadastrar nova joia</a>
-                    </span>
-                    <p className="required-fields-note">
-                        <span className="required-asterisk">*</span> Campos obrigatórios
-                    </p>
-                </div>
-            </CardForm>
-        </>
+            <div className={formStyles.acoes}>
+                <Button type={"submit"} colorido={true}>Realizar reentrada</Button>
+                <span className={formStyles.link}>
+                    <p>Nova joia?</p>
+                    <Link to="/movimentacoes?fluxo=entrada">Cadastrar nova joia</Link>
+                </span>
+                <p className={formStyles.nota}>
+                    <span className={formStyles.asterisco}>*</span> Campos obrigatórios
+                </p>
+            </div>
+        </FormFlat>
     )
 }
