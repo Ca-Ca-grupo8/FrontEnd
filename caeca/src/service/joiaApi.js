@@ -1,19 +1,15 @@
 import api from "./api"
 import { fetchAllPages } from "../utils/fetchAllPages"
+import { limparParams } from "../utils/limparParams"
 
 export const joiaApi = {
-    listarJoias: async (filtros = {}) => {
-        const params = Object.fromEntries(
-            Object.entries(filtros).filter(([, valor]) => valor !== '' && valor !== null && valor !== undefined)
-        );
-        const response = await api.get("/joias", { params })
+    listarJoias: async (filtros = {}, { signal } = {}) => {
+        const response = await api.get("/joias", { params: limparParams(filtros), signal })
         return response.data
     },
 
     listarTodasJoias: async (filtros = {}) => {
-        const params = Object.fromEntries(
-            Object.entries(filtros).filter(([, valor]) => valor !== '' && valor !== null && valor !== undefined)
-        );
+        const params = limparParams(filtros);
         return fetchAllPages((page) =>
             api.get("/joias", { params: { ...params, page } }).then(r => r.data)
         );

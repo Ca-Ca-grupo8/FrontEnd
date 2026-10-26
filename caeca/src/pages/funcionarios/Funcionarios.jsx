@@ -2,10 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Button } from '../../components/ui/Button';
+import { Pagination } from '../../components/ui/Pagination';
+import { FilterBar } from '../../components/ui/filters/FilterBar';
+import { SearchFilter } from '../../components/ui/filters/SearchFilter';
+import { SelectFilter } from '../../components/ui/filters/SelectFilter';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 import { usuarioApi } from '../../service/usuarioApi';
-import { Search } from 'lucide-react';
+import { useListFilters } from '../../hooks/useListFilters';
 import style from './Funcionarios.module.css';
+import listStyle from '../../styles/ListPage.module.css';
 
 const colunas = [
     'NOME',
@@ -13,17 +18,29 @@ const colunas = [
     'PERFIL'
 ];
 
+const POR_PAGINA = 10;
+
 const PERFIS = {
     ROLE_ADMIN: 'ROLE_ADMIN',
     ROLE_USER: 'ROLE_USER'
 };
 
+const FILTROS_PADRAO = {
+    busca: '',
+    perfil: ''
+};
+
+const OPCOES_PERFIL = [
+    { value: '', label: 'Todos' },
+    { value: PERFIS.ROLE_ADMIN, label: 'Administrador' },
+    { value: PERFIS.ROLE_USER, label: 'Funcionário' }
+];
+
 export function Funcionarios() {
     const navigate = useNavigate();
     const [usuarios, setUsuarios] = useState([]);
     const [carregando, setCarregando] = useState(true);
-    const [busca, setBusca] = useState('');
-    const [filtroPerfil, setFiltroPerfil] = useState('');
+    const { valores, pagina, setFilter, setPagina, limpar, temFiltrosAtivos } = useListFilters(FILTROS_PADRAO);
 
     useEffect(() => {
         const buscarUsuarios = async () => {
@@ -41,9 +58,9 @@ export function Funcionarios() {
     }, []);
 
     // O endpoint devolve a lista inteira, sem filtro no servidor — então
-    // busca e perfil são resolvidos aqui, a partir da lista em memória.
+    // busca, perfil e paginação são resolvidos aqui, a partir da lista em memória.
     const usuariosFiltrados = useMemo(() => {
-        const termo = busca.trim().toLowerCase();
+        const termo = valores.busca.trim().toLowerCase();
 
         return usuarios.filter((usuario) => {
             const casaComBusca =
@@ -51,11 +68,19 @@ export function Funcionarios() {
                 usuario.nome?.toLowerCase().includes(termo) ||
                 usuario.email?.toLowerCase().includes(termo);
 
-            const casaComPerfil = !filtroPerfil || usuario.role === filtroPerfil;
+            const casaComPerfil = !valores.perfil || usuario.role === valores.perfil;
 
             return casaComBusca && casaComPerfil;
         });
-    }, [usuarios, busca, filtroPerfil]);
+    }, [usuarios, valores]);
+
+    const totalPaginas = Math.max(1, Math.ceil(usuariosFiltrados.length / POR_PAGINA));
+    const paginaEfetiva = Math.min(pagina, totalPaginas);
+
+    const usuariosDaPagina = useMemo(() => {
+        const inicio = (paginaEfetiva - 1) * POR_PAGINA;
+        return usuariosFiltrados.slice(inicio, inicio + POR_PAGINA);
+    }, [usuariosFiltrados, paginaEfetiva]);
 
     const rotuloDoPerfil = (role) => {
         if (role === PERFIS.ROLE_ADMIN) {
@@ -84,47 +109,31 @@ export function Funcionarios() {
     return (
         <>
             <PageHeader titulo="Funcionários" subtitulo="Gerencie a equipe e os acessos do sistema">
-                <Button colorido={true} onClick={() => navigate('/contribuintes?tipo=funcionario')}>
-                    Adicionar Funcionário
-                </Button>
+                <BotaoAdicionar rotulo="Adicionar Funcionário" onClick={() => navigate('/contribuintes?tipo=funcionario')} />
             </PageHeader>
-            <div className={style.pageContainer}>
-                <div className={style.toolbar}>
-                    <div className={style.searchInputWrapper}>
-                        <span className={style.searchIcon}>
-                            <Search size={16} />
-                        </span>
-                        <input
-                            type="text"
-                            placeholder="Pesquisar por nome ou email"
-                            className={style.searchInput}
-                            value={busca}
-                            onChange={(e) => setBusca(e.target.value)}
-                        />
-                    </div>
-
-                    <div className={style.filterButtons}>
-                        <label className={style.typeFilter}>
-                            <span>Perfil</span>
-                            <select
-                                value={filtroPerfil}
-                                onChange={(e) => setFiltroPerfil(e.target.value)}
-                            >
-                                <option value="">Todos</option>
-                                <option value={PERFIS.ROLE_ADMIN}>Administrador</option>
-                                <option value={PERFIS.ROLE_USER}>Funcionário</option>
-                            </select>
-                        </label>
-                    </div>
-                </div>
+            <div className={listStyle.pageContainer}>
+                <FilterBar ariaLabel="Filtros de funcionários" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
+                    <SearchFilter
+                        rotulo="Pesquisar funcionário"
+                        placeholder="Pesquisar por nome ou email"
+                        valor={valores.busca}
+                        onChange={(valor) => setFilter('busca', valor)}
+                    />
+                    <SelectFilter
+                        rotulo="Perfil"
+                        valor={valores.perfil}
+                        onChange={(valor) => setFilter('perfil', valor)}
+                        opcoes={OPCOES_PERFIL}
+                    />
+                </FilterBar>
 
                 {carregando ? (
                     <div className={style.emptyState}>Carregando funcionários...</div>
-                ) : usuariosFiltrados.length > 0 ? (
+                ) : usuariosDaPagina.length > 0 ? (
                     <Table
                         colunas={colunas}
                         funcaoRender={funcaoRender}
-                        data={usuariosFiltrados}
+                        data={usuariosDaPagina}
                         onRowClick={(row) => navigate(`/contribuintes/funcionarios/${row.id ?? row.idUsuario}`)}
                     />
                 ) : (
@@ -134,6 +143,12 @@ export function Funcionarios() {
                             : 'Nenhum funcionário encontrado'}
                     </div>
                 )}
+
+                <Pagination
+                    paginaAtual={paginaEfetiva}
+                    totalPaginas={totalPaginas}
+                    aoMudarPagina={setPagina}
+                />
             </div>
         </>
     );

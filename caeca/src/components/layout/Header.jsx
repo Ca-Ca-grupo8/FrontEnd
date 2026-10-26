@@ -94,12 +94,16 @@ export function Header({ avatarImg }) {
             <span className="nav-label">Contribuintes</span>
           </button>
           <div className="dropdown-menu">
-            <NavLink to="/contribuintes" onClick={closeAll}>Contribuintes</NavLink>
+            {usuarioEhAdmin() && (
+              <NavLink to="/contribuintes" onClick={closeAll}>Contribuintes</NavLink>
+            )}
             <NavLink to="/contribuintes/revendedoras" onClick={closeAll}>Revendedoras</NavLink>
             {usuarioEhAdmin() && (
               <NavLink to="/contribuintes/fornecedores" onClick={closeAll}>Fornecedores</NavLink>
             )}
-            <NavLink to="/contribuintes/funcionarios" onClick={closeAll}>Funcionários</NavLink>
+            {usuarioEhAdmin() && (
+              <NavLink to="/contribuintes/funcionarios" onClick={closeAll}>Funcionários</NavLink>
+            )}
           </div>
         </div>
 
@@ -114,10 +118,12 @@ export function Header({ avatarImg }) {
           </div>
         </div>
 
-        <NavLink to="/dashboard" className="nav-item" onClick={closeAll}>
-          <TrendingUp size={24} />
-          <span className="nav-label">Métricas</span>
-        </NavLink>
+        {usuarioEhAdmin() && (
+          <NavLink to="/dashboard" className="nav-item" onClick={closeAll}>
+            <TrendingUp size={24} />
+            <span className="nav-label">Métricas</span>
+          </NavLink>
+        )}
 
         <NavLink to="/" className="nav-item" end onClick={closeAll}>
           <Home size={24} />

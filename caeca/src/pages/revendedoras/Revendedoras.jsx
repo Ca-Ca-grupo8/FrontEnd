@@ -1,16 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Filter, Search } from "lucide-react";
-import { Button } from "../../components/ui/Button";
+import { BotaoAdicionar } from "../../components/ui/BotaoAdicionar";
 import { PageHeader } from "../../components/ui/PageHeader";
 import { Pagination } from "../../components/ui/Pagination";
 import { Table } from "../../components/ui/Table";
-import { Toast } from "../../components/ui/Toast";
+import { FilterBar } from "../../components/ui/filters/FilterBar";
+import { SearchFilter } from "../../components/ui/filters/SearchFilter";
+import { SelectFilter } from "../../components/ui/filters/SelectFilter";
 import { revendedoraApi } from "../../service/revendedoraApi";
+import { useListFilters } from "../../hooks/useListFilters";
+import { usuarioEhAdmin } from "../../utils/perfil";
 import styles from "./Revendedoras.module.css";
+import listStyle from "../../styles/ListPage.module.css";
 
 const colunas = ["NOME", "CONTATO", "ENDEREÇO", "ATIVIDADE"];
 const POR_PAGINA = 10;
+
+const FILTROS_PADRAO = {
+    busca: "",
+    atividade: ""
+};
+
+const OPCOES_ATIVIDADE = [
+    { value: "", label: "Todos" },
+    { value: "true", label: "Ativo" },
+    { value: "false", label: "Inativo" }
+];
 
 function formatarData(data) {
     if (!data) return "";
@@ -50,12 +65,8 @@ function revendedoraAtiva(revendedora) {
 export function Revendedoras() {
     const navigate = useNavigate();
     const [revendedoras, setRevendedoras] = useState([]);
-    const [busca, setBusca] = useState("");
-    const [filtroAtividade, setFiltroAtividade] = useState("");
-    const [filtroAberto, setFiltroAberto] = useState(false);
-    const [paginaAtual, setPaginaAtual] = useState(1);
     const [carregando, setCarregando] = useState(true);
-    const [toast, setToast] = useState(null);
+    const { valores, pagina, setFilter, setPagina, limpar, temFiltrosAtivos } = useListFilters(FILTROS_PADRAO);
 
     useEffect(() => {
         let ignore = false;
@@ -65,7 +76,7 @@ export function Revendedoras() {
                 const lista = await revendedoraApi.listarRevendedoras();
                 if (!ignore) setRevendedoras(lista);
             } catch {
-                if (!ignore) setToast({ message: "Não foi possível carregar as revendedoras." });
+                // erro exibido pelo interceptor global
             } finally {
                 if (!ignore) setCarregando(false);
             }
@@ -76,7 +87,7 @@ export function Revendedoras() {
     }, []);
 
     const filtradas = useMemo(() => {
-        const termo = busca.trim().toLocaleLowerCase("pt-BR");
+        const termo = valores.busca.trim().toLocaleLowerCase("pt-BR");
 
         return revendedoras.filter((revendedora) => {
             const atividade = revendedoraAtiva(revendedora);
@@ -86,14 +97,15 @@ export function Revendedoras() {
                 revendedora.telefone,
                 formatarEndereco(revendedora)
             ].some((valor) => String(valor ?? "").toLocaleLowerCase("pt-BR").includes(termo));
-            const correspondeAtividade = !filtroAtividade || String(atividade) === filtroAtividade;
+            const correspondeAtividade = !valores.atividade || String(atividade) === valores.atividade;
 
             return correspondeAoTermo && correspondeAtividade;
         });
-    }, [revendedoras, busca, filtroAtividade]);
+    }, [revendedoras, valores]);
 
     const totalPaginas = Math.max(1, Math.ceil(filtradas.length / POR_PAGINA));
-    const revendedorasDaPagina = filtradas.slice((paginaAtual - 1) * POR_PAGINA, paginaAtual * POR_PAGINA);
+    const paginaEfetiva = Math.min(pagina, totalPaginas);
+    const revendedorasDaPagina = filtradas.slice((paginaEfetiva - 1) * POR_PAGINA, paginaEfetiva * POR_PAGINA);
 
     const funcaoRender = {
         render: (row, coluna) => {
@@ -140,57 +152,27 @@ export function Revendedoras() {
 
     return (
         <>
-            {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
             <PageHeader titulo="Revendedoras">
-                <Button onClick={() => navigate("/contribuintes?tipo=revendedora")}>
-                    Adicionar Revendedora
-                </Button>
+                {usuarioEhAdmin() && (
+                    <BotaoAdicionar rotulo="Adicionar Revendedora" onClick={() => navigate("/contribuintes?tipo=revendedora")} />
+                )}
             </PageHeader>
 
-            <main className={styles.pageContainer}>
-                <div className={styles.toolbar}>
-                    <label className={styles.searchInputWrapper}>
-                        <span className={styles.visuallyHidden}>Pesquisar revendedora</span>
-                        <input
-                            type="search"
-                            placeholder="Pesquisar revendedora"
-                            className={styles.searchInput}
-                            value={busca}
-                            onChange={(event) => {
-                                setBusca(event.target.value);
-                                setPaginaAtual(1);
-                            }}
-                        />
-                        <Search size={16} aria-hidden="true" />
-                    </label>
-
-                    <div className={styles.filterContainer}>
-                        <Button
-                            className={styles.filterButton}
-                            aria-expanded={filtroAberto}
-                            onClick={() => setFiltroAberto((aberto) => !aberto)}
-                        >
-                            <Filter size={15} aria-hidden="true" />
-                            Filtro
-                        </Button>
-                        {filtroAberto && (
-                            <label className={styles.activityFilter}>
-                                <span>Atividade</span>
-                                <select
-                                    value={filtroAtividade}
-                                    onChange={(event) => {
-                                        setFiltroAtividade(event.target.value);
-                                        setPaginaAtual(1);
-                                    }}
-                                >
-                                    <option value="">Todas</option>
-                                    <option value="true">Ativas</option>
-                                    <option value="false">Inativas</option>
-                                </select>
-                            </label>
-                        )}
-                    </div>
-                </div>
+            <main className={listStyle.pageContainer}>
+                <FilterBar ariaLabel="Filtros de revendedoras" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
+                    <SearchFilter
+                        rotulo="Pesquisar revendedora"
+                        placeholder="Pesquisar revendedora"
+                        valor={valores.busca}
+                        onChange={(valor) => setFilter("busca", valor)}
+                    />
+                    <SelectFilter
+                        rotulo="Atividade"
+                        valor={valores.atividade}
+                        onChange={(valor) => setFilter("atividade", valor)}
+                        opcoes={OPCOES_ATIVIDADE}
+                    />
+                </FilterBar>
 
                 {carregando ? (
                     <div className={styles.emptyState}>Carregando revendedoras...</div>
@@ -210,9 +192,9 @@ export function Revendedoras() {
                 )}
 
                 <Pagination
-                    paginaAtual={paginaAtual}
+                    paginaAtual={paginaEfetiva}
                     totalPaginas={totalPaginas}
-                    aoMudarPagina={setPaginaAtual}
+                    aoMudarPagina={setPagina}
                 />
             </main>
         </>

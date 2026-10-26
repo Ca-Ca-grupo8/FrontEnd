@@ -1,0 +1,31 @@
+/* Contêiner único das páginas de listagem (mesmo visual da página de joias). */
+.pageContainer {
+    padding: 24px;
+    background-color: #f4f4f6;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Botão "Adicionar": texto no desktop; no celular fica só o "+". */
+.iconeAdicionar {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .pageContainer {
+        padding: 16px;
+    }
+
+    .iconeAdicionar {
+        display: inline-block;
+    }
+
+    .textoAdicionar {
+        display: none;
+    }
+
+    .botaoAdicionar.botaoAdicionar {
+        width: auto;
+        max-width: none;
+        padding: 0 12px;
+    }
+}

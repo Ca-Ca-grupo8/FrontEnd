@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Table } from '../../components/ui/Table';
 import { PageHeader } from '../../components/ui/PageHeader';
-import { Button } from '../../components/ui/Button';
+import { Pagination } from '../../components/ui/Pagination';
+import { FilterBar } from '../../components/ui/filters/FilterBar';
+import { SearchFilter } from '../../components/ui/filters/SearchFilter';
+import { SelectFilter } from '../../components/ui/filters/SelectFilter';
+import { DateRangeFilter } from '../../components/ui/filters/DateRangeFilter';
 import { joiaApi } from '../../service/joiaApi';
 import { categoriaApi } from '../../service/categoriaApi';
 import { materialApi } from '../../service/materialApi';
 import { banhoApi } from '../../service/banhoApi';
-import { emitirToast } from '../../utils/toastBus';
+import { useListFilters } from '../../hooks/useListFilters';
+import { validarPeriodo } from '../../utils/validarPeriodo';
 import style from './InventarioProdutos.module.css';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Pagination } from '../../components/ui/Pagination';
+import listStyle from '../../styles/ListPage.module.css';
+import { useNavigate } from 'react-router-dom';
+import { BotaoAdicionar } from '../../components/ui/BotaoAdicionar';
 
 const colunas = [
     'PRODUTOS',
@@ -20,38 +26,49 @@ const colunas = [
     'STATUS'
 ];
 
-const STATUS_JOIA = {
-    OK: 'OK',
-    INATIVO: 'INATIVO',
-    CRITICO: 'CRITICO',
-    ALERTA: 'ALERTA'
+// A dashboard entra aqui com ?categoria=<id> vinda dos rankings.
+const FILTROS_PADRAO = {
+    nome: '',
+    categoria: '',
+    material: '',
+    banho: '',
+    joiaStatus: '',
+    dataInicio: '',
+    dataFim: '',
+    ordem: 'asc'
 };
+
+const OPCOES_STATUS = [
+    { value: '', label: 'Todos' },
+    { value: 'OK', label: 'OK' },
+    { value: 'ALERTA', label: 'Alerta' },
+    { value: 'CRITICO', label: 'Em falta' },
+    { value: 'INATIVO', label: 'Inativo' }
+];
+
+const OPCOES_ORDEM = [
+    { value: 'asc', label: 'A - Z' },
+    { value: 'desc', label: 'Z - A' }
+];
+
+const comOpcaoTodos = (itens) => [
+    { value: '', label: 'Todos' },
+    ...(itens ?? []).map((item) => ({ value: String(item.id), label: item.nome }))
+];
 
 export function InventarioProdutos() {
     const navigate = useNavigate()
-    // A dashboard entra aqui com ?categoria=<id> vinda dos rankings.
-    const [searchParams] = useSearchParams();
-    const categoriaInicial = searchParams.get('categoria') ?? '';
-    const [produtos, setProdutos] = useState([]);
+    const { valores, pagina, setFilter, setPagina, limpar, temFiltrosAtivos } = useListFilters(FILTROS_PADRAO);
     const [categorias, setCategorias] = useState([]);
     const [materiais, setMateriais] = useState([]);
     const [banhos, setBanhos] = useState([]);
-    const [filters, setFilters] = useState({
-        nome: '',
-        categoria: categoriaInicial,
-        material: '',
-        banho: '',
-        joiaStatus: '',
-        dataInicio: '',
-        dataFim: '',
-        ordem: 'asc'
-    });
-    const [appliedFilters, setAppliedFilters] = useState(() => {
-        const { ordem, ...filtrosSemOrdem } = filters;
-        return { ...filtrosSemOrdem, page: 0, sort: `nome,${ordem}` };
-    });
-    const [paginaAtual, setPaginaAtual] = useState(1);
-    const [totalPaginas, setTotalPaginas] = useState(1);
+    const [consulta, setConsulta] = useState({ chave: null, itens: [], totalPaginas: 1 });
+
+    const periodo = validarPeriodo(valores);
+    const periodoValido = periodo.valido;
+    const chaveConsulta = JSON.stringify({ ...valores, pagina });
+    const carregando = periodoValido && consulta.chave !== chaveConsulta;
+    const { itens: produtos, totalPaginas } = consulta;
 
     useEffect(() => {
         const carregarOpcoes = async () => {
@@ -73,62 +90,27 @@ export function InventarioProdutos() {
     }, []);
 
     useEffect(() => {
-        const carregarProdutos = async () => {
-            try {
-                const pagina = await joiaApi.listarJoias(appliedFilters);
-                setProdutos(pagina.content ?? []);
-                setTotalPaginas(pagina.totalPages ?? 1);
-            } catch {
-                // erro exibido pelo interceptor global
-            }
-        };
-
-        carregarProdutos();
-    }, [appliedFilters]);
-
-    const atualizarFiltro = (campo, valor) => {
-        setFilters((filtrosAtuais) => ({ ...filtrosAtuais, [campo]: valor }));
-    };
-
-    const validarPeriodo = (filtros) => {
-        const apenasUmaDataPreenchida = Boolean(filtros.dataInicio) !== Boolean(filtros.dataFim);
-        const periodoInvalido = filtros.dataInicio && filtros.dataFim && filtros.dataInicio > filtros.dataFim;
-
-        if (periodoInvalido) {
-            emitirToast({ message: 'A data de início não pode ser maior que a data de fim.', type: 'error' });
-        }
-
-        return !apenasUmaDataPreenchida && !periodoInvalido;
-    };
-
-    const atualizarData = (campo, valor) => {
-        const novosFiltros = { ...filters, [campo]: valor };
-        atualizarFiltro(campo, valor);
-        validarPeriodo(novosFiltros);
-    };
-
-    const periodoValido =
-        Boolean(filters.dataInicio) === Boolean(filters.dataFim) &&
-        (!filters.dataInicio || filters.dataInicio <= filters.dataFim);
-
-    const buscarProdutos = () => {
         if (!periodoValido) {
             return;
         }
 
-        setPaginaAtual(1);
-        const { ordem, ...filtrosSemOrdem } = filters;
-        setAppliedFilters({ ...filtrosSemOrdem, page: 0, sort: `nome,${ordem}` });
-    };
+        const controller = new AbortController();
+        const { ordem, ...filtros } = valores;
 
-    const alterarPagina = (pagina) => {
-        setPaginaAtual(pagina);
-        setAppliedFilters((filtros) => ({ ...filtros, page: pagina - 1 }));
-    };
+        joiaApi.listarJoias(
+            { ...filtros, page: pagina - 1, sort: `nome,${ordem}` },
+            { signal: controller.signal }
+        )
+            .then((resposta) => {
+                setConsulta({ chave: chaveConsulta, itens: resposta.content ?? [], totalPaginas: resposta.totalPages ?? 1 });
+            })
+            .catch(() => {
+                // erro exibido pelo interceptor global
+                if (!controller.signal.aborted) setConsulta({ chave: chaveConsulta, itens: [], totalPaginas: 1 });
+            });
 
-    const optionsFiltro = (itens) => (itens || []).map((item) => (
-        <option key={item.id} value={item.id}>{item.nome}</option>
-    ));
+        return () => controller.abort();
+    }, [valores, pagina, periodoValido, chaveConsulta]);
 
     const formatarPreco = (preco) => {
         if (preco === null || preco === undefined) {
@@ -196,91 +178,58 @@ export function InventarioProdutos() {
 
     return (
         <>
-            <PageHeader titulo="Inventário de produtos" subtitulo="Visualize o inventário de produtos" />
-            <div className={style['page-container']}>
-                <div className={style.toolbar}>
-                    <div className={style['search-input-wrapper']}>
-                        <span className={style['search-icon']} aria-hidden="true">🔍</span>
-                        <input
-                            type="text"
-                            placeholder="Buscar produto pelo nome"
-                            className={style['search-input']}
-                            value={filters.nome}
-                            onChange={(event) => atualizarFiltro('nome', event.target.value)}
-                            onKeyDown={(event) => {
-                                if (event.key === 'Enter') {
-                                    buscarProdutos();
-                                }
-                            }}
-                        />
-                    </div>
+            <PageHeader titulo="Inventário de produtos" subtitulo="Visualize o inventário de produtos">
+                <BotaoAdicionar rotulo="Adicionar joia" onClick={() => navigate('/movimentacoes?fluxo=entrada')} />
+            </PageHeader>
+            <div className={listStyle.pageContainer}>
+                <FilterBar ariaLabel="Filtros do inventário" temFiltrosAtivos={temFiltrosAtivos} onLimpar={limpar}>
+                    <SearchFilter
+                        rotulo="Buscar produto"
+                        placeholder="Buscar produto pelo nome"
+                        valor={valores.nome}
+                        onChange={(valor) => setFilter('nome', valor)}
+                    />
+                    <SelectFilter
+                        rotulo="Categoria"
+                        valor={valores.categoria}
+                        onChange={(valor) => setFilter('categoria', valor)}
+                        opcoes={comOpcaoTodos(categorias)}
+                    />
+                    <SelectFilter
+                        rotulo="Material"
+                        valor={valores.material}
+                        onChange={(valor) => setFilter('material', valor)}
+                        opcoes={comOpcaoTodos(materiais)}
+                    />
+                    <SelectFilter
+                        rotulo="Banho"
+                        valor={valores.banho}
+                        onChange={(valor) => setFilter('banho', valor)}
+                        opcoes={comOpcaoTodos(banhos)}
+                    />
+                    <SelectFilter
+                        rotulo="Status"
+                        valor={valores.joiaStatus}
+                        onChange={(valor) => setFilter('joiaStatus', valor)}
+                        opcoes={OPCOES_STATUS}
+                    />
+                    <DateRangeFilter
+                        dataInicio={valores.dataInicio}
+                        dataFim={valores.dataFim}
+                        onChange={setFilter}
+                        erro={periodo.mensagem}
+                    />
+                    <SelectFilter
+                        rotulo="Ordem"
+                        valor={valores.ordem}
+                        onChange={(valor) => setFilter('ordem', valor)}
+                        opcoes={OPCOES_ORDEM}
+                    />
+                </FilterBar>
 
-                    <div className={style['filter-buttons']}>
-                        <label className={style['type-filter']}>
-                            <span>Categoria</span>
-                            <select
-                                value={filters.categoria}
-                                onChange={(event) => atualizarFiltro('categoria', event.target.value)}
-                            >
-                                <option value="">Todos</option>
-                                {optionsFiltro(categorias)}
-                            </select>
-                        </label>
-                        <label className={style['type-filter']}>
-                            <span>Material</span>
-                            <select
-                                value={filters.material}
-                                onChange={(event) => atualizarFiltro('material', event.target.value)}
-                            >
-                                <option value="">Todos</option>
-                                {optionsFiltro(materiais)}
-                            </select>
-                        </label>
-                        <label className={style['type-filter']}>
-                            <span>Banho</span>
-                            <select
-                                value={filters.banho}
-                                onChange={(event) => atualizarFiltro('banho', event.target.value)}
-                            >
-                                <option value="">Todos</option>
-                                {optionsFiltro(banhos)}
-                            </select>
-                        </label>
-                        <label className={style['type-filter']}>
-                            <span>Status</span>
-                            <select
-                                value={filters.joiaStatus}
-                                onChange={(event) => atualizarFiltro('joiaStatus', event.target.value)}
-                            >
-                                <option value="">Todos</option>
-                                {Object.values(STATUS_JOIA).map((status) => (
-                                    <option key={status} value={status}>{status}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <label className={style['date-filter']}>
-                            <span>De</span>
-                            <input type="date" value={filters.dataInicio} onChange={(event) => atualizarData('dataInicio', event.target.value)} />
-                        </label>
-                        <label className={style['date-filter']}>
-                            <span>Até</span>
-                            <input type="date" value={filters.dataFim} onChange={(event) => atualizarData('dataFim', event.target.value)} />
-                        </label>
-                        <label className={style['type-filter']}>
-                            <span>Ordem</span>
-                            <select
-                                value={filters.ordem}
-                                onChange={(event) => atualizarFiltro('ordem', event.target.value)}
-                            >
-                                <option value="asc">A - Z</option>
-                                <option value="desc">Z - A</option>
-                            </select>
-                        </label>
-                        <Button className={style['btn-buscar']} children={"Buscar"} colorido={true} disabled={!periodoValido} onClick={buscarProdutos} />
-                    </div>
-                </div>
-
-                {produtos.length > 0 ? (
+                {carregando ? (
+                    <div className={style['empty-state']}>Carregando produtos...</div>
+                ) : produtos.length > 0 ? (
                     <Table
                         colunas={colunas}
                         funcaoRender={funcaoRender}
@@ -294,9 +243,9 @@ export function InventarioProdutos() {
                 )}
 
                 <Pagination
-                    paginaAtual={paginaAtual}
+                    paginaAtual={pagina}
                     totalPaginas={totalPaginas}
-                    aoMudarPagina={alterarPagina}
+                    aoMudarPagina={setPagina}
                 />
             </div>
         </>

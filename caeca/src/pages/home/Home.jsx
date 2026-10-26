@@ -6,6 +6,7 @@ import { RankingPecas } from "./components/RankingPecas";
 import { UltimasMovimentacoes } from "./components/UltimasMovimentacoes";
 import { UltimosEnvios } from "./components/UltimosEnvios";
 import { useHomeData } from "./useHomeData";
+import { usuarioEhAdmin } from "../../utils/perfil";
 import styles from "./Home.module.css";
 
 const ACESSOS = [
@@ -80,6 +81,9 @@ export function Home() {
     const semKpis = carregando || erros.kpis;
     const valorKpi = (valor) => (semKpis ? "—" : formatarNumero(valor));
 
+    const admin = usuarioEhAdmin();
+    const acessos = ACESSOS.filter((item) => admin || item.path !== "/dashboard");
+
     return (
         <div className={styles.page}>
             <div className={styles.layout}>
@@ -89,7 +93,7 @@ export function Home() {
                     <section className={styles.secao}>
                         <h2 className={styles.tituloSecao}>Acesso rápido</h2>
                         <div className={styles.acessos}>
-                            {ACESSOS.map((item) => (
+                            {acessos.map((item) => (
                                 <CardHome
                                     key={item.path}
                                     titulo={item.titulo}
@@ -148,7 +152,7 @@ export function Home() {
                             itens={dados.topVendidos ?? []}
                             campo="quantidadeSaidas"
                             rotuloValor="saídas"
-                            caminhoVerMais="/dashboard"
+                            caminhoVerMais={admin ? "/dashboard" : undefined}
                             rotuloVerMais="Ver métricas"
                             caminhoItem={(item) => (item.id ? `/joias/${item.id}` : null)}
                             carregando={carregando}

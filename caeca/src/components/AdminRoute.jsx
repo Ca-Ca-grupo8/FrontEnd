@@ -3,7 +3,7 @@ import { usuarioEhAdmin } from '../utils/perfil';
 
 export function AdminRoute({ children }) {
   if (!usuarioEhAdmin()) {
-    return <Navigate to="/contribuintes" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;

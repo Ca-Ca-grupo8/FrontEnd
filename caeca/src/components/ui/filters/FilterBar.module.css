@@ -1,0 +1,130 @@
+.filterBar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    margin-bottom: 24px;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1 1 280px;
+    max-width: 420px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    color: #6b6b74;
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px 0 36px;
+    border: 1px solid #e2e2e8;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #333;
+    font: inherit;
+    font-size: 14px;
+}
+
+.searchInput:focus,
+.select select:focus,
+.date input:focus {
+    outline: 2px solid #96205c;
+    outline-offset: 1px;
+}
+
+.select,
+.date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #555;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.select select,
+.date input {
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #e2e2e8;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #333;
+    font: inherit;
+    font-size: 14px;
+}
+
+.date input[aria-invalid='true'] {
+    border-color: #a20738;
+}
+
+.erro {
+    flex-basis: 100%;
+    margin: 0;
+    color: #a20738;
+    font-size: 13px;
+}
+
+.clear {
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #96205c;
+    border-radius: 8px;
+    background: transparent;
+    color: #96205c;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.clear:hover:not(:disabled) {
+    background-color: #96205c;
+    color: #ffffff;
+}
+
+.clear:disabled {
+    border-color: #d4d4d4;
+    color: #9a9aa3;
+    cursor: not-allowed;
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 768px) {
+    .filterBar {
+        margin-bottom: 16px;
+    }
+
+    .search {
+        max-width: none;
+    }
+}
