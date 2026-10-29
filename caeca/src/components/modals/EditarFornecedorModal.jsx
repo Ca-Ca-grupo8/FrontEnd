@@ -12,6 +12,7 @@ function FormEditarFornecedor({ fornecedor, onSalvo }) {
         telefone: fornecedor.telefone || "",
         instagram: fornecedor.instagram || "",
     });
+    const fornecedorEstaAtivo = fornecedor.isAtivo === true;
 
     const handleChange = (field, value) => {
         setFormValues(prev => ({
@@ -31,6 +32,22 @@ function FormEditarFornecedor({ fornecedor, onSalvo }) {
             });
 
             emitirToast({ message: "Fornecedor atualizado com sucesso!", type: "success" });
+            onSalvo();
+        } catch {
+            // Erro exibido pelo interceptor global.
+        }
+    };
+
+    const handleAlterarStatus = async () => {
+        const acao = fornecedorEstaAtivo ? "inativar" : "ativar";
+        const confirmar = window.confirm(
+            `Deseja ${acao} o fornecedor "${formValues.nome}"?`
+        );
+        if (!confirmar) return;
+
+        try {
+            await fornecedorApi.alterarStatus(fornecedor.id, !fornecedorEstaAtivo);
+            emitirToast({ message: `Fornecedor "${formValues.nome}" ${acao === "ativar" ? "ativado" : "inativado"}.`, type: "success" });
             onSalvo();
         } catch {
             // Erro exibido pelo interceptor global.
@@ -69,6 +86,12 @@ function FormEditarFornecedor({ fornecedor, onSalvo }) {
             <div className="modal-actions">
                 <Button type="submit" colorido={true}>
                     Salvar alterações
+                </Button>
+            </div>
+
+            <div className="modal-actions">
+                <Button type="button" colorido={false} onClick={handleAlterarStatus}>
+                    {fornecedorEstaAtivo ? "Inativar fornecedor" : "Ativar fornecedor"}
                 </Button>
             </div>
         </form>

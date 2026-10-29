@@ -1,0 +1,20 @@
+/* Com o endereço aberto, o modal fica mais largo e rola dentro da tela */
+.modal-container--largo {
+    max-width: 720px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Campos do endereço em duas colunas; em telas pequenas, uma coluna */
+.endereco-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+@media (max-width: 520px) {
+    .endereco-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}

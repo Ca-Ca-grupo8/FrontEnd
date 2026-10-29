@@ -26,6 +26,6 @@ export const fornecedorApi = {
     },
 
     alterarStatus: async (id, isAtivo) => {
-        await api.patch(`/fornecedores/${id}/status`, { isAtivo })
+        await api.patch(`/fornecedores/${id}/status`, { ativo: isAtivo })
     },
 }

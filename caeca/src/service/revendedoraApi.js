@@ -7,8 +7,11 @@ export const revendedoraApi = {
         return response.data;
     },
     editarRevendedora: async (id, payload) => {
-        const response = await api.put(`/revendedoras/${id}`, payload);
+        const response = await api.patch(`/revendedoras/${id}`, payload);
         return response.data;
+    },
+    alterarStatusRevendedora: async (id, ativo) => {
+        await api.patch(`/revendedoras/${id}`, { ativo });
     },
     listarRevendedoras: async () => {
         return fetchAllPages((page) =>

@@ -6,25 +6,15 @@ import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
 import { OPCOES_PERFIL } from "../../utils/perfilOpcoes";
 
-const OPCOES_STATUS = [
-    { id: "ATIVO", nome: "Ativo" },
-    { id: "INATIVO", nome: "Inativo" },
-];
-
 // Só é montado enquanto o modal está aberto, então o formulário
 // reinicia com os dados do funcionário a cada abertura.
 function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
-    // Pendente não é escolhido manualmente: aparece só para mostrar o estado atual.
-    const opcoesStatus = funcionario.status === "PENDENTE"
-        ? [{ id: "PENDENTE", nome: "Pendente" }, ...OPCOES_STATUS]
-        : OPCOES_STATUS;
-
     const [formValues, setFormValues] = useState({
         nome: funcionario.nome || "",
         email: funcionario.email || "",
         perfilUsuario: funcionario.tipoPerfil || "",
-        status: funcionario.status || "",
     });
+    const funcionarioEstaAtivo = funcionario.status === "ATIVO";
 
     const handleChange = (field, value) => {
         setFormValues(prev => ({
@@ -36,10 +26,9 @@ function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Quem edita outro funcionário só altera perfil e status.
+        // Quem edita outro funcionário só altera o perfil.
         const payload = {
             perfilUsuario: formValues.perfilUsuario,
-            status: formValues.status,
             ...(propriaConta && {
                 nome: formValues.nome,
                 email: formValues.email,
@@ -51,6 +40,27 @@ function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
 
             emitirToast({
                 message: "Funcionário atualizado com sucesso",
+                type: "success",
+            });
+            onSalvo();
+        } catch {
+            // erro exibido pelo interceptor global
+        }
+    };
+
+    const handleAlterarStatus = async () => {
+        const acao = funcionarioEstaAtivo ? "inativar" : "ativar";
+        const confirmar = window.confirm(
+            `Deseja ${acao} o funcionário "${funcionario.nome}"?`
+        );
+        if (!confirmar) return;
+
+        try {
+            await funcionarioApi.atualizar(funcionario.id, {
+                status: funcionarioEstaAtivo ? "INATIVO" : "ATIVO",
+            });
+            emitirToast({
+                message: `Funcionário "${funcionario.nome}" ${acao === "ativar" ? "ativado" : "inativado"}.`,
                 type: "success",
             });
             onSalvo();
@@ -91,19 +101,19 @@ function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
                 onChange={(e) => handleChange("perfilUsuario", e.target.value)}
             />
 
-            <SelectField
-                label={"Status"}
-                data={opcoesStatus}
-                required={true}
-                value={formValues.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-            />
-
             <div className="modal-actions">
                 <Button type="submit" colorido={true}>
                     Salvar alterações
                 </Button>
             </div>
+
+            {!propriaConta && (
+                <div className="modal-actions">
+                    <Button type="button" colorido={false} onClick={handleAlterarStatus}>
+                        {funcionarioEstaAtivo ? "Inativar funcionário" : "Ativar funcionário"}
+                    </Button>
+                </div>
+            )}
         </form>
     );
 }
