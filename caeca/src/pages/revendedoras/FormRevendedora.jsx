@@ -142,6 +142,12 @@ export function FormRevendedora() {
         }
     };
 
+    const bloquearTeclasInvalidas = (e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <FormFlat onSubmit={handleSubmit}>
             <div className={formStyles.inteiro}>
@@ -227,8 +233,10 @@ export function FormRevendedora() {
                     type="number"
                     placeholder="123"
                     required
+                    min="0"
                     value={formValues.numero}
                     onChange={(event) => handleChange("numero", event.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
                 />
                 <InputField
                     label="Complemento"

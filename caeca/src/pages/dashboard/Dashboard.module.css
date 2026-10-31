@@ -12,6 +12,8 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 24px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .cardTitle {
@@ -45,6 +47,7 @@
 .fieldGroup {
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .field {

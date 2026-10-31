@@ -37,9 +37,17 @@ export function EntradaJoia() {
     });
 
     const handleChange = (field, value) => {
+        // Se for um campo numérico, remove 'e', 'E', '+' e '-' instantaneamente
+        const camposNumericos = ['quantidade', 'quantidadeMinima', 'precoCusto', 'precoBanho', 'multiplicador'];
+        
+        let valorTratado = value;
+        if (camposNumericos.includes(field)) {
+            valorTratado = value.replace(/[eE+\-]/g, '');
+        }
+
         setFormValues(prev => ({
             ...prev,
-            [field]: value
+            [field]: valorTratado
         }))
     }
 
@@ -120,6 +128,13 @@ export function EntradaJoia() {
         }
     }
 
+    // Função para bloquear fisicamente a digitação de 'e', 'E', '+' e '-' nas teclas
+    const bloquearTeclasInvalidas = (e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <>
             <FormFlat onSubmit={handleSubmit}>
@@ -175,18 +190,22 @@ export function EntradaJoia() {
                         type={"number"}
                         placeholder={"Ex: 15"}
                         required={true}
+                        min="0"
                         value={formValues.quantidade}
-                        onChange={(e) => handleChange("quantidade", e.target.value)}>
-                    </InputField>
+                        onChange={(e) => handleChange("quantidade", e.target.value)}
+                        onKeyDown={bloquearTeclasInvalidas}
+                    />
 
                     <InputField
                         label={"Quantidade mínima"}
                         type={"number"}
                         placeholder={"Ex: 3"}
                         required={true}
+                        min="0"
                         value={formValues.quantidadeMinima}
-                        onChange={(e) => handleChange("quantidadeMinima", e.target.value)}>
-                    </InputField>
+                        onChange={(e) => handleChange("quantidadeMinima", e.target.value)}
+                        onKeyDown={bloquearTeclasInvalidas}
+                    />
                 </div>
 
                 <InputField
@@ -194,27 +213,33 @@ export function EntradaJoia() {
                     type={"number"}
                     placeholder={"Ex: 45.50"}
                     required={true}
+                    min="0"
                     value={formValues.precoCusto}
-                    onChange={(e) => handleChange("precoCusto", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("precoCusto", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <InputField
                     label={"Preço do banho"}
                     type={"number"}
                     placeholder={"Ex: 12.00"}
                     required={true}
+                    min="0"
                     value={formValues.precoBanho}
-                    onChange={(e) => handleChange("precoBanho", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("precoBanho", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <InputField
                     label={"Multiplicador (Ganho)"}
                     type={"number"}
                     placeholder={"Ex: 1.5"}
                     required={true}
+                    min="0"
                     value={formValues.multiplicador}
-                    onChange={(e) => handleChange("multiplicador", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("multiplicador", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <div className={formStyles.inteiro}>
                     <InputField

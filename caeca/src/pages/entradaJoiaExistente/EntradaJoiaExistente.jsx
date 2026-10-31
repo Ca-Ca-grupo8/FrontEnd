@@ -131,6 +131,12 @@ export function EntradaJoiaExistente() {
         }
     }
 
+    const bloquearTeclasInvalidas = (e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <>
             <FormFlat onSubmit={handleSubmit}>
@@ -181,36 +187,44 @@ export function EntradaJoiaExistente() {
                     type={"number"}
                     placeholder={"Value"}
                     required={true}
+                    min="0"
                     value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("quantidade", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <InputField
                     label={"Preço Original (Custo)"}
                     type={"number"}
                     placeholder={"Value"}
                     required={true}
+                    min="0"
                     value={formValues.precoCusto}
-                    onChange={(e) => handleChange("precoCusto", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("precoCusto", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <InputField
                     label={"Preço do banho"}
                     type={"number"}
                     placeholder={"Value"}
                     required={true}
+                    min="0"
                     value={formValues.precoBanho}
-                    onChange={(e) => handleChange("precoBanho", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("precoBanho", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <InputField
                     label={"Multiplicador"}
                     type={"number"}
                     placeholder={"Value"}
                     required={true}
+                    min="0"
                     value={formValues.multiplicador}
-                    onChange={(e) => handleChange("multiplicador", e.target.value)}>
-                </InputField>
+                    onChange={(e) => handleChange("multiplicador", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
+                />
 
                 <SelectField
                     data={fornecedor}

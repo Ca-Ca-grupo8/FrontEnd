@@ -111,6 +111,12 @@ export function SaidaJoia({ sugestao }) {
         }
     };
 
+    const bloquearTeclasInvalidas = (e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <>
             <NovaRevendedoraModal
@@ -168,8 +174,10 @@ export function SaidaJoia({ sugestao }) {
                     type={"number"}
                     placeholder={"Ex: 10"}
                     required={true}
+                    min="0"
                     value={formValues.quantidade}
                     onChange={(e) => handleChange("quantidade", e.target.value)}
+                    onKeyDown={bloquearTeclasInvalidas}
                 />
 
                 <div className={formStyles.acoes}>
