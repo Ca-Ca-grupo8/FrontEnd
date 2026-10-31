@@ -166,6 +166,12 @@ export function ReentradaJoia() {
         }
     }
 
+    const bloquearTeclasInvalidas = (e) => {
+        if (['e', 'E', '+', '-'].includes(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <FormFlat onSubmit={handleSubmit}>
 
@@ -200,11 +206,12 @@ export function ReentradaJoia() {
                 type={"number"}
                 placeholder={"Value"}
                 required={true}
-                min={quantidadeMaxima !== undefined ? 1 : undefined}
+                min={quantidadeMaxima !== undefined ? 1 : 0}
                 max={quantidadeMaxima}
                 value={formValues.quantidade}
-                onChange={(e) => handleQuantidadeChange(e.target.value)}>
-            </InputField>
+                onChange={(e) => handleQuantidadeChange(e.target.value)}
+                onKeyDown={bloquearTeclasInvalidas}
+            />
 
             <div className={formStyles.acoes}>
                 <Button type={"submit"} colorido={true}>Realizar reentrada</Button>

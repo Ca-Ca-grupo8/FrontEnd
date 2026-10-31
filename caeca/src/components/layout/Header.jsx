@@ -7,6 +7,7 @@ import { usuarioApi } from '../../service/usuarioApi';
 import { HttpStatusCode } from 'axios';
 import { usuarioEhAdmin } from '../../utils/perfil';
 import { obterIniciais } from '../../utils/obterIniciais';
+import logoBranca from '../../assets/logoBranca.png';
 
 export function Header({ avatarImg }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,10 +78,17 @@ export function Header({ avatarImg }) {
 
       <div className={`nav-menu ${isOpen ? 'open' : ''}`}>
         
+        {/* Container da Logomarca no topo da Sidebar */}
+        <div className="sidebar-logo-container">
+          <img src={logoBranca} alt="Logomarca Caeca" className="sidebar-logo-img" />
+        </div>
+
         <div className={`nav-item-wrapper ${activeDropdown === 'joias' ? 'show-dropdown' : ''}`}>
-          <button className="nav-item" onClick={() => toggleDropdown('joias')}>
-            <Gem size={24} />
-            <span className="nav-label">Jóias</span>
+          <button className="nav-item has-dropdown" onClick={() => toggleDropdown('joias')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <Gem size={24} />
+              <span className="nav-label">Jóias</span>
+            </div>
           </button>
           <div className="dropdown-menu">
             <NavLink to="/joias" onClick={closeAll}>Catálogo</NavLink>
@@ -89,9 +97,11 @@ export function Header({ avatarImg }) {
         </div>
 
         <div className={`nav-item-wrapper ${activeDropdown === 'contribuintes' ? 'show-dropdown' : ''}`}>
-          <button className="nav-item" onClick={() => toggleDropdown('contribuintes')}>
-            <Users size={24} />
-            <span className="nav-label">Contribuintes</span>
+          <button className="nav-item has-dropdown" onClick={() => toggleDropdown('contribuintes')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <Users size={24} />
+              <span className="nav-label">Contribuintes</span>
+            </div>
           </button>
           <div className="dropdown-menu">
             {usuarioEhAdmin() && (
@@ -108,9 +118,11 @@ export function Header({ avatarImg }) {
         </div>
 
         <div className={`nav-item-wrapper ${activeDropdown === 'historico' ? 'show-dropdown' : ''}`}>
-          <button className="nav-item" onClick={() => toggleDropdown('historico')}>
-            <History size={24} />
-            <span className="nav-label">Histórico</span>
+          <button className="nav-item has-dropdown" onClick={() => toggleDropdown('historico')}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <History size={24} />
+              <span className="nav-label">Histórico</span>
+            </div>
           </button>
           <div className="dropdown-menu">
             <NavLink to="/joias/movimentacoes" onClick={closeAll}>Movimentações</NavLink>
@@ -120,14 +132,18 @@ export function Header({ avatarImg }) {
 
         {usuarioEhAdmin() && (
           <NavLink to="/dashboard" className="nav-item" onClick={closeAll}>
-            <TrendingUp size={24} />
-            <span className="nav-label">Métricas</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <TrendingUp size={24} />
+              <span className="nav-label">Métricas</span>
+            </div>
           </NavLink>
         )}
 
         <NavLink to="/" className="nav-item" end onClick={closeAll}>
-          <Home size={24} />
-          <span className="nav-label">Home</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Home size={24} />
+            <span className="nav-label">Home</span>
+          </div>
         </NavLink>
       </div>
     </nav>

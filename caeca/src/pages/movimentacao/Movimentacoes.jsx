@@ -9,6 +9,7 @@ import { TopJoiasSaida } from "./components/TopJoiasSaida";
 import { Button } from "../../components/ui/Button";
 import { NovaCategoriaModal } from "../../components/modals/NovaCategoriaModal";
 import { NovoFornecedorModal } from "../../components/modals/NovoFornecedor";
+import { PageHeader } from '../../components/ui/PageHeader';
 import styles from "./Movimentacoes.module.css";
 
 // Textos da coluna de ajuda ficam aqui para serem trocados depois com facilidade
@@ -75,7 +76,7 @@ export function Movimentacoes() {
 
     return (
         <div className={styles.page}>
-            <h1 className={styles.titulo}>Movimentação de joias</h1>
+            <PageHeader titulo="Fornecedores" subtitulo="Gerencie seus parceiros de fornecimento"> </PageHeader>
 
             <div className={styles.layout}>
                 <nav className={styles.nav} aria-label="Tipos de movimentação">
