@@ -117,7 +117,11 @@ jobs:
             TAGS="latest sha-${GITHUB_SHA:0:7}"
           fi
           for TAG in $TAGS; do
+            if [ "$TAG" = "latest" ]; then
+              EXTRA_TAG=(--tag "$ECR_REGISTRY/$ECR_REPOSITORY:latest")
+            fi
             docker buildx imagetools create \
               --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$SERVICE-$TAG" \
+              "${EXTRA_TAG[@]}" \
               "$IMAGE_NAME:$TAG"
           done
