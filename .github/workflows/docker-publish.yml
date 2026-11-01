@@ -1,6 +1,8 @@
-# Builda a imagem do frontend e publica no Docker Hub.
-# - Pull request para a main: builda e publica com a tag pr-<número>.
-# - Push na main: builda e publica com as tags latest e sha-<commit>.
+# Builda a imagem do frontend e publica no Docker Hub e no ECR.
+# - Pull request para a main: builda e publica no Docker Hub com a tag pr-<número>.
+# - Push na main: builda e publica no Docker Hub com as tags latest e sha-<commit>,
+#   e copia essas tags para o ECR (frontend-latest, frontend-sha-<commit>).
+# - workflow_dispatch: copia para o ECR uma tag já publicada no Docker Hub, sem rebuildar.
 # PRs vindos de fork não recebem os secrets, então só fazem o build (sem push).
 
 name: Docker publish
@@ -10,13 +12,20 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag já publicada no Docker Hub a ser enviada ao ECR (ex: latest, sha-abc1234)"
+        required: false
+        default: latest
 
 concurrency:
-  group: docker-publish-${{ github.ref }}
+  group: docker-publish-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build-and-push:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: eduardonl/caeca-frontend
@@ -58,3 +67,57 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  push-ecr:
+    needs: build-and-push
+    # Roda só no push na main e no disparo manual, nunca em PR
+    if: ${{ !cancelled() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && needs.build-and-push.result == 'success')) }}
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: eduardonl/caeca-frontend
+      SERVICE: frontend
+      ECR_REPOSITORY: erc_caeca
+      AWS_REGION: us-east-1
+      EVENT_NAME: ${{ github.event_name }}
+      TAG_INPUT: ${{ github.event.inputs.tag }}
+
+    steps:
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Credenciais temporárias do AWS Learner Lab: expiram em poucas horas.
+      # Se falhar aqui, atualize os secrets AWS_* e use "Re-run failed jobs".
+      - name: Credenciais AWS (Learner Lab)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login no ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Copia a imagem já publicada no Docker Hub, sem rebuild
+      - name: Enviar tags ao ECR
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TAGS="${TAG_INPUT:-latest}"
+          else
+            TAGS="latest sha-${GITHUB_SHA:0:7}"
+          fi
+          for TAG in $TAGS; do
+            docker buildx imagetools create \
+              --tag "$ECR_REGISTRY/$ECR_REPOSITORY:$SERVICE-$TAG" \
+              "$IMAGE_NAME:$TAG"
+          done
