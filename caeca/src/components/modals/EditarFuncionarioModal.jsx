@@ -5,6 +5,8 @@ import { SelectField } from "../ui/SelectField";
 import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
 import { OPCOES_PERFIL } from "../../utils/perfilOpcoes";
+import { useConfirmacao } from "../../hooks/useConfirmacao";
+import { ConfirmarAcaoModal } from "./ConfirmarAcaoModal";
 
 // Só é montado enquanto o modal está aberto, então o formulário
 // reinicia com os dados do funcionário a cada abertura.
@@ -23,9 +25,9 @@ function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const confirmacao = useConfirmacao();
 
+    const salvar = async () => {
         // Quem edita outro funcionário só altera o perfil.
         const payload = {
             perfilUsuario: formValues.perfilUsuario,
@@ -48,28 +50,39 @@ function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
         }
     };
 
-    const handleAlterarStatus = async () => {
-        const acao = funcionarioEstaAtivo ? "inativar" : "ativar";
-        const confirmar = window.confirm(
-            `Deseja ${acao} o funcionário "${funcionario.nome}"?`
-        );
-        if (!confirmar) return;
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-        try {
-            await funcionarioApi.atualizar(funcionario.id, {
-                status: funcionarioEstaAtivo ? "INATIVO" : "ATIVO",
-            });
-            emitirToast({
-                message: `Funcionário "${funcionario.nome}" ${acao === "ativar" ? "ativado" : "inativado"}.`,
-                type: "success",
-            });
-            onSalvo();
-        } catch {
-            // erro exibido pelo interceptor global
-        }
+        confirmacao.solicitar({
+            titulo: "Salvar alterações",
+            mensagem: `Deseja salvar as alterações do funcionário "${formValues.nome || funcionario.nome}"?`,
+            textoConfirmar: "Salvar",
+            executar: salvar,
+        });
+    };
+
+    const handleAlterarStatus = () => {
+        const acao = funcionarioEstaAtivo ? "inativar" : "ativar";
+
+        confirmacao.solicitar({
+            titulo: `${acao === "ativar" ? "Ativar" : "Inativar"} funcionário`,
+            mensagem: `Deseja ${acao} o funcionário "${funcionario.nome}"?`,
+            textoConfirmar: acao === "ativar" ? "Ativar" : "Inativar",
+            executar: async () => {
+                await funcionarioApi.atualizar(funcionario.id, {
+                    status: funcionarioEstaAtivo ? "INATIVO" : "ATIVO",
+                });
+                emitirToast({
+                    message: `Funcionário "${funcionario.nome}" ${acao === "ativar" ? "ativado" : "inativado"}.`,
+                    type: "success",
+                });
+                onSalvo();
+            },
+        });
     };
 
     return (
+        <>
         <form onSubmit={handleSubmit} className="modal-form">
             {propriaConta && (
                 <>
@@ -115,6 +128,14 @@ function FormEditarFuncionario({ funcionario, propriaConta, onSalvo }) {
                 </div>
             )}
         </form>
+
+        <ConfirmarAcaoModal
+            pendente={confirmacao.pendente}
+            carregando={confirmacao.carregando}
+            onConfirmar={confirmacao.confirmar}
+            onCancelar={confirmacao.cancelar}
+        />
+        </>
     );
 }
 

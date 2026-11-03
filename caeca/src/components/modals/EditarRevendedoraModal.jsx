@@ -8,6 +8,8 @@ import { InputField } from "../ui/InputField";
 import { SelectField } from "../ui/SelectField";
 import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
+import { useConfirmacao } from "../../hooks/useConfirmacao";
+import { ConfirmarAcaoModal } from "./ConfirmarAcaoModal";
 import styles from "../../pages/revendedoras/CadastroRevendedora.module.css";
 
 const estados = [
@@ -92,23 +94,24 @@ function FormEditarRevendedora({ revendedora, id, onSalvo, editarEndereco, onAlt
         }));
     };
 
-    const handleAlterarStatus = async () => {
-        const acao = revendedoraEstaAtiva ? "inativar" : "ativar";
-        const confirmar = window.confirm(
-            `Deseja ${acao} a revendedora "${formValues.nome}"?`
-        );
-        if (!confirmar) return;
+    const confirmacao = useConfirmacao();
 
-        try {
-            await revendedoraApi.alterarStatusRevendedora(id, !revendedoraEstaAtiva);
-            emitirToast({ message: `Revendedora "${formValues.nome}" ${acao === "ativar" ? "ativada" : "inativada"}.`, type: "success" });
-            onSalvo();
-        } catch {
-            // Erro exibido pelo interceptor global.
-        }
+    const handleAlterarStatus = () => {
+        const acao = revendedoraEstaAtiva ? "inativar" : "ativar";
+
+        confirmacao.solicitar({
+            titulo: `${acao === "ativar" ? "Ativar" : "Inativar"} revendedora`,
+            mensagem: `Deseja ${acao} a revendedora "${formValues.nome}"?`,
+            textoConfirmar: acao === "ativar" ? "Ativar" : "Inativar",
+            executar: async () => {
+                await revendedoraApi.alterarStatusRevendedora(id, !revendedoraEstaAtiva);
+                emitirToast({ message: `Revendedora "${formValues.nome}" ${acao === "ativar" ? "ativada" : "inativada"}.`, type: "success" });
+                onSalvo();
+            },
+        });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         const telefoneDigits = formValues.telefone.replace(/\D/g, "");
@@ -117,6 +120,15 @@ function FormEditarRevendedora({ revendedora, id, onSalvo, editarEndereco, onAlt
             return;
         }
 
+        confirmacao.solicitar({
+            titulo: "Salvar alterações",
+            mensagem: `Deseja salvar as alterações da revendedora "${formValues.nome}"?`,
+            textoConfirmar: "Salvar",
+            executar: () => salvar(telefoneDigits),
+        });
+    };
+
+    const salvar = async (telefoneDigits) => {
         try {
             const payload = {
                 nome: formValues.nome,
@@ -160,6 +172,7 @@ function FormEditarRevendedora({ revendedora, id, onSalvo, editarEndereco, onAlt
     };
 
     return (
+        <>
         <form onSubmit={handleSubmit} className="modal-form">
             <InputField
                 label={"Nome"}
@@ -300,6 +313,14 @@ function FormEditarRevendedora({ revendedora, id, onSalvo, editarEndereco, onAlt
                 </Button>
             </div>
         </form>
+
+        <ConfirmarAcaoModal
+            pendente={confirmacao.pendente}
+            carregando={confirmacao.carregando}
+            onConfirmar={confirmacao.confirmar}
+            onCancelar={confirmacao.cancelar}
+        />
+        </>
     );
 }
 

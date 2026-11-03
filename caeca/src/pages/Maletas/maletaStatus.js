@@ -37,3 +37,20 @@ export const classeStatusMaleta = (status) => statusConhecido(status)?.classe ??
 
 export const statusSelecionavel = (status) =>
     String(status?.nome ?? '').toUpperCase() !== NOME_NAO_SELECIONAVEL;
+
+// Fluxo permitido: Em preparação → Em consignação → Em acerto → Finalizada.
+// Não é possível voltar nem pular etapas.
+const TRANSICOES_MALETA = Object.freeze({
+    EM_PREPARACAO: Object.freeze(['EM_CONSIGNACAO']),
+    EM_CONSIGNACAO: Object.freeze(['EM_ACERTO']),
+    EM_ACERTO: Object.freeze(['FINALIZADA']),
+    FINALIZADA: Object.freeze([])
+});
+
+const nomeStatus = (status) => String(status?.nome ?? '').toUpperCase();
+
+export const proximosStatusMaleta = (statusAtual) =>
+    TRANSICOES_MALETA[nomeStatus(statusAtual)] ?? [];
+
+export const transicaoMaletaPermitida = (statusAtual, novoStatus) =>
+    proximosStatusMaleta(statusAtual).includes(nomeStatus(novoStatus));

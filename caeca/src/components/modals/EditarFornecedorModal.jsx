@@ -3,6 +3,8 @@ import { fornecedorApi } from "../../service/fornecedorApi";
 import { InputField } from "../ui/InputField";
 import { Button } from "../ui/Button";
 import { emitirToast } from "../../utils/toastBus";
+import { useConfirmacao } from "../../hooks/useConfirmacao";
+import { ConfirmarAcaoModal } from "./ConfirmarAcaoModal";
 
 // Só é montado enquanto o modal está aberto, então o formulário
 // reinicia com os dados do fornecedor a cada abertura.
@@ -21,9 +23,9 @@ function FormEditarFornecedor({ fornecedor, onSalvo }) {
         }));
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const confirmacao = useConfirmacao();
 
+    const salvar = async () => {
         try {
             await fornecedorApi.editarFornecedor(fornecedor.id, {
                 nome: formValues.nome,
@@ -38,23 +40,34 @@ function FormEditarFornecedor({ fornecedor, onSalvo }) {
         }
     };
 
-    const handleAlterarStatus = async () => {
-        const acao = fornecedorEstaAtivo ? "inativar" : "ativar";
-        const confirmar = window.confirm(
-            `Deseja ${acao} o fornecedor "${formValues.nome}"?`
-        );
-        if (!confirmar) return;
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-        try {
-            await fornecedorApi.alterarStatus(fornecedor.id, !fornecedorEstaAtivo);
-            emitirToast({ message: `Fornecedor "${formValues.nome}" ${acao === "ativar" ? "ativado" : "inativado"}.`, type: "success" });
-            onSalvo();
-        } catch {
-            // Erro exibido pelo interceptor global.
-        }
+        confirmacao.solicitar({
+            titulo: "Salvar alterações",
+            mensagem: `Deseja salvar as alterações do fornecedor "${formValues.nome}"?`,
+            textoConfirmar: "Salvar",
+            executar: salvar,
+        });
+    };
+
+    const handleAlterarStatus = () => {
+        const acao = fornecedorEstaAtivo ? "inativar" : "ativar";
+
+        confirmacao.solicitar({
+            titulo: `${acao === "ativar" ? "Ativar" : "Inativar"} fornecedor`,
+            mensagem: `Deseja ${acao} o fornecedor "${formValues.nome}"?`,
+            textoConfirmar: acao === "ativar" ? "Ativar" : "Inativar",
+            executar: async () => {
+                await fornecedorApi.alterarStatus(fornecedor.id, !fornecedorEstaAtivo);
+                emitirToast({ message: `Fornecedor "${formValues.nome}" ${acao === "ativar" ? "ativado" : "inativado"}.`, type: "success" });
+                onSalvo();
+            },
+        });
     };
 
     return (
+        <>
         <form onSubmit={handleSubmit} className="modal-form">
             <InputField
                 label={"Nome do fornecedor"}
@@ -95,6 +108,14 @@ function FormEditarFornecedor({ fornecedor, onSalvo }) {
                 </Button>
             </div>
         </form>
+
+        <ConfirmarAcaoModal
+            pendente={confirmacao.pendente}
+            carregando={confirmacao.carregando}
+            onConfirmar={confirmacao.confirmar}
+            onCancelar={confirmacao.cancelar}
+        />
+        </>
     );
 }
 

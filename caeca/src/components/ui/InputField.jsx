@@ -1,4 +1,5 @@
 import '../../styles/InputField.css';
+import { InputData } from './InputData';
 
 export function InputField({ label, type, placeholder, required = false, value, onChange, min, max, step, onFocus, autoComplete, onKeyDown }) {
     return (
@@ -6,6 +7,16 @@ export function InputField({ label, type, placeholder, required = false, value, 
             <label className="input-field-label">
                 {label} {required && <span className="required-indicator">*</span>}
             </label>
+            {type === "date" ? (
+                <InputData
+                    className="input-field-input"
+                    required={required}
+                    value={value}
+                    onChange={(iso) => onChange?.({ target: { value: iso } })}
+                    onFocus={onFocus}
+                    onKeyDown={onKeyDown}
+                />
+            ) : (
             <input
                 type={type}
                 placeholder={placeholder}
@@ -20,6 +31,7 @@ export function InputField({ label, type, placeholder, required = false, value, 
                 autoComplete={autoComplete}
                 onKeyDown={onKeyDown}
             />
+            )}
         </div>
     )
 }

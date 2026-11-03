@@ -11,6 +11,7 @@ import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
 import { revendedoraApi } from "../../service/revendedoraApi";
 import { vendaApi } from "../../service/vendaApi";
+import { somenteInteiros } from '../../utils/quantidade';
 
 export function ReentradaJoia() {
     const [motivos, setMotivos] = useState([]);
@@ -106,7 +107,8 @@ export function ReentradaJoia() {
         : undefined;
     const quantidadeMaxima = joiaSelecionadaRevendedora?.quantidade;
 
-    const handleQuantidadeChange = (value) => {
+    const handleQuantidadeChange = (valorDigitado) => {
+        const value = somenteInteiros(valorDigitado);
         if (quantidadeMaxima !== undefined && value !== "") {
             if (!/^\d+$/.test(value) || Number(value) < 1) return;
             if (Number(value) > quantidadeMaxima) {

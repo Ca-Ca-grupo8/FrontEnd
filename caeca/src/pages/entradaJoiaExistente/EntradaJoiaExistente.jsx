@@ -10,6 +10,7 @@ import { movimentacaoApi } from "../../service/movimentacaoApi";
 import { joiaApi } from "../../service/joiaApi";
 import comboStyles from "./EntradaJoiaExistente.module.css";
 import { emitirToast } from "../../utils/toastBus";
+import { somenteInteiros } from '../../utils/quantidade';
 
 export function EntradaJoiaExistente() {
     const [joias, setJoias] = useState([]);
@@ -189,7 +190,7 @@ export function EntradaJoiaExistente() {
                     required={true}
                     min="0"
                     value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}
+                    onChange={(e) => handleChange("quantidade", somenteInteiros(e.target.value))}
                     onKeyDown={bloquearTeclasInvalidas}
                 />
 

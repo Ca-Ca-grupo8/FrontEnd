@@ -14,6 +14,7 @@ import { motivoApi } from "../service/motivoApi";
 
 import '../styles/EntradaJoia.css'; // Reaproveitando os estilos base de formulário
 import { NovaRevendedoraModal } from "../components/modals/NovaRevendedora";
+import { arredondarQuantidade, somenteInteiros } from '../utils/quantidade';
 
 export function SaidaJoia({ sugestao }) {
     const [motivos, setMotivos] = useState([]);
@@ -71,7 +72,7 @@ export function SaidaJoia({ sugestao }) {
             ...prev,
             joiaId: String(sugestao.joia.idJoia),
             motivoSaidaId: String(sugestao.joia.idMotivo),
-            quantidade: String(sugestao.joia.quantidadeMedia)
+            quantidade: String(Math.max(1, arredondarQuantidade(sugestao.joia.quantidadeMedia)))
         }));
     }
 
@@ -176,7 +177,7 @@ export function SaidaJoia({ sugestao }) {
                     required={true}
                     min="0"
                     value={formValues.quantidade}
-                    onChange={(e) => handleChange("quantidade", e.target.value)}
+                    onChange={(e) => handleChange("quantidade", somenteInteiros(e.target.value))}
                     onKeyDown={bloquearTeclasInvalidas}
                 />
 

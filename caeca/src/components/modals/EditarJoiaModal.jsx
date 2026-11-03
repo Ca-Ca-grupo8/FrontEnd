@@ -7,6 +7,9 @@ import { banhoApi } from "../../service/banhoApi";
 import { materialApi } from "../../service/materialApi";
 import { categoriaApi } from "../../service/categoriaApi";
 import { joiaApi } from "../../service/joiaApi";
+import { useConfirmacao } from "../../hooks/useConfirmacao";
+import { ConfirmarAcaoModal } from "./ConfirmarAcaoModal";
+import { somenteInteiros } from '../../utils/quantidade';
 
 const inicializarForm = (joia) => ({
     nome: joia?.nome || "",
@@ -60,7 +63,19 @@ export function EditarJoiaModal({ isOpen, onClose, joia, onAtualizar }) {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const confirmacao = useConfirmacao();
+
+    const salvar = async (payload) => {
+        try {
+            await joiaApi.atualizarJoia(joia.id, payload);
+            onAtualizar();
+            onClose();
+        } catch (error) {
+            console.error("Erro ao atualizar a joia:", error);
+        }
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         const payload = {
@@ -74,13 +89,12 @@ export function EditarJoiaModal({ isOpen, onClose, joia, onAtualizar }) {
             ativo: formValues.ativo
         };
 
-        try {
-            await joiaApi.atualizarJoia(joia.id, payload);
-            onAtualizar();
-            onClose();
-        } catch (error) {
-            console.error("Erro ao atualizar a joia:", error);
-        }
+        confirmacao.solicitar({
+            titulo: "Salvar alterações",
+            mensagem: `Deseja salvar as alterações da joia "${formValues.nome}"?`,
+            textoConfirmar: "Salvar",
+            executar: () => salvar(payload),
+        });
     };
 
     if (!isOpen) return null;
@@ -132,7 +146,7 @@ export function EditarJoiaModal({ isOpen, onClose, joia, onAtualizar }) {
                         placeholder={"Ex: 5"}
                         required={true}
                         value={formValues.quantidadeMinima}
-                        onChange={(e) => handleChange("quantidadeMinima", e.target.value)}
+                        onChange={(e) => handleChange("quantidadeMinima", somenteInteiros(e.target.value))}
                     />
 
                     <InputField
@@ -159,6 +173,13 @@ export function EditarJoiaModal({ isOpen, onClose, joia, onAtualizar }) {
                     </div>
                 </form>
             </div>
+
+            <ConfirmarAcaoModal
+                pendente={confirmacao.pendente}
+                carregando={confirmacao.carregando}
+                onConfirmar={confirmacao.confirmar}
+                onCancelar={confirmacao.cancelar}
+            />
         </div>
     );
 }

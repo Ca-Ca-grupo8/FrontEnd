@@ -5,10 +5,12 @@ import { PageHeader } from '../../components/ui/PageHeader'
 import { Table } from '../../components/ui/Table'
 import { vendaApi } from '../../service/maletasApi'
 import { emitirToast } from '../../utils/toastBus'
-import { rotuloStatusMaleta, statusSelecionavel } from './maletaStatus'
+import { rotuloStatusMaleta, statusSelecionavel, transicaoMaletaPermitida } from './maletaStatus'
 import { StatusMaletaBadge } from './StatusMaletaBadge'
 import { TipoMovimentacaoBadge } from './TipoMovimentacaoBadge'
 import { usuarioEhAdmin } from '../../utils/perfil'
+import { useConfirmacao } from '../../hooks/useConfirmacao'
+import { ConfirmarAcaoModal } from '../../components/modals/ConfirmarAcaoModal'
 import { contarItens, ehReentrada } from './tipoMovimentacao'
 import '../entradaJoia/JoiaDetalhes.css'
 import style from './Maletas.module.css'
@@ -55,6 +57,7 @@ export function MaletaDetalhes() {
     const [erro, setErro] = useState(false)
     const [statusDisponiveis, setStatusDisponiveis] = useState([])
     const [salvandoStatus, setSalvandoStatus] = useState(false)
+    const confirmacao = useConfirmacao()
 
     useEffect(() => {
         let ignore = false
@@ -106,13 +109,16 @@ export function MaletaDetalhes() {
 
     const totalItens = contarItens(maleta.movimentacoes)
 
-    const alterarStatus = async (event) => {
-        const idStatus = event.target.value
-        if (idStatus === '') return
+    // Só mostra o status atual e os próximos permitidos pelo fluxo.
+    const opcoesStatus = statusDisponiveis.filter((status) =>
+        status.id === maleta.status?.id || transicaoMaletaPermitida(maleta.status, status)
+    ).filter(statusSelecionavel)
+    const existeProximoStatus = opcoesStatus.some((status) => status.id !== maleta.status?.id)
 
+    const salvarStatus = async (idStatus) => {
         setSalvandoStatus(true)
         try {
-            const atualizada = await vendaApi.atualizarStatus(id, Number(idStatus))
+            const atualizada = await vendaApi.atualizarStatus(id, idStatus)
             setMaleta(atualizada?.idMovimentacaoRevendedora ? atualizada : await vendaApi.buscarPorId(id))
             emitirToast({ message: 'Status da maleta atualizado.', type: 'success' })
         } catch {
@@ -120,6 +126,25 @@ export function MaletaDetalhes() {
         } finally {
             setSalvandoStatus(false)
         }
+    }
+
+    // Primeira validação: o fluxo permitido. Segunda: confirmação explícita.
+    const alterarStatus = (event) => {
+        const idStatus = event.target.value
+        if (idStatus === '') return
+
+        const novoStatus = statusDisponiveis.find((status) => String(status.id) === idStatus)
+        if (!transicaoMaletaPermitida(maleta.status, novoStatus)) {
+            emitirToast({ message: 'Essa mudança de status não é permitida.', type: 'error' })
+            return
+        }
+
+        confirmacao.solicitar({
+            titulo: 'Alterar status da maleta',
+            mensagem: `Mudar "${maleta.nome}" de "${rotuloStatusMaleta(maleta.status)}" para "${rotuloStatusMaleta(novoStatus)}"? Não será possível voltar ao status anterior.`,
+            textoConfirmar: 'Alterar status',
+            executar: () => salvarStatus(Number(idStatus)),
+        })
     }
 
     const colunas = ["PRODUTO", "TIPO", "QUANTIDADE", "PREÇO UNIT.", "SUBTOTAL"]
@@ -161,10 +186,10 @@ export function MaletaDetalhes() {
                         <select
                             value={maleta.status?.id ?? ''}
                             onChange={alterarStatus}
-                            disabled={salvandoStatus || statusDisponiveis.length === 0}
+                            disabled={salvandoStatus || !existeProximoStatus}
                         >
                             <option value="" disabled>Selecione...</option>
-                            {statusDisponiveis.filter(statusSelecionavel).map((status) => (
+                            {opcoesStatus.map((status) => (
                                 <option key={status.id} value={status.id}>{rotuloStatusMaleta(status)}</option>
                             ))}
                         </select>
@@ -213,6 +238,13 @@ export function MaletaDetalhes() {
 
                 <Table colunas={colunas} funcaoRender={funcaoRender} data={maleta.movimentacoes} />
             </div>
+
+            <ConfirmarAcaoModal
+                pendente={confirmacao.pendente}
+                carregando={confirmacao.carregando}
+                onConfirmar={confirmacao.confirmar}
+                onCancelar={confirmacao.cancelar}
+            />
         </div>
     )
 }

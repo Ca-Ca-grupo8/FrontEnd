@@ -13,6 +13,7 @@ import { movimentacaoApi } from "../service/movimentacaoApi";
 import { motivoApi } from "../service/motivoApi";
 import '../styles/EntradaJoia.css'
 import { emitirToast } from "../utils/toastBus";
+import { somenteInteiros } from '../utils/quantidade';
 
 export function EntradaJoia() {
     const [motivos, setMotivos] = useState([]);
@@ -43,6 +44,9 @@ export function EntradaJoia() {
         let valorTratado = value;
         if (camposNumericos.includes(field)) {
             valorTratado = value.replace(/[eE+\-]/g, '');
+        }
+        if (field === 'quantidade' || field === 'quantidadeMinima') {
+            valorTratado = somenteInteiros(valorTratado);
         }
 
         setFormValues(prev => ({

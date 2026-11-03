@@ -10,6 +10,7 @@ import { Toast } from '../../components/ui/Toast';
 import { dashboardApi } from '../../service/dashboardApi';
 import { categoriaApi } from '../../service/categoriaApi';
 import style from './Dashboard.module.css';
+import { InputData } from '../../components/ui/InputData';
 
 const CORES = {
     entradas: '#7FB9CC',
@@ -425,10 +426,9 @@ export function Dashboard() {
                                             <span className={style.fieldSubLabel}>Início</span>
                                             <div className={style.inputWrap}>
                                                 <Calendar size={16} />
-                                                <input
-                                                    type="date"
+                                                <InputData
                                                     value={paraInput(inicio)}
-                                                    onChange={(e) => setInicio(deInput(e.target.value))}
+                                                    onChange={(iso) => iso && setInicio(deInput(iso))}
                                                 />
                                             </div>
                                         </div>
@@ -436,10 +436,9 @@ export function Dashboard() {
                                             <span className={style.fieldSubLabel}>Término</span>
                                             <div className={style.inputWrap}>
                                                 <Calendar size={16} />
-                                                <input
-                                                    type="date"
+                                                <InputData
                                                     value={paraInput(termino)}
-                                                    onChange={(e) => setTermino(deInput(e.target.value))}
+                                                    onChange={(iso) => iso && setTermino(deInput(iso))}
                                                 />
                                             </div>
                                         </div>

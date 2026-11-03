@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { movimentacaoApi } from "../../../service/movimentacaoApi";
 import styles from "./TopJoiasSaida.module.css";
+import { arredondarQuantidade } from '../../../utils/quantidade';
 
 export function TopJoiasSaida({ onSelecionar }) {
     const [topJoias, setTopJoias] = useState([]);
@@ -29,7 +30,7 @@ export function TopJoiasSaida({ onSelecionar }) {
                         key={joia.idJoia}
                         type={"button"}
                         colorido={false}
-                        title={`${joia.motivoMaisComum} · média de ${joia.quantidadeMedia} por saída`}
+                        title={`${joia.motivoMaisComum} · média de ${arredondarQuantidade(joia.quantidadeMedia)} por saída`}
                         onClick={() => onSelecionar(joia)}>
                         {joia.nomeJoia}
                     </Button>

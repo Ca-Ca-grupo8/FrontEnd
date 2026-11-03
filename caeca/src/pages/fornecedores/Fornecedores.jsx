@@ -11,6 +11,8 @@ import { fornecedorApi } from '../../service/fornecedorApi';
 import { emitirToast } from '../../utils/toastBus';
 import { usuarioEhAdmin } from '../../utils/perfil';
 import { useListFilters } from '../../hooks/useListFilters';
+import { useConfirmacao } from '../../hooks/useConfirmacao';
+import { ConfirmarAcaoModal } from '../../components/modals/ConfirmarAcaoModal';
 import style from './Fornecedores.module.css';
 import listStyle from '../../styles/ListPage.module.css';
 
@@ -81,19 +83,19 @@ export function Fornecedores() {
         return filtrados.slice(inicio, inicio + POR_PAGINA);
     }, [filtrados, paginaEfetiva]);
 
-    const inativarFornecedor = async (fornecedor) => {
-        const confirmar = window.confirm(
-            `Deseja inativar o fornecedor "${fornecedor.nome}"? Ele deixará de aparecer nas listas de seleção.`
-        );
-        if (!confirmar) return;
+    const confirmacao = useConfirmacao();
 
-        try {
-            await fornecedorApi.alterarStatus(fornecedor.id, false);
-            emitirToast({ message: `Fornecedor "${fornecedor.nome}" inativado.`, type: 'success' });
-            setVersaoLista((versao) => versao + 1);
-        } catch {
-            // erro exibido pelo interceptor global
-        }
+    const inativarFornecedor = (fornecedor) => {
+        confirmacao.solicitar({
+            titulo: 'Inativar fornecedor',
+            mensagem: `Deseja inativar o fornecedor "${fornecedor.nome}"? Ele deixará de aparecer nas listas de seleção.`,
+            textoConfirmar: 'Inativar',
+            executar: async () => {
+                await fornecedorApi.alterarStatus(fornecedor.id, false);
+                emitirToast({ message: `Fornecedor "${fornecedor.nome}" inativado.`, type: 'success' });
+                setVersaoLista((versao) => versao + 1);
+            },
+        });
     };
 
     const formatarData = (data) => {
@@ -175,6 +177,13 @@ export function Fornecedores() {
                     aoMudarPagina={setPagina}
                 />
             </div>
+
+            <ConfirmarAcaoModal
+                pendente={confirmacao.pendente}
+                carregando={confirmacao.carregando}
+                onConfirmar={confirmacao.confirmar}
+                onCancelar={confirmacao.cancelar}
+            />
         </>
     );
 }

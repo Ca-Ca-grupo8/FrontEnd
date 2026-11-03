@@ -1,4 +1,5 @@
 import styles from './FilterBar.module.css';
+import { InputData } from '../InputData';
 
 export function DateRangeFilter({ dataInicio, dataFim, onChange, erro }) {
     const invalido = Boolean(erro);
@@ -7,20 +8,18 @@ export function DateRangeFilter({ dataInicio, dataFim, onChange, erro }) {
         <>
             <label className={styles.date}>
                 <span>De</span>
-                <input
-                    type="date"
+                <InputData
                     value={dataInicio}
                     aria-invalid={invalido}
-                    onChange={(event) => onChange('dataInicio', event.target.value)}
+                    onChange={(iso) => onChange('dataInicio', iso)}
                 />
             </label>
             <label className={styles.date}>
                 <span>Até</span>
-                <input
-                    type="date"
+                <InputData
                     value={dataFim}
                     aria-invalid={invalido}
-                    onChange={(event) => onChange('dataFim', event.target.value)}
+                    onChange={(iso) => onChange('dataFim', iso)}
                 />
             </label>
             {invalido && <p role="alert" className={styles.erro}>{erro}</p>}
